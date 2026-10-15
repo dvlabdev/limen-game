@@ -157,21 +157,38 @@ Da definire nel blocco 3: contenuto di ogni tipo di milestone, valute (denaro, i
 - Il nemico mostra un **hint** di cosa sta per fare: il giocatore mantiene la postura o la cambia per parare o contrattaccare.
 - Tutto si legge con **simboli chiari**, con poco testo a schermo.
 
-### 5.2 Posture 🟡 (numero da confermare: 4)
-| Postura | Effetto | Reazione base | Recupero fiato |
-|---|---|---|---|
-| **Assalto** | Attacchi più forti | Nessuna, incassi tutto | Basso |
-| **Guardia** | Attacchi deboli, danni subiti ridotti | Parata | Alto |
-| **Attesa** | Nessun attacco | Schivata + contrattacco | Medio |
-| **Distanza** | Nessun attacco ravvicinato | Evita i colpi corti | Alto |
+### 5.2 Posture (numero da confermare dall'arena: 4)
+
+#### Modello ✅
+> **La postura è la risposta del viandante al prossimo colpo. Ogni postura compra qualcosa adesso e lascia un debito per dopo.**
+
+Le posture nascono dall'incrocio di due assi, l'intento e il tempo:
+
+| | **Agire adesso** | **Agire dopo** |
+|---|---|---|
+| **Offendere** | **Assalto**: colpisci per primo | **Attesa**: carichi la risposta, cioè una preparazione |
+| **Difendersi** | **Guardia**: copri e rispondi leggero | **Distanza**: esci dal colpo e ti riposizioni |
+
+Ogni postura si paga in una di tre valute: **vigore**, **fiato** o **iniziativa**. L'iniziativa è il **vantaggio**: decide chi comanda lo scambio successivo. Lo svantaggio è il vantaggio in mano all'avversario.
+
+| Postura | Compra | Paga | Reazione base | Recupero fiato |
+|---|---|---|---|---|
+| **Assalto** | Danno e iniziativa | Vigore: ti esponi | Nessuna | Basso |
+| **Guardia** | Sicurezza e fiato | Danno: colpi deboli | Parata | Alto |
+| **Attesa** | Un colpo migliore dopo: contrattacco, oppure la carica (*preparato*) se nessuno attacca | Tempo: contro i colpi rapidi arriva tardi | Schivata e contrattacco | Medio |
+| **Distanza** | Salvezza adesso e riposizionamento | **Iniziativa**: chi arretra la cede, l'avversario incalza; e lo spazio alle spalle è limitato | Evita i colpi corti | Alto |
 
 - Mantenere la postura è gratuito; **cambiarla costa fiato**.
 - ✅ Le 4 posture corrispondono a famiglie reali di guardie della scherma storica: Assalto = *posta di donna*, Guardia = *posta frontale*, Attesa = *dente di zenghiaro*, Distanza = *posta longa*. Analisi completa e confronto con altri giochi in [docs/ricerca/POSTURE_ANALISI.md](docs/ricerca/POSTURE_ANALISI.md).
-- 🟡 Candidate per l'arena v1.1 (POSTURE_ANALISI §4), tutte da verificare con il simulatore:
-  - **P1 spazio alle spalle:** limite di 2 Distanze consecutive;
-  - **P2:** un nemico con mosse di Attesa;
-  - **P3:** gradi della Distanza (*Punta*, *Arresto*);
-  - **P4:** il *Colpo maestro* come tecnica da boss.
+
+#### Regole che derivano dal modello ✅ (arena v1.1)
+- **Arretrare cede l'iniziativa:** chi attacca un avversario in Distanza guadagna il vantaggio (incalza), a meno che la Distanza non risponda con *Punta* o *Arresto*.
+- **Spazio alle spalle:** dopo 2 turni consecutivi in Distanza, la Distanza non è disponibile per un turno.
+- **L'Attesa è una preparazione:** se nessun colpo la raggiunge, a fine turno si diventa *preparati* (prossimo colpo ×1,5). È la stessa meccanica del nemico che si raccoglie: un solo sistema per tutti.
+- **Gradi della Distanza:** *Punta* (grado 2) e *Arresto* (grado 3). La posta longa minaccia: chi entra corto finisce sulla punta.
+- **Ogni nemico ha una risposta all'Assalto:** nel roster ci sono mosse di difesa o di attesa, così la catena dell'Assalto con vantaggio si spezza leggendo l'hint.
+- 🟡 Facoltativa, dopo il simulatore: **chi manca un colpo a vuoto cede l'iniziativa.**
+- 🟡 **P4:** il *Colpo maestro* come tecnica da boss.
 - L'equipaggiamento può aggiungere o modificare posture (per esempio la lancia aggiunge *Ricevere*).
 - Il terreno può abilitare o vietare posture.
 

@@ -1,6 +1,7 @@
 # Arena di prova del duello: specifica operativa
 
-> **Versione:** 1.0.2 (15 ottobre 2026: dispositivo di riferimento S23; mossa "Finta" del Duellante rinominata "Battuta") · **Proprietario:** Planning · **Esecutore:** sessione Codice
+> **Versione:** 1.1 (15 ottobre 2026): modello delle posture, nuove regole e risposte al report. **La §12 prevale sulle sezioni precedenti dove le modifica.** · **Proprietario:** Planning · **Esecutore:** sessione Codice
+> Storico: 1.0.1 dispositivo di riferimento S23 · 1.0.2 la mossa "Finta" del Duellante diventa "Battuta"
 > **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5 (combattimento) e [CLAUDE.md](../CLAUDE.md) (regole delle sessioni).
 
 ## 0. Scopo
@@ -391,3 +392,113 @@ Euristica `lettore` (si può rifinire, sempre con le sole informazioni visibili)
 4. Scostamenti dalla specifica, con il motivo.
 5. **Domande per Planning.**
 6. Osservazioni sul gioco emerse dai test, per esempio "la Distanza contro il Bruto è troppo sicura".
+
+---
+
+## 12. Revisione 1.1: modello delle posture
+Questa revisione rende l'arena coerente con il **modello delle posture** di DESIGN §5.2: ogni postura compra qualcosa adesso e lascia un debito. Risponde anche alle domande di `docs/ARENA_REPORT.md` §5. **Dove modifica le sezioni precedenti, prevale.**
+
+### 12.1 Risposte al report
+| Domanda | Decisione |
+|---|---|
+| **1. Lanciere** (l'Assalto fisso domina) | Si risolve con le regole: il Lanciere ottiene la **Distanza di grado 3 (Arresto)** sulla mossa *Tenere a bada* (§12.2 R4 ed R5). Resta negli obiettivi `fissa:*`. |
+| **2. Bruto** (Assalto fisso al 28%) | Nuova mossa difensiva **Incassare** (§12.2 R5). L'obiettivo resta < 25%; se dopo il bilanciamento non si scende sotto, è accettato < 30% **solo per il Bruto**, da riportare nel report. |
+| **3. Scala del vigore** | **Accettata:** giocatore a 20, nemici come da bilanciamento. |
+| **4. Entrambi a 0** | **Pareggio:** confermato. |
+| **5a. Interruzione** | Un colpo pesante a segno interrompe **qualunque** attacco ancora da risolvere: confermato. |
+| **5b. Vantaggio negli scambi simultanei** | Confermato. La catena dell'Assalto con vantaggio è voluta: chi ha l'iniziativa la tiene finché l'avversario non si difende bene. La spezzano le difese nel roster e la lettura dell'hint (§12.2 R5 ed R6). |
+| **6d. Fiato 0 e Distanza** | Confermato: senza fiato non si arretra. Il colpo corto arriva con danno ×1,25. È coerente con il modello: arretrare è un movimento. |
+| **6e, 6f, 6g, 6h, 6i, 6j** | Interpretazioni confermate così come implementate. |
+| **7. Gradi dei nemici** | Invariati. Si aggiunge il grado della Distanza: §12.2 R4. |
+
+### 12.2 Nuove regole
+**R1. Arretrare cede l'iniziativa (incalzare).**
+- Quando un attacco si risolve contro un difensore in postura `distanza`, **qualunque sia l'esito** (evitato, oppure a segno con ×1,25), l'attaccante guadagna il vantaggio, secondo le regole del vantaggio in arrivo (§4.5).
+- Eccezione: non succede se il difensore risponde con *Punta* o *Arresto* (R4).
+- Evento: `incalza`.
+
+**R2. Spazio alle spalle.**
+- Ogni combattente ha un contatore `distanzaConsecutive`: i turni consecutivi **conclusi** in `distanza`. Si azzera a fine turno se la postura è un'altra.
+- Se a inizio turno il contatore è ≥ 2, l'archetipo `distanza` **non è disponibile**. Per il giocatore: la postura risulta non disponibile per mancanza di spazio. Per l'IA: le mosse `distanza` sono escluse.
+- Chi è in Distanza e non può restarci **cambia postura gratis**: è con le spalle al muro, e questo evita il blocco a fiato zero.
+- Evento: `spalleAlMuro`, quando il contatore arriva a 2.
+
+**R3. L'Attesa è una preparazione.**
+- A fine turno un combattente in `attesa` che **non è stato raggiunto da nessun attacco** diventa `preparato`. Vale se l'avversario non aveva attacco, oppure se il suo attacco è stato interrotto prima di risolversi.
+- Se è già `preparato`, resta tale: il bonus non si accumula.
+- Il bonus `preparato` (×1,5) vale per il **prossimo colpo a danno** del combattente: attacco, contrattacco, *Punta* o *Arresto*. Poi si consuma. Questo vale ora anche per i nemici: la §4.4 diceva "prossimo attacco".
+- Il recupero di fiato dell'Attesa resta +1.
+- Evento: `preparato` (lo stesso del nemico che si raccoglie).
+
+**R4. Gradi della Distanza.**
+- Nuovo campo `gradi.distanza: 1 | 2 | 3`. Il giocatore parte da 1 e il grado si regola nel pannello dell'arena, come gli altri. *Punta* e *Arresto* sono **reazioni**: costano 1 fiato e non scattano a fiato zero.
+
+| Grado | Contro un colpo corto evitato | Effetto |
+|---|---|---|
+| 1 | — | Come prima: evita senza costo e cede l'iniziativa (R1) |
+| 2 · ***Punta*** | Colpo **pesante** | −1 fiato; l'attaccante subisce 1–2, un colpo senza reazioni come il contrattacco; **nessun** incalzare |
+| 3 · ***Arresto*** | Colpo pesante o leggero **non rapido** | −1 fiato; l'attaccante subisce 2–3; il difensore **guadagna il vantaggio**; nessun incalzare. Contro un colpo rapido vale la Punta, se il colpo è pesante. |
+
+- I colpi **lunghi** non vengono evitati (danno ×1,25 come prima), quindi Punta e Arresto non scattano.
+
+**R5. Roster: ogni nemico ha una risposta all'Assalto.** I pesi iniziali sono indicativi e regolabili nel bilanciamento.
+
+| Nemico | Modifica |
+|---|---|
+| **Duellante** | Nuova mossa **Invito** (archetipo `attesa`, senza attacco). Nella scherma l'invito è aprire una linea apposta per provocare l'attacco. Peso iniziale 3. |
+| **Bruto** | Nuova mossa **Incassare** (archetipo `guardia`, senza attacco; Parata di grado 1). Peso iniziale 2. |
+| **Lanciere** | `gradi.distanza = 3`: *Tenere a bada* diventa la minaccia dell'Arresto. |
+| Recluta, Mietitore | Invariati. |
+
+**R6. Adattamento.**
+- Nella tabella del §5, l'Assalto è battuto dagli archetipi `guardia` e `attesa` **e da `distanza` se il nemico ha grado della Distanza ≥ 2**.
+- Il resto della tabella non cambia.
+
+**R7. Vista e simboli (contratto `DuelView`).**
+- Ogni elemento di `posture[]` riceve `motivo?: 'fiato' | 'spazio'` quando `disponibile` è falso.
+- `CombattenteView` riceve `spazio: number`, cioè `distanzaConsecutive` limitato a 2, così la scena può mostrare il bordo.
+- Nuovi id di simbolo: `stato.spalle`, `evento.incalza`, `evento.punta`, `evento.arresto`. Finché la Grafica non li disegna si usano segnaposto in `src/ui/symbols.ts`.
+- Il registro spiega il perché, per esempio: "Arretri: il Bruto incalza e prende l'iniziativa."
+
+**R8. Bot `lettore` aggiornato.** Usa sempre e solo le informazioni visibili.
+1. Se ha il vantaggio → **Assalto**.
+2. Altrimenti, in base all'hint:
+   - **pesante** → **Attesa** se il fiato basta (cambio più schivata); altrimenti **Distanza** se è disponibile; altrimenti **Guardia**;
+   - **leggero** → **Guardia**;
+   - **difesa** → **Attesa** (per prepararsi) se il fiato è ≥ 2; altrimenti **Guardia**;
+   - **preparazione** → **Assalto**.
+3. Se ha il bonus `preparato` e l'hint non è "pesante" → **Assalto**.
+4. Se il cambio non è consentito, resta nella postura attuale.
+
+`fissa:distanza`: quando la Distanza non è disponibile, ripiega su **Guardia**.
+
+### 12.3 Matrice di riferimento: celle modificate (§4.6)
+Condizioni del §4.6, con in più il grado della Distanza 1. Dado finto: Punta 2, Arresto 3.
+
+| Giocatore ↓ / Nemico → | P1 | P2 | L1 | L2 | D | PR |
+|---|---|---|---|---|---|---|
+| **Attesa** | invariata | invariata | invariata | invariata | **il giocatore diventa preparato** | **entrambi preparati** |
+| **Distanza** | evitato, **il nemico incalza** (+vantaggio) | subisce 8, **il nemico incalza** | evitato, **il nemico incalza** | subisce 4, **il nemico incalza** | niente | il nemico diventa preparato |
+
+Altri test richiesti:
+- Distanza di grado 2 contro P1: Punta 2, nessun incalzare, −1 fiato.
+- Distanza di grado 2 contro L1: nessuna Punta (colpo leggero) e incalzare.
+- Distanza di grado 3 contro P1: Arresto 3 e vantaggio al giocatore.
+- Distanza di grado 3 contro L1: nessun Arresto (colpo rapido) e incalzare.
+- Distanza di grado 3 contro L2: colpo lungo, ×1,25 e incalzare.
+- Spazio alle spalle: indisponibilità al terzo turno, cambio gratuito, azzeramento del contatore.
+- Attesa: diventa preparata quando l'attacco nemico viene interrotto; nessun accumulo; ×1,5 sul contrattacco.
+- Fiato zero: nessuna Punta né Arresto.
+
+### 12.4 Obiettivi del simulatore
+- **Invariati** rispetto al §9, con l'eccezione del Bruto (§12.1).
+- **Nuovo obiettivo:** `fissa:distanza` deve stare sotto il 25% di vittorie **e** sotto il 50% di pareggi contro ogni nemico. Lo stallo non deve più essere una strategia.
+- Bilanciamento: valgono le regole del §9, cioè solo numeri. Sono numeri anche i pesi delle nuove mosse e i danni di Punta e Arresto (in `balance.ts`).
+
+### 12.5 Ordine di lavoro per la sessione Codice
+1. **F2b Revisione 1.1**, da fare prima di F4:
+   - R1–R8 e test del §12.3;
+   - nuovo bilanciamento;
+   - nel report: tabelle aggiornate e una sezione "Revisione 1.1", con il confronto prima/dopo per le domande 1 e 2.
+   - Commit: `F2b Revisione 1.1: …`.
+2. **F4 Verifica**, come da §10, a 360×780 (S23), provando anche i gradi della Distanza e lo spazio alle spalle.
