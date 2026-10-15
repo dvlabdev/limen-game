@@ -8,6 +8,7 @@ import { creaDuello, resolveTurn } from '../../src/core/resolve.ts';
 import { toDuelView } from '../../src/core/view.ts';
 import { pesiCandidate, sceglieMossaNemico } from '../../src/core/ai.ts';
 import { registraProfilo, trovaProfilo } from '../../src/data/enemies.ts';
+import { BALANCE } from '../../src/data/balance.ts';
 
 // --- Banco di prova: le mosse nemiche di §4.6 ------------------------------------------------------
 const att = (forza: 'leggero' | 'pesante', portata: 'corta' | 'lunga', velocita: 'rapido' | 'normale' | 'lento', d: number, extra = {}) => ({
@@ -335,6 +336,19 @@ const casi: Caso[] = [
     const g = gioca(banco({ postura: 'distanza', mossa: 'P1', gFiato: 0, gradi: { distanza: 3 } }), 'distanza');
     return g.subisce === 8 && g.infligge === 0 && !g.tipi.some((t) => /^(punta|arresto|evitato)/.test(t)) && g.tipi.includes('incalza:nemico') ? null : `subisce ${g.subisce}, eventi ${g.tipi.join(',')}`;
   } },
+  // AUD-017 (chiuso in C2): le reazioni della Distanza costano fiato e si fanno solo se il fiato basta. I costi sono numeri
+  // bilanciabili (§12.4): si prova con costo 2 e fiato 1, poi si ripristina.
+  { nome: 'Punta con costo 2 e fiato 1: non scatta, il fiato non va sotto zero, il nemico incalza', rif: 'R4, §12.4; AUD-017', gravita: 'Maggiore', prova() {
+    const vecchio = BALANCE.costoPunta;
+    (BALANCE as { costoPunta: number }).costoPunta = 2;
+    try {
+      const g = gioca(banco({ postura: 'distanza', mossa: 'P1', gFiato: 1, gradi: { distanza: 2 } }), 'distanza');
+      const f = g.r.stato.giocatore.fiato;
+      return !g.tipi.includes('punta:giocatore') && g.tipi.includes('incalza:nemico') && f >= 0 && f === 3 ? null : `eventi ${g.tipi.join(',')}, fiato ${f} (atteso 3 = 1 + recupero 2, senza spesa)`;
+    } finally {
+      (BALANCE as { costoPunta: number }).costoPunta = vecchio;
+    }
+  } },
   // §12.3 Spazio alle spalle
   { nome: 'Spazio alle spalle: indisponibile al terzo turno, cambio gratuito, contatore azzerato', rif: '§12.3, R2', gravita: 'Bloccante', prova() {
     let s = banco({ postura: 'distanza', mossa: 'D' });
@@ -480,16 +494,28 @@ const casi: Caso[] = [
     return pb2 === 3 * pb1 && pl2 === 2 * pl1 ? null : `Bruto ${pb1}→${pb2}, Lanciere ${pl1}→${pl2}`;
   } },
   // §4.1 valori di partenza
-  { nome: 'Nemico: fiato al massimo e postura iniziale = archetipo della prima mossa', rif: '§4.1', gravita: 'Bloccante', prova() {
+  // §4.1 come sostituito da §12.7 AUD-004: il nemico parte in Guardia, a fiato pieno, e paga il cambio verso la prima mossa.
+  { nome: 'Nemico: parte in Guardia a fiato pieno e paga il cambio verso la prima mossa (§12.7 AUD-004)', rif: '§4.1, §12.7', gravita: 'Bloccante', prova() {
     const errori: string[] = [];
+    const rec: Record<string, number> = { assalto: 0, guardia: 2, attesa: 1, distanza: 2, preparazione: 3 }; // §4.2
     for (const id of ['recluta', 'duellante', 'bruto', 'lanciere', 'mietitore']) {
       for (let seed = 1; seed <= 30; seed++) {
         const s = creaDuello(id, seed);
         const m = trovaProfilo(id).mosse.find((x) => x.id === s.mossaNemico) as Mossa;
-        if (s.nemico.postura !== m.archetipo || s.nemico.fiato !== s.nemico.fiatoMax) errori.push(`${id}/${seed}`);
+        if (s.nemico.postura !== 'guardia' || s.nemico.fiato !== s.nemico.fiatoMax) {
+          errori.push(`${id}/${seed}: partenza ${s.nemico.postura} fiato ${s.nemico.fiato}/${s.nemico.fiatoMax}`);
+          continue;
+        }
+        // La vista del primo turno non deve rivelare l'archetipo: la postura nemica è sempre Guardia.
+        if (toDuelView(s, []).nemico.postura.id !== 'guardia') errori.push(`${id}/${seed}: la vista rivela ${toDuelView(s, []).nemico.postura.id}`);
+        // Dopo il primo turno (il giocatore resta in Guardia, quindi nessuna reazione costa fiato al nemico):
+        // postura = archetipo della mossa, fiato = massimo − cambio + recupero, entro il massimo.
+        const r = resolveTurn(s, 'guardia', { dado: dadoMin }).stato;
+        const atteso = Math.min(s.nemico.fiatoMax, s.nemico.fiatoMax - (m.archetipo === 'guardia' ? 0 : 1) + (rec[m.archetipo] as number));
+        if (r.nemico.postura !== m.archetipo || r.nemico.fiato !== atteso) errori.push(`${id}/${seed}: dopo il turno ${r.nemico.postura} fiato ${r.nemico.fiato}, atteso ${m.archetipo} ${atteso}`);
       }
     }
-    return errori.length ? `casi: ${errori.slice(0, 5).join(', ')}` : null;
+    return errori.length ? `casi: ${errori.slice(0, 5).join('; ')}` : null;
   } },
   { nome: 'Giocatore: fiato 4/6, velocità 2, Guardia, gradi 1, vigore 20 (§12.1 3)', rif: '§4.1, §12.1 3', gravita: 'Maggiore', prova() {
     const g = creaDuello('bruto', 1).giocatore;
@@ -523,6 +549,17 @@ const casi: Caso[] = [
     const s = banco({ postura: 'guardia', mossa: 'P1', opzioni: { anteprimaDanni: true } });
     const a = toDuelView(s).posture.find((p) => p.id === 'distanza')?.anteprima;
     return JSON.stringify(a) === JSON.stringify({ subito: [0, 8], inflitto: [0, 0] }) ? null : JSON.stringify(a);
+  } },
+  // AUD-003 (chiuso in C2): l'anteprima è sul danno, non sulla differenza di vigore limitata a 0.
+  { nome: 'Anteprima sul colpo letale inflitto: nemico a 2 di vigore, Assalto contro P2 → inflitto 4–6', rif: '§7 anteprima; DESIGN §5.5 (intervalli veri); AUD-003', gravita: 'Maggiore', prova() {
+    const s = banco({ postura: 'guardia', mossa: 'P2', nVigore: 2, opzioni: { hintCompleti: true, anteprimaDanni: true } });
+    const a = toDuelView(s).posture.find((p) => p.id === 'assalto')?.anteprima;
+    return JSON.stringify(a?.inflitto) === JSON.stringify([4, 6]) ? null : `inflitto ${JSON.stringify(a?.inflitto)} (atteso [4,6])`;
+  } },
+  { nome: 'Anteprima sul colpo letale subìto: giocatore a 2 di vigore, Assalto contro L2 → subito 3–3', rif: '§7 anteprima; DESIGN §5.5; AUD-003', gravita: 'Maggiore', prova() {
+    const s = banco({ postura: 'guardia', mossa: 'L2', gVigore: 2, opzioni: { hintCompleti: true, anteprimaDanni: true } });
+    const a = toDuelView(s).posture.find((p) => p.id === 'assalto')?.anteprima;
+    return JSON.stringify(a?.subito) === JSON.stringify([3, 3]) ? null : `subito ${JSON.stringify(a?.subito)} (atteso [3,3])`;
   } },
   { nome: 'Il risolutore non modifica lo stato in ingresso', rif: '§7', gravita: 'Bloccante', prova() {
     const s = banco({ postura: 'attesa', mossa: 'P1', gPrep: true, gVant: true });

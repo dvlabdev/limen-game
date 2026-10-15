@@ -1,5 +1,6 @@
 // A08 · Simulatore: rilancio a seed fisso (1000 duelli, seed 1), confronto con gli obiettivi di
-// ARENA_SPEC §9 e §12.4 (con §12.1 2 e §12.6 2) e con i numeri dichiarati in ARENA_REPORT §7.4 (±2 punti).
+// ARENA_SPEC §9 e §12.4 (con §12.1 2, §12.6 e §12.7 AUD-012) e con i numeri dichiarati in ARENA_REPORT §8.1 (±2 punti).
+// Le tabelle informative di §7.4b/§7.4c (gradi 3, adattamento spento) sono storiche e non ridichiarate dopo C2: si rilanciano senza confronto.
 // Inoltre: robustezza degli obiettivi su altri seed e un `lettore` riscritto dall'Audit dal testo di R8.
 import type { Controllo, Esito } from './comune.ts';
 import { leggi, sezione, tabella } from './comune.ts';
@@ -12,16 +13,18 @@ const NEMICI = ['recluta', 'duellante', 'bruto', 'lanciere', 'mietitore'];
 const NOMI: Record<string, string> = { recluta: 'Recluta', duellante: 'Duellante', bruto: 'Bruto', lanciere: 'Lanciere', mietitore: 'Mietitore' };
 const TOLL = 2; // punti percentuali (AUDIT_PROTOCOL A08)
 
-interface Config { nome: string; gradi: 1 | 2 | 3; adattamento: boolean; sezione: RegExp }
+interface Config { nome: string; gradi: 1 | 2 | 3; adattamento: boolean; sezione?: RegExp }
 const CONFIG: Config[] = [
-  { nome: 'obiettivi (gradi 1, adattamento on)', gradi: 1, adattamento: true, sezione: /^#### 7\.4a/ },
-  { nome: 'informativa (gradi 3, adattamento on)', gradi: 3, adattamento: true, sezione: /^#### 7\.4b/ },
-  { nome: 'informativa (gradi 1, adattamento off)', gradi: 1, adattamento: false, sezione: /^#### 7\.4c/ },
+  { nome: 'obiettivi (gradi 1, adattamento on)', gradi: 1, adattamento: true, sezione: /^### 8\.1/ },
+  { nome: 'informativa (gradi 3, adattamento on)', gradi: 3, adattamento: true },
+  { nome: 'informativa (gradi 1, adattamento off)', gradi: 1, adattamento: false },
 ];
 
 function tabellaReport(re: RegExp): Map<string, { v: number; p: number; t: number }> {
   const out = new Map<string, { v: number; p: number; t: number }>();
-  const righe = tabella(sezione(leggi('docs/ARENA_REPORT.md'), re));
+  const tutte = tabella(sezione(leggi('docs/ARENA_REPORT.md'), re));
+  const i0 = tutte.findIndex((r) => r[0] === 'Nemico');
+  const righe = i0 >= 0 ? tutte.slice(i0) : [];
   const intest = righe[0] ?? [];
   for (const r of righe.slice(1)) {
     const nemico = (r[0] ?? '').toLowerCase();
@@ -61,7 +64,7 @@ const lettoreAudit: Politica = (v: DuelView) => {
 export const controllo: Controllo = {
   id: 'A08',
   titolo: 'Simulatore: obiettivi e numeri del report',
-  riferimento: 'ARENA_SPEC §9, §11, §12.4, §12.6; ARENA_REPORT §7.4–§7.5',
+  riferimento: 'ARENA_SPEC §9, §11, §12.4, §12.6; ARENA_REPORT §8.1',
   gates: ['G2'],
   esegui(): Esito {
     const esito: Esito = { voci: [], note: [] };
@@ -70,6 +73,10 @@ export const controllo: Controllo = {
       const ris: Risultato[] = [];
       for (const n of NEMICI) for (const pol of POLITICHE) ris.push(simula(n, pol, { duelli: 1000, gradi: c.gradi, adattamento: c.adattamento, seed: 1 }));
       tutti[c.nome] = ris;
+      if (!c.sezione) {
+        esito.note.push(`${c.nome}: rilanciata senza confronto (tabella storica del §7.4, non ridichiarata nel §8).`);
+        continue;
+      }
       const rep = tabellaReport(c.sezione);
       let confrontate = 0;
       const scarti: string[] = [];
@@ -84,7 +91,7 @@ export const controllo: Controllo = {
           scarti.push(`${r.nemico}/${r.politica}: report ${d.v} (${d.p}) · ${d.t}, rilancio ${r.percVittorie.toFixed(1)} (${r.percPareggi.toFixed(1)}) · ${r.turniMedi.toFixed(1)}`);
         }
       }
-      if (scarti.length) esito.voci.push({ gravita: 'Maggiore', testo: `Report §7.4 ${c.nome}: ${scarti.length} celle fuori tolleranza: ${scarti.slice(0, 6).join('; ')}`, riferimento: 'ARENA_REPORT §7.4; AUDIT_PROTOCOL A08', evidenza: 'node audit/run.ts --solo A08' });
+      if (scarti.length) esito.voci.push({ gravita: 'Maggiore', testo: `Report §8.1 ${c.nome}: ${scarti.length} celle fuori tolleranza: ${scarti.slice(0, 6).join('; ')}`, riferimento: 'ARENA_REPORT §8.1; AUDIT_PROTOCOL A08', evidenza: 'node audit/run.ts --solo A08' });
       esito.note.push(`${c.nome}: ${confrontate} celle confrontate con il report, ${scarti.length} fuori tolleranza (±${TOLL} punti, ±0,15 turni).`);
     }
 
@@ -110,7 +117,11 @@ export const controllo: Controllo = {
     }
     for (const n of NEMICI) {
       const d = r(n, 'fissa:distanza');
-      // §12.4 vale per "ogni nemico"; §12.6 1 esclude la Recluta, ma solo dalla prossima fase.
+      // §12.4 vale per "ogni nemico"; §12.6 1 esclude la Recluta (applicato in C2): per lei si registra solo che non vince.
+      if (n === 'recluta') {
+        ob('fissa:distanza contro la Recluta: esclusa dal vincolo (§12.6 1), controllo informativo: vittorie < 25%', d.percVittorie < 25, `${d.percVittorie.toFixed(1)} (${d.percPareggi.toFixed(1)})`);
+        continue;
+      }
       ob(`fissa:distanza < 25% vittorie e < 50% pareggi contro ${n}`, d.percVittorie < 25 && d.percPareggi < 50, `${d.percVittorie.toFixed(1)} (${d.percPareggi.toFixed(1)})`);
     }
     for (const n of ['recluta', 'duellante', 'bruto']) {
@@ -135,8 +146,9 @@ export const controllo: Controllo = {
       const pol = POLITICHE.find((x) => x.nome === p)!;
       const valori = seeds.map((s) => simula(n, pol, { duelli: 1000, gradi: 1, adattamento: true, seed: s }).percVittorie);
       margini.push(`${n}/${p}: seed 1 ${r(n, p).percVittorie.toFixed(1)}; ${seeds.map((s, i) => `seed ${s} ${valori[i]!.toFixed(1)}`).join(', ')}`);
-      const sopra = valori.filter((x) => x >= 25).length;
-      if (sopra) esito.voci.push({ gravita: 'Osservazione', testo: `Obiettivo "< 25%" non robusto: ${n}/${p} supera il 25% con ${sopra} seed su ${seeds.length} (${valori.map((x) => x.toFixed(1)).join(', ')})`, riferimento: 'ARENA_SPEC §9, §12.4; ARENA_REPORT §7.5', evidenza: 'node audit/run.ts --solo A08' });
+      // §12.7 AUD-012: riferimento seed 1; con altri seed è accettato uno scarto fino a +2 punti sulle soglie fissa:* (25 + 2).
+      const sopra = valori.filter((x) => x >= 27).length;
+      if (sopra) esito.voci.push({ gravita: 'Osservazione', testo: `Obiettivo "< 25%" oltre la tolleranza di +2 punti (§12.7 AUD-012): ${n}/${p} supera il 27% con ${sopra} seed su ${seeds.length} (${valori.map((x) => x.toFixed(1)).join(', ')})`, riferimento: 'ARENA_SPEC §12.4, §12.7 AUD-012', evidenza: 'node audit/run.ts --solo A08' });
     }
     if (margini.length) esito.note.push(`Celle con margine stretto (≥ 20%) rilanciate su altri seed: ${margini.join(' | ')}`);
 

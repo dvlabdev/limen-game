@@ -97,7 +97,7 @@ const fmt = (a: number, b: number) => `${a}–${b}`;
 export const controllo: Controllo = {
   id: 'A07',
   titolo: 'Valori iniziali tracciati nel report',
-  riferimento: 'ARENA_SPEC §4.1, §4.2, §6, §9, §12.2; ARENA_REPORT §7.2',
+  riferimento: 'ARENA_SPEC §4.1, §4.2, §6, §9, §12.2, §12.6; ARENA_REPORT §7.2, §8.1',
   gates: ['G2'],
   esegui(): Esito {
     const esito: Esito = { voci: [], note: [] };
@@ -120,12 +120,20 @@ export const controllo: Controllo = {
         v11.split(/\s*·\s*/).forEach((x, i) => dich.set(`${corrente}|${(nomi[i] as string).toLowerCase()}`, { spec: sv[i] ?? '', v11: x }));
       }
     }
+    const sez81 = sezione(leggi('docs/ARENA_REPORT.md'), /^### 8\.1/);
+    const superati: string[] = [];
     const nonDich: string[] = [];
     let numeriDiversi = 0;
     const verificaNumero = (nemico: string, chiave: string, etichetta: string, codice: string, spec: string): void => {
       if (codice === spec) {
         const d = dich.get(`${nemico}|${chiave}`);
-        if (d && d.v11 !== codice) esito.voci.push({ gravita: 'Maggiore', testo: `${nemico} · ${etichetta}: il report dichiara ${d.v11}, il codice ha ${codice}`, riferimento: 'ARENA_REPORT §7.2', evidenza: 'src/data/enemies.ts' });
+        if (d && d.v11 !== codice) {
+          // Il §7.2 è storico (revisione 1.1): un valore poi riportato a quello della specifica (C2, §12.6) è
+          // superato se il §8.1 lo dichiara con il valore attuale.
+          const voce = (chiave.split('|').pop() ?? chiave).toLowerCase();
+          if (new RegExp(`${voce}\\s+${codice}\\s*\\(era ${d.v11}`, 'i').test(sez81)) superati.push(`${nemico} · ${etichetta}: ${d.v11} (§7.2) → ${codice} (§8.1)`);
+          else esito.voci.push({ gravita: 'Maggiore', testo: `${nemico} · ${etichetta}: il report dichiara ${d.v11}, il codice ha ${codice}`, riferimento: 'ARENA_REPORT §7.2, §8.1', evidenza: 'src/data/enemies.ts' });
+        }
         return;
       }
       numeriDiversi++;
@@ -208,6 +216,7 @@ export const controllo: Controllo = {
       esito.voci.push({ gravita: /^posture|recupero|molt|costo|contrattacco|punta|arresto|distanzaConsecutive|velocitaMossa|soglia|adattamento|gradoDistanza/.test(nome) ? 'Bloccante' : 'Maggiore', testo: `balance ${nome}: ${JSON.stringify(codice)} invece di ${JSON.stringify(spec)}`, riferimento: `ARENA_SPEC ${rif}`, evidenza: 'src/data/balance.ts' });
     }
     esito.note.push(`${numeriDiversi} numeri dei nemici diversi dalla specifica; ${numeriDiversi - nonDich.length} annotati in ARENA_REPORT §7.2 con lo stesso valore del codice.`);
+    if (superati.length) esito.note.push(`Valori del §7.2 superati e dichiarati nel §8.1 (ARENA_SPEC §12.6, ARENA_S23_SPEC §1): ${superati.join('; ')}.`);
     esito.note.push('Gradi, archetipi, forza/portata/velocità, tratti, adattamenti, modificatori e sequenza confrontati con §6 e R4–R5.');
     return esito;
   },

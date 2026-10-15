@@ -31,8 +31,15 @@ export const controllo: Controllo = {
         const nuova = await costruisciHtml(true);
         const en = esterni(nuova);
         if (en.length) voci.push({ gravita: 'Bloccante', testo: `La build di HEAD richiama risorse esterne: ${en.join(', ')}`, riferimento: 'ARENA_SPEC §1', evidenza: 'scripts/build.ts' });
-        if (nuova !== dist) voci.push({ gravita: 'Minore', testo: 'dist/index.html non coincide con la build del commit corrente (va rigenerato con npm run build)', riferimento: 'ARENA_SPEC §10 F4', evidenza: 'dist/index.html' });
-        else esito.note.push('dist/index.html coincide byte per byte con la build in memoria del commit corrente.');
+        // Dalla C2 la build contiene versione e data (ARENA_S23_SPEC §6): si confronta il resto, e si annota la versione.
+        const RE_VERSIONE = /commit:"([^"]*)",data:"([^"]*)"/;
+        const vd = dist.match(RE_VERSIONE);
+        const vn = nuova.match(RE_VERSIONE);
+        const senzaVersione = (t: string) => t.replace(RE_VERSIONE, 'commit:"",data:""');
+        if (senzaVersione(nuova) !== senzaVersione(dist)) voci.push({ gravita: 'Minore', testo: `dist/index.html non coincide con la build del commit corrente neppure ignorando versione e data (va rigenerato con npm run build)`, riferimento: 'ARENA_SPEC §10 F4', evidenza: 'dist/index.html' });
+        else if (vd && vn && vd[1] === vn[1]) esito.note.push(`dist/index.html coincide con la build in memoria del commit corrente (versione ${vd[1]}).`);
+        else esito.note.push(`dist/index.html coincide con la build del commit corrente salvo versione e data (dist: ${vd?.[1]} ${vd?.[2]}; HEAD: ${vn?.[1]} ${vn?.[2]}); è un file locale, non tracciato.`);
+        if (!vn || !/Versione /.test(nuova)) voci.push({ gravita: 'Maggiore', testo: 'La versione della build non è visibile nel menu (ARENA_S23_SPEC §7.4)', riferimento: 'ARENA_S23_SPEC §6, §7 punto 4', evidenza: 'scripts/build.ts, src/ui' });
         if (!/<script>/.test(nuova) || !/<style>/.test(nuova)) voci.push({ gravita: 'Bloccante', testo: 'JS o CSS non inline nella build', riferimento: 'ARENA_SPEC §1' });
       } catch (err) {
         voci.push({ gravita: 'Bloccante', testo: `Build in memoria fallita: ${(err as Error).message}`, riferimento: 'ARENA_SPEC §1', evidenza: 'scripts/build.ts' });

@@ -1,0 +1,232 @@
+{
+  "data": "2026-10-15",
+  "commit": "154a071",
+  "gate": "G2",
+  "node": "v24.19.0",
+  "totali": {
+    "Bloccante": 0,
+    "Maggiore": 0,
+    "Minore": 0,
+    "Osservazione": 0
+  },
+  "controlli": [
+    {
+      "id": "A07",
+      "titolo": "Valori iniziali tracciati nel report",
+      "riferimento": "ARENA_SPEC §4.1, §4.2, §6, §9, §12.2, §12.6; ARENA_REPORT §7.2, §8.1",
+      "gates": [
+        "G2"
+      ],
+      "ms": 11,
+      "voci": [],
+      "note": [
+        "balance: giocatore.vigore 20 invece di 30, annotato nel report e accettato da ARENA_SPEC §12.1 3.",
+        "35 numeri dei nemici diversi dalla specifica; 35 annotati in ARENA_REPORT §7.2 con lo stesso valore del codice.",
+        "Valori del §7.2 superati e dichiarati nel §8.1 (ARENA_SPEC §12.6, ARENA_S23_SPEC §1): recluta · danno Fendente: 10–12 (§7.2) → 3–5 (§8.1).",
+        "Gradi, archetipi, forza/portata/velocità, tratti, adattamenti, modificatori e sequenza confrontati con §6 e R4–R5."
+      ]
+    },
+    {
+      "id": "A08",
+      "titolo": "Simulatore: obiettivi e numeri del report",
+      "riferimento": "ARENA_SPEC §9, §11, §12.4, §12.6; ARENA_REPORT §8.1",
+      "gates": [
+        "G2"
+      ],
+      "ms": 4737,
+      "voci": [],
+      "note": [
+        "obiettivi (gradi 1, adattamento on): 30 celle confrontate con il report, 0 fuori tolleranza (±2 punti, ±0,15 turni).",
+        "informativa (gradi 3, adattamento on): rilanciata senza confronto (tabella storica del §7.4, non ridichiarata nel §8).",
+        "informativa (gradi 1, adattamento off): rilanciata senza confronto (tabella storica del §7.4, non ridichiarata nel §8).",
+        "Obiettivi §9/§12.4: 35/35 rispettati con seed 1.",
+        "Lanciere: 8.7 turni, fuori da 4–8 della 1.1 ma dentro 4–9 di §12.6 2 (accettato da Planning).",
+        "Celle con margine stretto (≥ 20%) rilanciate su altri seed: bruto/fissa:attesa: seed 1 24.1; seed 9000 23.3, seed 20001 22.2, seed 31337 24.5, seed 777777 23.8 | lanciere/fissa:assalto: seed 1 23.9; seed 9000 24.0, seed 20001 25.2, seed 31337 24.6, seed 777777 24.1",
+        "Il lettore riscritto dall'Audit da R8 dà risultati identici a quello di sim/run.ts (1000 duelli × 5 nemici)."
+      ],
+      "dati": {
+        "obiettivi": [
+          [
+            "lettore ≥ 90% contro la Recluta",
+            true,
+            "100.0"
+          ],
+          [
+            "lettore 60–85% contro duellante",
+            true,
+            "69.3"
+          ],
+          [
+            "lettore 60–85% contro bruto",
+            true,
+            "68.6"
+          ],
+          [
+            "lettore 60–85% contro lanciere",
+            true,
+            "61.7"
+          ],
+          [
+            "lettore 35–65% contro il Mietitore",
+            true,
+            "53.6"
+          ],
+          [
+            "fissa:assalto < 25% contro duellante",
+            true,
+            "19.9"
+          ],
+          [
+            "fissa:guardia < 25% contro duellante",
+            true,
+            "11.4"
+          ],
+          [
+            "fissa:attesa < 25% contro duellante",
+            true,
+            "13.2"
+          ],
+          [
+            "fissa:distanza < 25% contro duellante",
+            true,
+            "0.5"
+          ],
+          [
+            "casuale < 30% contro duellante",
+            true,
+            "13.7"
+          ],
+          [
+            "fissa:assalto < 25% contro bruto",
+            true,
+            "17.0"
+          ],
+          [
+            "fissa:guardia < 25% contro bruto",
+            true,
+            "0.0"
+          ],
+          [
+            "fissa:attesa < 25% contro bruto",
+            true,
+            "24.1"
+          ],
+          [
+            "fissa:distanza < 25% contro bruto",
+            true,
+            "0.0"
+          ],
+          [
+            "casuale < 30% contro bruto",
+            true,
+            "1.8"
+          ],
+          [
+            "fissa:assalto < 25% contro lanciere",
+            true,
+            "23.9"
+          ],
+          [
+            "fissa:guardia < 25% contro lanciere",
+            true,
+            "6.8"
+          ],
+          [
+            "fissa:attesa < 25% contro lanciere",
+            true,
+            "0.0"
+          ],
+          [
+            "fissa:distanza < 25% contro lanciere",
+            true,
+            "0.0"
+          ],
+          [
+            "casuale < 30% contro lanciere",
+            true,
+            "19.3"
+          ],
+          [
+            "fissa:assalto < 25% contro mietitore",
+            true,
+            "13.5"
+          ],
+          [
+            "fissa:guardia < 25% contro mietitore",
+            true,
+            "0.0"
+          ],
+          [
+            "fissa:attesa < 25% contro mietitore",
+            true,
+            "10.0"
+          ],
+          [
+            "fissa:distanza < 25% contro mietitore",
+            true,
+            "0.0"
+          ],
+          [
+            "casuale < 30% contro mietitore",
+            true,
+            "2.1"
+          ],
+          [
+            "fissa:distanza contro la Recluta: esclusa dal vincolo (§12.6 1), controllo informativo: vittorie < 25%",
+            true,
+            "2.0 (98.0)"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro duellante",
+            true,
+            "0.5 (15.4)"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro bruto",
+            true,
+            "0.0 (0.0)"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro lanciere",
+            true,
+            "0.0 (0.0)"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro mietitore",
+            true,
+            "0.0 (0.6)"
+          ],
+          [
+            "turni medi lettore 4–8 contro recluta",
+            true,
+            "7.0"
+          ],
+          [
+            "turni medi lettore 4–8 contro duellante",
+            true,
+            "7.4"
+          ],
+          [
+            "turni medi lettore 4–8 contro bruto",
+            true,
+            "7.8"
+          ],
+          [
+            "turni medi lettore contro il Lanciere: 4–9 (§12.6 2)",
+            true,
+            "8.7"
+          ],
+          [
+            "turni medi lettore ≤ 14 contro il Mietitore",
+            true,
+            "11.1"
+          ]
+        ],
+        "celleStrette": [
+          "bruto/fissa:attesa: seed 1 24.1; seed 9000 23.3, seed 20001 22.2, seed 31337 24.5, seed 777777 23.8",
+          "lanciere/fissa:assalto: seed 1 23.9; seed 9000 24.0, seed 20001 25.2, seed 31337 24.6, seed 777777 24.1"
+        ]
+      }
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 // Esegue i controlli automatici dell'Audit (docs/AUDIT_PROTOCOL.md §4.1).
-// Uso: node audit/run.ts [--gate G1|G2|G3|G4] [--solo A05,A06]
+// Uso: node audit/run.ts [--gate G1|G2|G3|G4] [--solo A05,A06] [--etichetta C2]
 // Scrive audit/out/<data>-<gate>.json; esce con codice 1 se c'è almeno un rilievo Bloccante.
 import { mkdirSync, writeFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
@@ -51,7 +51,9 @@ for (const c of scelti) {
 const tutte = risultati.flatMap((r) => r.voci);
 const totali = Object.fromEntries(ORDINE.map((g) => [g, tutte.filter((v) => v.gravita === g).length]));
 const data = new Date().toISOString().slice(0, 10);
-const nome = `${data}-${gate ?? 'tutti'}${solo ? '-' + solo.join('_') : ''}.json`;
+// Con --etichetta C2 il file diventa 2026-10-15-C2-G3.json: le tornate dello stesso giorno non si sovrascrivono.
+const etichetta = argomento('--etichetta');
+const nome = `${data}-${etichetta ? etichetta + '-' : ''}${gate ?? 'tutti'}${solo ? '-' + solo.join('_') : ''}.json`;
 mkdirSync(join(RADICE, 'audit', 'out'), { recursive: true });
 writeFileSync(
   join(RADICE, 'audit', 'out', nome),

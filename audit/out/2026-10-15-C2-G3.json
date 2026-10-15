@@ -1,0 +1,160 @@
+{
+  "data": "2026-10-15",
+  "commit": "154a071",
+  "gate": "G3",
+  "node": "v24.19.0",
+  "totali": {
+    "Bloccante": 0,
+    "Maggiore": 0,
+    "Minore": 1,
+    "Osservazione": 1
+  },
+  "controlli": [
+    {
+      "id": "A04",
+      "titolo": "Copertura dei simboli",
+      "riferimento": "ARENA_SPEC §7, §12.2 R7; ARENA_S23_SPEC §2, §3; UI_SPEC §7, §8, §9",
+      "gates": [
+        "G3",
+        "G4"
+      ],
+      "ms": 170,
+      "voci": [
+        {
+          "gravita": "Minore",
+          "testo": "src/ui/symbols.ts non è allineato a design/symbols.proposed.ts (C2a, 808711a): simboli con disegno o etichetta diversi: mod.inarrestabile (svg); campo min nei simboli: no (design: sì); icona() porta le richieste al minimo: no",
+          "riferimento": "UI_SPEC §7.1, §9 (1); ARENA_SPEC §12.8 3",
+          "evidenza": "src/ui/symbols.ts; design/symbols.proposed.ts"
+        },
+        {
+          "gravita": "Osservazione",
+          "testo": "13 estensioni di UI_SPEC §8 approvate in ARENA_S23_SPEC §2 ma non ancora riportate nella tabella degli id di ARENA_SPEC §7 (che non cita neppure i campi dove, breve, spalle, spazio, motivo): mod.inarrestabile, mod.portata.corta, mod.portata.lunga, mod.sfondaGuardia, mod.velocita.lento, mod.velocita.normale, mod.velocita.rapido, posture.assalto.medaglione, posture.attesa.medaglione, posture.distanza.medaglione, posture.guardia.medaglione, risorsa.fiato.pieno, risorsa.fiato.vuoto",
+          "riferimento": "ARENA_S23_SPEC §2; ARENA_SPEC §7, §12.8 1; CLAUDE.md (contratto modificabile solo con Planning)",
+          "evidenza": "docs/ARENA_SPEC.md §7"
+        }
+      ],
+      "note": [
+        "Contratto ARENA_SPEC §7 + R7: 25 id; estensioni proposte in UI_SPEC §8: 13 id.",
+        "src/ui/symbols.ts: 38 id = contratto (25) + estensioni approvate (13).",
+        "design/symbols.proposed.ts: 38 id = contratto (25) + estensioni (13).",
+        "design/icons: 38 id = contratto (25) + estensioni (13).",
+        "UI_SPEC §7 elenca 38 id: coincide con contratto + estensioni.",
+        "toDuelView ha emesso 23 id distinti, tutti nel contratto. Mai emessi dalla vista (li usa la UI o non capitano): risorsa.fiato, risorsa.vigore.",
+        "Id letterali usati da src/ui (arena.ts, comuni.ts, render.ts, scena.ts, telemetria.ts, versione.ts): 9 distinti, tutti nel catalogo.",
+        "Sagome: 9 id (4 del viandante, 5 nemici) uno a uno in design/sagome/*.svg, design/sagome.proposed.ts e src/ui/sagome.ts; la copia in src/ui coincide con quella di Grafica."
+      ],
+      "dati": {
+        "contratto": [
+          "evento.arresto",
+          "evento.colpo",
+          "evento.contrattacco",
+          "evento.evitato",
+          "evento.incalza",
+          "evento.interrotto",
+          "evento.parata",
+          "evento.punta",
+          "evento.rotta",
+          "evento.schivata",
+          "intent.difesa",
+          "intent.leggero",
+          "intent.pesante",
+          "intent.preparazione",
+          "posture.assalto",
+          "posture.attesa",
+          "posture.distanza",
+          "posture.guardia",
+          "posture.preparazione",
+          "risorsa.fiato",
+          "risorsa.vigore",
+          "stato.fase2",
+          "stato.preparato",
+          "stato.spalle",
+          "stato.vantaggio"
+        ],
+        "estensioni": [
+          "mod.inarrestabile",
+          "mod.portata.corta",
+          "mod.portata.lunga",
+          "mod.sfondaGuardia",
+          "mod.velocita.lento",
+          "mod.velocita.normale",
+          "mod.velocita.rapido",
+          "posture.assalto.medaglione",
+          "posture.attesa.medaglione",
+          "posture.distanza.medaglione",
+          "posture.guardia.medaglione",
+          "risorsa.fiato.pieno",
+          "risorsa.fiato.vuoto"
+        ],
+        "emessi": [
+          "evento.arresto",
+          "evento.colpo",
+          "evento.contrattacco",
+          "evento.evitato",
+          "evento.incalza",
+          "evento.interrotto",
+          "evento.parata",
+          "evento.punta",
+          "evento.rotta",
+          "evento.schivata",
+          "intent.difesa",
+          "intent.leggero",
+          "intent.pesante",
+          "intent.preparazione",
+          "posture.assalto",
+          "posture.attesa",
+          "posture.distanza",
+          "posture.guardia",
+          "posture.preparazione",
+          "stato.fase2",
+          "stato.preparato",
+          "stato.spalle",
+          "stato.vantaggio"
+        ]
+      }
+    },
+    {
+      "id": "A09",
+      "titolo": "Build a file singolo",
+      "riferimento": "ARENA_SPEC §1; DESIGN §1.4",
+      "gates": [
+        "G3"
+      ],
+      "ms": 212,
+      "voci": [],
+      "note": [
+        "dist/index.html: 78.6 KB, nessun src/href/@import verso risorse esterne.",
+        "dist/index.html coincide con la build del commit corrente salvo versione e data (dist: 808711a 2026-10-15; HEAD: 154a071 2026-10-15); è un file locale, non tracciato."
+      ]
+    },
+    {
+      "id": "A10",
+      "titolo": "Vocabolario",
+      "riferimento": "DESIGN §5; ARENA_SPEC §3, §6, §7; UI_SPEC §7; SCENA_SPEC §1.4",
+      "gates": [
+        "G3",
+        "G4"
+      ],
+      "ms": 9,
+      "voci": [],
+      "note": [
+        "Nomi di posture, nemici e mosse confrontati con DESIGN §5.2, ARENA_SPEC §6/R5 e SCENA_SPEC §1.4.",
+        "Nessun uso del termine riservato \"finta\" in dati, vista e UI.",
+        "Etichette dei 38 simboli proposti identiche a UI_SPEC §7."
+      ]
+    },
+    {
+      "id": "B04a",
+      "titolo": "Contratto DuelView: campi della C2 popolati",
+      "riferimento": "ARENA_SPEC §7, §12.2 R2/R7, §12.8 1; ARENA_S23_SPEC §4",
+      "gates": [
+        "G3"
+      ],
+      "ms": 216,
+      "voci": [],
+      "note": [
+        "1645 viste controllate (5 nemici × 40 seed, opzioni variate): spalle/spazio/motivo coerenti con R2 e R7 (spalle viste: 46); 2112 voci di registro con dove/breve; vista serializzabile; hint e anteprima nei limiti di §7."
+      ]
+    }
+  ]
+}
