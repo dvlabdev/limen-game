@@ -10,8 +10,8 @@ Il progetto è un gioco a turni in TypeScript compilato in un singolo file HTML.
 ## Sessioni e proprietà dei file
 | Sessione | Possiede | Non tocca |
 |---|---|---|
-| **Planning** | `DESIGN.md`, `docs/*_SPEC.md`, `CLAUDE.md` | `src/`, `sim/`, `test/` |
-| **Codice** | `src/` (tranne `src/ui/symbols.ts` e gli stili), `sim/`, `test/`, `scripts/`, `package.json`, `tsconfig.json`, `docs/*_REPORT.md` | I documenti di design e le specifiche |
+| **Planning** | `DESIGN.md`, `docs/*_SPEC.md`, `docs/ROADMAP.md`, `docs/PLAYTEST.md`, `CLAUDE.md` | `src/`, `sim/`, `test/` |
+| **Codice** | `src/` (tranne `src/ui/symbols.ts` e gli stili), `sim/`, `test/`, `scripts/`, `package.json`, `tsconfig.json`, `docs/*_REPORT.md`, `.github/` | I documenti di design e le specifiche |
 | **Grafica/UI** | `design/`, `docs/UI_SPEC.md`; dopo la consegna dell'arena anche `src/ui/symbols.ts` e `src/ui/styles.css` | La logica in `src/core/` |
 | **Audit** | `audit/` | Tutto il resto, in sola lettura. Non corregge e non decide: vedi [docs/AUDIT_PROTOCOL.md](docs/AUDIT_PROTOCOL.md) |
 
