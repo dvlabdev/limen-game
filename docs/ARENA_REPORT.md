@@ -1,7 +1,7 @@
 # Arena di prova: rapporto della sessione Codice
 
-> **Autore:** sessione Codice · **Riferimento:** [ARENA_SPEC.md](ARENA_SPEC.md) v1.0 (§11)
-> **Stato:** F0–F4 completate sulle regole 1.0; **F2b Revisione 1.1** (ARENA_SPEC §12) implementata, vedi **§7**. Le tabelle e i numeri validi oggi sono quelli del §7.
+> **Autore:** sessione Codice · **Riferimento:** [ARENA_SPEC.md](ARENA_SPEC.md) v1.1.1 (§11; le sezioni 1–6 descrivono la 1.0, la 1.1 è nel §7, la fase C2 nel §8)
+> **Stato:** F0–F4 completate sulle regole 1.0; **F2b Revisione 1.1** (ARENA_SPEC §12) implementata, vedi **§7**; **C2b** (arena giocabile su S23) completata, vedi **§8**. Le tabelle e i numeri validi oggi sono quelli del §8.1 (che conferma e aggiorna il §7).
 
 ## 1. Stato delle fasi e comandi verificati
 
@@ -18,7 +18,7 @@ Comandi verificati su Node 24.19.0 (Windows):
 
 | Comando | Esito |
 |---|---|
-| `npm test` | 74 test verdi (matrice 24 celle, regole dedicate, IA, vista) |
+| `npm test` | **142 test verdi** a fine C2b (erano 74 a fine F4 e 89 a fine F2b: matrice 24 celle, regole dedicate, revisione 1.1, IA, vista, audit, obiettivi del simulatore, interfaccia, telemetria) |
 | `npm run typecheck` | zero errori (TypeScript 7.0.2) |
 | `npm run build` | produce `dist/index.html` autosufficiente (JS e CSS inline) |
 | `npm run dev` | server su `http://localhost:8000` con ricaricamento |
@@ -136,7 +136,7 @@ I **modificatori** (`fiatoSotto(2)` ×3 del Bruto, `vigoreSotto(0,4)` ×2 del La
 5. **`lettore` senza modifiche.** Ho provato cinque varianti dell'euristica (ripiego diverso dalla Distanza contro i colpi pesanti, Assalto contro la difesa, Assalto contro il colpo leggero) sui dati della specifica e dopo il bilanciamento: nessuna cambia la conclusione del §5, domanda 1, e quelle che giocano l'Assalto contro il colpo leggero o pesante si comportano come `fissa:assalto`. Le tabelle usano l'euristica del §9 alla lettera.
 6. **Turni medi** = media sull'insieme dei duelli (vittorie, sconfitte e pareggi). In `report.json` c'è anche `turniMediVittorie`.
 7. **Caso dei bot** = RNG con seed separato da quello del duello, quindi a parità di seed i risultati sono riproducibili.
-8. **Git.** F0 e F1 sono state committate con `git add -A` prima che la regola "solo i propri file" comparisse in CLAUDE.md (commit `e90e053`, a metà lavoro). In quei momenti la cartella conteneva solo file miei. Da F2 aggiungo i file per percorso.
+8. **Git.** F0 e F1 sono state committate con `git add -A`, anche se la regola "solo i propri file" era già in CLAUDE.md dal commit `b181865` (precedente a F0, `070d0c1`): non l'avevo applicata. In quei momenti la cartella conteneva solo file miei e i commit contengono solo file di Codice (rilievo AUD-010, verificato dall'Audit). Da F2 aggiungo i file per percorso.
 9. **Stop del §Domande di CLAUDE.md.** Davanti agli obiettivi non raggiungibili la regola dice di fermarsi. Ho scritto le domande qui e ho **proseguito con F3 e F4**, perché non dipendono dalle risposte (l'interfaccia legge i numeri dai dati). Se le risposte di Planning cambiano le regole, basta rilanciare `npm run sim`.
 
 ### Interpretazioni di regole ambigue (da confermare, vedi §5)
@@ -318,22 +318,22 @@ Build finale `dist/index.html` nel browser integrato con viewport emulato 360×7
 
 ## 8. C2: arena giocabile su S23 (ARENA_S23_SPEC)
 
-> **Stato:** in corso. Questa sezione cresce con i commit della fase C2b. Fonte: [ARENA_S23_SPEC.md](ARENA_S23_SPEC.md) e ARENA_SPEC §12.6–§12.7.
+> **Stato:** C2b completata (6 commit, da `6b2a16b`). Fonti: [ARENA_S23_SPEC.md](ARENA_S23_SPEC.md) e ARENA_SPEC §12.6–§12.7. La sessione C2a (sagome) non ha consegnato `design/sagome.proposed.ts`: la scena usa un **segnaposto** con la stessa firma (§8.7, domanda 3).
 
 ### 8.1 Core e dati (punto 1)
 
 | Rilievo / decisione | Cosa è stato fatto | Dove |
 |---|---|---|
 | **AUD-001** | Nello scambio simultaneo la perdita del vantaggio attuale è rimandata a dopo i due colpi: entrambi si calcolano sullo stato di inizio scambio. Test: entrambi col vantaggio → 6 e 7 (massimi di 4–6 e 5–7) | `resolve.ts`, `test/audit.test.ts` |
-| **AUD-003** | L'anteprima somma i danni veri degli eventi (colpo, parata, contrattacco, Punta, Arresto) invece della differenza di vigore limitata a 0. Test sul colpo letale inflitto (4–6 contro un nemico a 2) e subito (6 contro un giocatore a 3) | `view.ts` |
+| **AUD-003** | L'anteprima somma i danni veri degli eventi (colpo, parata, contrattacco, Punta, Arresto) invece della differenza di vigore limitata a 0. Test sul colpo letale inflitto (4–6 contro un nemico a 2) e subìto (6 contro un giocatore a 3) | `view.ts` |
 | **AUD-004, AUD-019** | Il nemico parte in Guardia a fiato pieno e paga il cambio verso la prima mossa; la prima mossa si sceglie dalla postura reale (niente postura provvisoria). Il Lanciere non ha mosse di Guardia: parte in Guardia e cambia come gli altri | `resolve.ts` (`creaDuello`) |
 | **AUD-017** | Punta e Arresto scattano solo se il fiato copre il costo; altrimenti l'attaccante incalza. Test con costo 2 e fiato 1 | `resolve.ts` |
-| **AUD-018** | Senza candidate l'IA sceglie una mossa con lo stesso archetipo della postura attuale. Poiché una tale mossa è sempre candidata (stessa postura = nessun cambio), il ripiego scatta solo con dati invalidi e in quel caso lancia un errore chiaro: la garanzia vera è il test di validazione dei dati (ogni fase di ogni nemico: fiato sufficiente per il primo cambio, archetipi presenti in tutte le fasi, almeno una mossa non di Distanza) | `ai.ts`, `test/audit.test.ts` |
+| **AUD-018** | Senza candidate l'IA sceglie una mossa con lo stesso archetipo della postura attuale. Poiché una tale mossa è sempre candidata (stessa postura = nessun cambio), il ripiego scatta solo con dati invalidi e in quel caso lancia un errore chiaro: la garanzia vera è il test di validazione dei dati (per ogni fase di ogni nemico: fiato sufficiente per il primo cambio, archetipi presenti in tutte le fasi, almeno una mossa non di Distanza, mosse esistenti) | `ai.ts`, `test/audit.test.ts` |
 | **AUD-020** | Una sola implementazione di `senzaSpazio` e `costoCambioDi` in `src/core/spazio.ts`, usata da risolutore, IA e vista. Test di concordanza: ogni mossa che l'IA considera accessibile è accettata dal risolutore (tutti i nemici, posture, spazio e fiato). Commento di `balance.ts` corretto (vigore del giocatore 20) | `spazio.ts`, `ai.ts`, `resolve.ts`, `balance.ts` |
-| **AUD-021** | `CombattenteView.spalle: boolean`; la UI non ripete più la soglia. Aggiunta approvata dal rilievo; `spazio` resta per le tacche | `view.ts`, `render.ts` |
+| **AUD-021** | `CombattenteView.spalle: boolean`; la UI non ripete più la soglia. `spazio` resta per le tacche | `view.ts`, `render.ts`, `scena.ts` |
 | **ARENA_SPEC §12.6** | **Recluta mite:** Fendente 3–5 (era 10–12), esclusa dal vincolo su `fissa:distanza` (98% di pareggi, consentito). Vigore 17 e fiato 3 invariati: il `lettore` vince 100% in 7,0 turni. **Lanciere:** obiettivo 4–9 turni (8,7 oggi) | `enemies.ts`, `test/obiettivi.test.ts` |
 
-**Bilanciamento.** Dopo le correzioni (AUD-001, -004, -017) gli obiettivi di §9, §12.4, §12.6 sono rispettati **senza altre modifiche ai numeri** oltre al Fendente della Recluta: l'unico scostamento rispetto alla tabella §7.4a sono piccole variazioni sul primo turno (il nemico paga il cambio iniziale). Verifica con 5 seed (1, 9000, 20001, 31337, 777777), tolleranza +2 punti dai seed diversi da 1 (§12.7): nessuna violazione. Il test `test/obiettivi.test.ts` esegue il controllo con `--duelli 1000 --seed 1`.
+**Bilanciamento.** Dopo le correzioni (AUD-001, -004, -017) gli obiettivi di §9, §12.4, §12.6 sono rispettati **senza altre modifiche ai numeri** oltre al Fendente della Recluta (10–12 → 3–5, motivo: decisione §12.6): le differenze rispetto alla tabella §7.4a sono piccole variazioni sul primo turno (il nemico paga il cambio iniziale). Verifica con 5 seed (1, 9000, 20001, 31337, 777777), tolleranza +2 punti per i seed diversi da 1 (§12.7 AUD-012): nessuna violazione. `test/obiettivi.test.ts` esegue il controllo con `--duelli 1000 --seed 1`.
 
 Tabella di riferimento (gradi 1, adattamento attivo, 1000 duelli, seed 1; vittorie % (pareggi %) · turni medi):
 
@@ -344,3 +344,83 @@ Tabella di riferimento (gradi 1, adattamento attivo, 1000 duelli, seed 1; vittor
 | Bruto | 17.0 (0.0) · 2.9 | 0.0 (0.0) · 2.5 | 24.1 (0.0) · 7.1 | 0.0 (0.0) · 7.8 | 1.8 (0.0) · 4.6 | **68.6** (0.0) · 7.8 |
 | Lanciere | 23.9 (0.0) · 5.7 | 6.8 (0.0) · 14.1 | 0.0 (68.0) · 22.7 | 0.0 (0.0) · 5.3 | 19.3 (0.0) · 8.8 | **61.7** (0.0) · 8.7 |
 | Mietitore | 13.5 (0.0) · 6.7 | 0.0 (0.3) · 12.6 | 10.0 (14.7) · 18.1 | 0.0 (0.6) · 11.9 | 2.1 (0.9) · 10.2 | **53.6** (0.0) · 11.1 |
+
+Obiettivi: `lettore` Recluta ≥ 90% ✅ (100%); Duellante, Bruto, Lanciere 60–85% ✅ (69,3 · 68,6 · 61,7); Mietitore 35–65% ✅ (53,6); `fissa:*` < 25% ✅ (massimo 24,1%, Bruto `fissa:attesa`); `casuale` < 30% ✅ (massimo 19,3%); `fissa:distanza` < 25% vittorie e < 50% pareggi ✅ (Recluta esclusa); turni del `lettore` 4–8 ✅ (Recluta 7,0, Duellante 7,4, Bruto 7,8), Lanciere 4–9 ✅ (8,7), Mietitore ≤ 14 ✅ (11,1). Il margine di `fissa:attesa` del Bruto (24,1%) e di `fissa:assalto` del Lanciere (23,9%) resta stretto.
+
+### 8.2 Simboli definitivi (punto 2)
+
+- `src/ui/symbols.ts` è la **copia** di `design/symbols.proposed.ts` (generato da `design/genera.mjs`: non si modifica a mano). Le 13 estensioni (medaglioni, pallini del fiato, `mod.*`) sono nel set. `icona()` e `medaglione()` non passano da `esc()` (le stringhe sono costanti).
+- Usate in: hint a 44 px (rosso solo se pesante o leggero), fila dei modificatori con gli hint completi, pulsanti della griglia a 28 px, HUD a 16 px (bollini), vigore a 12 px, pallini del fiato pieno/vuoto a 10 px, registro a 16 px (`evento.colpo` in `--pericolo`). Fiato a zero: pallini e `risorsa.fiato` in `--pericolo` con "Senza fiato".
+- **Palette** di UI_SPEC §4, chiara e scura (`prefers-color-scheme`); tolti `--accento`, `--ok`, `--fiato`.
+- **AUD-009:** "Preparato" nel chip, nel registro ("era preparato: ×1,5", "Sei preparato") e nel set di simboli; "Colpo a segno" e "Preparazione rotta" arrivano con il set.
+- **Test:** ogni simbolo emesso da `toDuelView` (hint, posture, medaglioni, `mod.*`, registro) esiste in `SIMBOLI`: 5 nemici × 25 seed × fino a 30 turni, con hint completi.
+
+### 8.3 Layout scena (punto 3)
+
+Composizione di UI_SPEC §5 in un riquadro di **360 × 700 px**: viandante a sinistra (x 160) e nemico a destra (x 284), HUD a y 230, hint sopra la testa del nemico (cresce verso l'alto, mai sotto y 311), cartiglio dell'anteprima fisso a (8, 288), ventaglio ad arco di raggio 124 con i medaglioni nell'ordine Distanza, Attesa, Guardia, Assalto (bersaglio 64 × 84 con nome e costo), terreno a y 560, tacche e paletto dello spazio alle spalle per **entrambi** i combattenti (specchiate per il nemico), targhetta con la postura attuale sotto ogni figura, cassetto del registro in basso (y 656–700).
+
+- **Scelta a due tocchi:** il primo seleziona (`aria-pressed`, anello doppio, cartiglio con "↓ subito · ↑ inflitto" se l'anteprima è attiva); il secondo sullo stesso medaglione conferma; un altro medaglione sposta la selezione; un tocco fuori annulla. Nessuna selezione predefinita.
+- **Medaglione spento** con il motivo ("fiato" oppure "niente spazio") e un bollino sul disco: `stato.spalle` o `risorsa.fiato.vuoto`. I bottoni sono `disabled`.
+- **Risoluzione senza animazioni:** dopo la conferma compaiono le etichette del colpo nel punto dell'impatto con l'icona dell'evento per 1,2 s (CSS), la sagoma del viandante si dissolve in 200 ms; un tocco o l'interazione successiva le toglie. `prefers-reduced-motion` le disattiva.
+- **Cassetto:** chiuso mostra l'ultima riga, aperto lo storico (con scorrimento).
+- **Interruttore** "Layout: scena / griglia" nel pannello di configurazione, salvato in `limen.arena.config` e registrato nella telemetria. **Predefinito: scena.**
+- **AUD-002:** la selezione non è mai su una postura non disponibile: nella griglia parte dalla postura attuale solo se disponibile, altrimenti nessuna (Conferma disattivata, "Scegli una postura"); `conferma()` verifica con la vista e usa try/catch, e mostra un avviso invece di lanciare. Riprodotto il caso del registro (Bruto, seed 1, Distanza, Distanza): ora turno 3 con la Distanza spenta ("niente spazio") in entrambi i layout.
+- **AUD-022:** le caselle degli interruttori del menu misurano 44 × 44 px.
+- La **griglia classica** resta com'è, con i nuovi simboli (UI_SPEC §5.5).
+- Nessuna logica di gioco in `src/ui/`: tutto arriva da `DuelView` (con l'aggiunta `registro[].dove/breve`, domanda 1).
+
+### 8.4 Telemetria (punto 4)
+
+`src/ui/telemetria.ts`: `creaTelemetria()` parte in **locale** (`localStorage`, chiave `limen.arena.telemetria`, sempre in try/catch, con copia in memoria se l'archivio è negato) e passa a **`claude-db`** quando `claude.use('db')` restituisce un namespace (collezione `telemetria`). Senza `claude`, con `use` assente o `null`, o se la promessa si rifiuta, resta in locale; il gioco non aspetta mai. I record già salvati in locale si copiano una volta nel database (si ricordano gli id copiati; l'id del documento è l'id del record, quindi ricopiare non crea doppioni). Errori `quota_exceeded`, `not_granted`, `revoked`: ripiego su locale con un avviso nel menu; altri errori: solo quel record va in locale.
+
+Record: i campi di ARENA_SPEC §8 più `id` (seed + timestamp ISO), `layout`, `versione`, `destinazione`, `turniDettaglio` (per turno: postura scelta e categoria dell'hint, al massimo 25). Menu: contatore, destinazione attiva, "Copia JSON" (per entrambe), "Azzera" **solo** in locale, versione. Lettura da Planning: `ArtifactData` `list` sulla collezione `telemetria`.
+
+Test (`test/telemetria.test.ts`, 15): scelta con `claude` assente, senza `use`, `null`, namespace finto, `use` che si rifiuta e che non risolve subito; copia nel database (una volta, idempotente); ripiego per i tre codici e per la copia iniziale; errore transitorio; archivio negato; Azzera solo in locale.
+
+**Non provata** con un vero database di Claude: serve la pubblicazione come pagina privata (C2c, a cura di Planning, con `capabilities: { db: {}, user: {} }`). In questa sessione il database è stato provato solo con un finto che rispetta l'interfaccia dei tipi `db.d.ts` (contratto 0.2.80).
+
+### 8.5 GitHub Pages e versione (punto 5)
+
+- `.github/workflows/pages.yml`: a ogni push su `main` e a mano; job `build` (checkout, Node 24, `npm ci`, `npm test`, `npm run typecheck`, `npm run build`, `upload-pages-artifact` su `dist/`) e job `deploy` (`deploy-pages`, `pages: write`, `id-token: write`); se test o typecheck falliscono il deploy non parte.
+- **esbuild e `npm ci`:** nessun problema in CI (Linux): `npm ci` installa il binario della piattaforma, la build funziona e non serve autorizzare nessuno script. Provato anche in locale con `npm ci` su una copia pulita.
+- **Versione:** `scripts/build.ts` inietta `__LIMEN_COMMIT__` (hash breve da `git`, o `GITHUB_SHA` in CI) e `__LIMEN_DATA__` (data della build) con `define`; il menu mostra "Versione <hash> · <data>" e il record della telemetria la riporta. In sviluppo e nei test vale "dev".
+- **Esito della prima esecuzione** (commit `6b7373f`, run 38800056691): **success**: `build` (npm ci, test, typecheck, build, upload) e `deploy` verdi. `https://dvlabdev.github.io/limen-game/` risponde 200 e serve la build con l'hash `6b7373f` e senza risorse esterne.
+
+### 8.6 Verifica a 360 × 780 (punto 6)
+
+Provata la build di sviluppo (stessi sorgenti della build finale) nel browser integrato con viewport emulato **360 × 780**, con `distanza = 2`, hint completi e anteprima attivi:
+
+| Cosa | Esito |
+|---|---|
+| Duello completo contro ogni nemico, **scena** | 5 su 5 conclusi (Recluta: vittoria; gli altri: sconfitta, perché lo script di prova è un `lettore` semplificato: non misura il bilanciamento) |
+| Duello completo contro ogni nemico, **griglia** | 5 su 5 conclusi |
+| Scroll orizzontale | nessuno: `scrollWidth` = 360 in menu, scena e griglia |
+| Bersagli toccabili | tutti ≥ 44 × 44 px (medaglioni 64 × 84, caselle del menu 44 × 44) |
+| Testo | nessun testo sotto i 12 px; corpo ≥ 14 px |
+| Ventaglio a due tocchi | seleziona, cambia selezione, tocco fuori annulla, secondo tocco conferma (prova con clic veri) |
+| Medaglioni spenti con il motivo | Distanza "niente spazio" dopo due turni di Distanza (bollino `stato.spalle`); posture senza fiato spente con "fiato" (test di disegno) |
+| Spazio alle spalle | tacche visibili: dopo un turno in Distanza una tacca diventa a filo; paletto e tacche anche dietro il nemico |
+| Posizioni | misurate via DOM: HUD (66, 230) e (216, 230), ventaglio, cartiglio (8, 288), hint tra y 313 e 411, cassetto a y 655: coincidono con UI_SPEC §5.1; nessuna sovrapposizione tranne il badge del motivo sul proprio medaglione |
+| Console | nessun errore |
+| Altezza | la scena è alta 700 px; la **griglia** con hint completi e anteprima arriva a circa 850 px (senza le due opzioni circa 780): serve un po' di scorrimento verticale, come già in F4 |
+
+Limiti: come in §1, gli screenshot del browser integrato a 360 px sono deformati dal visual viewport (l'aspetto l'ho guardato nelle immagini, le misure sono via DOM); non ho provato su un S23 vero né nell'app Claude; il gioco è pilotato da script; non ho giudicato il divertimento.
+
+### 8.7 Scostamenti dalla specifica
+
+1. **Sagome segnaposto.** La sessione C2a è fallita e `design/sagome.proposed.ts` non esiste: `src/ui/sagome.ts` contiene sagome geometriche semplici con la firma richiesta `sagoma(id, { px })` (id: `viandante.<postura>`, `recluta`, …, `mietitore`; viewBox -90 -150 180 156 come in `design/sagome-dati.mjs`; il nemico si specchia in CSS). **Da sostituire** con la copia del modulo di C2a appena disponibile (`git pull` e `cp`). Un test controlla che ogni id produca un SVG.
+2. **Cartiglio fisso al posto dell'anteprima "vicino al medaglione":** ARENA_S23_SPEC §4 dice "vicino al medaglione", UI_SPEC §5.1 dice cartiglio fisso a (8, 288); ho seguito UI_SPEC.
+3. **Medaglione spento:** si attenua l'intero SVG (anello e segno) al 30% e non solo il segno, perché `medaglione()` li disegna insieme; il fondo carta resta pieno.
+4. **Stato "confermato" del medaglione:** non si vede, perché la conferma risolve subito il turno e ridisegna la scena (nessuna animazione).
+5. **Telemetria:** il documento nel database si crea con `collection('telemetria').doc(record.id).set(record)` e non con `add(record)` (§5): l'id del record rende idempotente la copia dei record locali.
+6. **Layout "griglia":** ho tolto lo stato `.attiva` verde e l'evidenziazione in oro (non più nella palette): la postura attuale è marcata da "·" dopo il nome.
+7. **Ambiente di lavoro:** i file avevano finali di riga CRLF (Windows, `autocrlf`); ho lavorato con LF e git normalizza al commit. Un file temporaneo (`src/core/resolve.ts.tmp.*`) è finito per errore nel commit `6b2a16b` e l'ho tolto con `e5fb555`.
+
+### 8.8 Domande per Planning
+
+1. **Contratto `DuelView`:** per il testo del colpo della scena ho aggiunto a ogni voce di `registro` due campi opzionali, `dove` (`'giocatore' | 'nemico'`: su quale figura cade l'evento) e `breve` (etichetta breve: "−5", "Parata", "Evitato"), calcolati dagli eventi in `view.ts`. Senza, la UI dovrebbe leggere il testo del registro per sapere su quale figura e con quale numero mostrare il colpo. Non cambiano né le regole né i campi esistenti. **Approvare l'aggiunta** (e riportarla in ARENA_SPEC §7), oppure indicare come ricavare quei dati.
+2. **AUD-018:** la regola "se non ci sono candidate, una mossa con lo stesso archetipo della postura attuale" non può mai scattare con dati validi (quella mossa è già candidata); resta come errore esplicito sui dati invalidi, con il test di validazione. È la lettura voluta?
+3. **Sagome:** rilanciare C2a o accettare le sagome segnaposto per il primo playtest?
+4. **Altezza della griglia** con hint completi e anteprima (circa 850 px contro i 700 utili): va bene lo scorrimento, o si compatta la griglia?
+5. **Telemetria su database:** confermare `doc(record.id).set` (§8.7, punto 5) al posto di `add`.
+6. **Punto di attenzione per C2c:** il test di `claude-db` con il database vero spetta alla pubblicazione come pagina privata (`capabilities: { db: {}, user: {} }`). Con i permessi predefiniti scrivono il proprietario e i Contributori; chi gioca da Visualizzatore ricade in locale con l'avviso.
