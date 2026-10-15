@@ -12,7 +12,7 @@ Il progetto è un gioco a turni in TypeScript compilato in un singolo file HTML.
 |---|---|---|
 | **Planning** | `DESIGN.md`, `docs/*_SPEC.md`, `docs/ROADMAP.md`, `docs/PLAYTEST.md`, `CLAUDE.md` | `src/`, `sim/`, `test/` |
 | **Codice** | `src/` (tranne `src/ui/symbols.ts` e gli stili), `sim/`, `test/`, `scripts/`, `package.json`, `tsconfig.json`, `docs/*_REPORT.md`, `.github/` | I documenti di design e le specifiche |
-| **Grafica/UI** | `design/`, `docs/UI_SPEC.md`; dopo la consegna dell'arena anche `src/ui/symbols.ts` e `src/ui/styles.css` | La logica in `src/core/` |
+| **Grafica/UI** | `design/`, `docs/UI_SPEC.md`. **Dalla fine della fase C2** anche `src/ui/symbols.ts` e `src/ui/styles.css`; durante C2 li integra Codice, come da ARENA_S23_SPEC | La logica in `src/core/` |
 | **Audit** | `audit/` | Tutto il resto, in sola lettura. Non corregge e non decide: vedi [docs/AUDIT_PROTOCOL.md](docs/AUDIT_PROTOCOL.md) |
 
 - Le sessioni comunicano **tramite i file del repository**.
@@ -34,7 +34,7 @@ Se una regola è ambigua o un obiettivo non si può raggiungere senza cambiare l
 1. scrivi la domanda nella sezione "Domande per Planning" di `docs/ARENA_REPORT.md`;
 2. fermati e segnalala all'utente.
 
-Puoi cambiare solo i **numeri**: `src/data/balance.ts`, oltre a pesi, danni e vigore in `src/data/enemies.ts`. Non puoi aggiungere regole o meccaniche.
+Puoi cambiare solo i **numeri**: `src/data/balance.ts`, oltre a pesi, danni, vigore, fiato e velocità in `src/data/enemies.ts` (come ARENA_SPEC §9). Non puoi aggiungere regole o meccaniche.
 
 ## Dispositivo di riferimento e artefatti
 Il riferimento è un **Samsung Galaxy S23**: schermo 1080×2340 px, **viewport CSS 360×780**, densità ×3. Valgono per il gioco e per **ogni artefatto o pagina di revisione** (cataloghi, mockup, laboratori di animazione):

@@ -134,3 +134,27 @@ interface DestinazioneTelemetria {
 | **C2a** | Grafica (Sonnet) | Sagome statiche (§3), commit su `design/` e `docs/UI_SPEC.md` |
 | **C2b** | Codice (Sonnet, high) | Decisioni della §12.6 (§1), simboli (§2), layout scena (§4), telemetria (§5), workflow e versione (§6), report. Un commit per sotto-fase. |
 | **C2c** | Planning | Pubblicazione come pagina privata con `db`, prova di un duello e lettura del database; verifica del link di Pages; audit di chiusura (Sonnet, cancello G3 sulla nuova interfaccia, più A04) |
+
+## 9. Rilievi dell'audit da chiudere in C2
+Smistamento di Planning dei 24 rilievi di `audit/REGISTRO.md` (audit G0–G4, nessun Bloccante). Le decisioni sulle regole sono in ARENA_SPEC §12.7.
+
+| Fase | Rilievi | Cosa fare |
+|---|---|---|
+| **C2a** (Grafica) | AUD-008 | Allineare in UI_SPEC le taglie d'uso ai minimi: niente simboli con minimo 20 px usati a 16 px, oppure ridisegno della variante piccola |
+| | AUD-023 | Distinguere `evento.interrotto` e `mod.inarrestabile` a 16 px |
+| | AUD-009 (etichette) | Etichetta "Preparato" coerente in tutto il set |
+| **C2b** (Codice) | **AUD-001** | Scambio simultaneo calcolato sullo stato di inizio scambio, vantaggio compreso (ARENA_SPEC §12.7), con test |
+| | **AUD-002** | Mai una selezione predefinita su una postura non disponibile, in entrambi i layout; Conferma non lancia mai eccezioni non gestite |
+| | **AUD-003** | Anteprima calcolata sul danno, non sulla differenza di vigore limitata a 0, con test sul colpo letale |
+| | AUD-004, AUD-019 | Nemico che parte in Guardia (ARENA_SPEC §12.7); prima mossa scelta da quella postura |
+| | AUD-009 (testi) | "Preparato" al posto di "Raccolto" nel registro e negli stati |
+| | AUD-010 | Report: aggiornare §1 (test, versione della specifica) e la data di §4.8 |
+| | AUD-017 | Punta e Arresto controllano il fiato come Parata e Schivata |
+| | AUD-018 | Ripiego dell'IA (ARENA_SPEC §12.7) e test di validazione dei dati |
+| | AUD-020 | Una sola implementazione della regola del cambio con le spalle al muro, condivisa da risolutore e IA; commento di `balance.ts` corretto |
+| | AUD-021 | La vista espone `spalle: boolean` invece di far ripetere la soglia alla UI |
+| | AUD-022 | Caselle del menu con bersaglio di almeno 44×44 px |
+| **Planning** (fatto) | AUD-004, -005, -006, -007, -012, -013, -014, -015, -016, -018 (regola), -024 | Decisioni in ARENA_SPEC §12.7, DESIGN §5.2 e §9.1, CLAUDE.md |
+| **Verifica in C2c** | AUD-011 | Le 13 estensioni dei simboli sono approvate (§2): l'audit di chiusura ne verifica l'integrazione |
+
+**Audit di chiusura (C2c, Sonnet):** cancelli G1 e G3 sui file toccati, A04, verifica e aggiornamento dello stato di tutti i rilievi qui sopra.

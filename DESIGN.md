@@ -183,7 +183,7 @@ Ogni postura si paga in una di tre valute: **vigore**, **fiato** o **iniziativa*
 
 #### Regole che derivano dal modello ✅ (arena v1.1)
 - **Arretrare cede l'iniziativa:** chi attacca un avversario in Distanza guadagna il vantaggio (incalza), a meno che la Distanza non risponda con *Punta* o *Arresto*.
-- **Spazio alle spalle:** dopo 2 turni consecutivi in Distanza, la Distanza non è disponibile per un turno.
+- **Spazio alle spalle:** dopo 2 turni consecutivi in Distanza, la Distanza non è disponibile per un turno. Chi è con le spalle al muro **cambia postura gratis**: non può restare dove è, e non deve bloccarsi a fiato zero.
 - **L'Attesa è una preparazione:** se nessun colpo la raggiunge, a fine turno si diventa *preparati* (prossimo colpo ×1,5). È la stessa meccanica del nemico che si raccoglie: un solo sistema per tutti.
 - **Gradi della Distanza:** *Punta* (grado 2) e *Arresto* (grado 3). La posta longa minaccia: chi entra corto finisce sulla punta.
 - **Ogni nemico ha una risposta all'Assalto:** nel roster ci sono mosse di difesa o di attesa, così la catena dell'Assalto con vantaggio si spezza leggendo l'hint.
@@ -286,7 +286,7 @@ Principi già fissati:
 
 - Le sessioni comunicano **tramite i file del repository**, non tramite messaggi.
 - 🟡 Contratto dati tra UI e logica: per l'arena è `DuelView` in `src/core/view.ts` (vedi ARENA_SPEC §7); per le altre schermate resta da definire.
-- ✅ Tutte le sessioni nella stessa cartella (su Google Drive), un solo scrittore per file, niente worktree. Le regole operative sono in [CLAUDE.md](CLAUDE.md).
+- ✅ Tutte le sessioni lavorano nella stessa cartella locale (Dropbox, vedi [CLAUDE.md](CLAUDE.md), "Cartella di lavoro"), un solo scrittore per file, niente worktree. La vecchia cartella su Google Drive è un archivio.
 
 ### 9.2a Passo 0: arena di prova ✅
 Obiettivo: verificare **posture, reazioni e divertimento** del duello prima di costruire il resto. È un banco di prova senza progressione: si sceglie un nemico da un menu, si combatte e si ricomincia, con interruttori A/B (hint completi, anteprima danni, adattamento) e telemetria locale. C'è anche un simulatore con bot per scovare le strategie dominanti. Specifica completa: [docs/ARENA_SPEC.md](docs/ARENA_SPEC.md).

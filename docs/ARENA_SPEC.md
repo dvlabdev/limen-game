@@ -512,3 +512,17 @@ Approvate dall'utente. **Si applicano nella prossima fase di codice** (arena gio
 | **2. Turni del `lettore` contro il Lanciere** | Obiettivo **4–9 turni** per il Lanciere, che tiene la distanza per natura. Gli altri nemici restano a 4–8. |
 | **3. Stallo di `fissa:attesa` contro il Lanciere** | **Accettato senza nuove regole.** Una strategia che non attacca mai non vince, e il pareggio conta come non vittoria. Il vincolo anti-stallo resta solo su `fissa:distanza`. |
 | **4. Attesa raggiunta da un attacco interrotto (R3)** | Va bene **senza test** finché non esiste una mossa che produce il caso. L'Audit lo registra come requisito "non verificabile". |
+
+### 12.7 Decisioni dopo l'audit G0–G4 (`audit/REGISTRO.md`)
+Si applicano nella fase C2. Il dettaglio dell'assegnazione è in ARENA_S23_SPEC §9.
+
+| Rilievo | Decisione |
+|---|---|
+| **AUD-001** | Confermato il testo: nello scambio simultaneo **entrambi** i colpi si calcolano sullo stato di inizio scambio, vantaggio compreso. Le perdite di vantaggio dovute ai colpi simultanei si applicano dopo entrambi. Va corretto il codice. |
+| **AUD-004** | **Il nemico parte in Guardia**, come il giocatore, e paga il cambio verso la prima mossa con le regole normali. La sua postura iniziale non rivela più l'archetipo della mossa in arrivo. Sostituisce il primo punto del §4.1 per il nemico. |
+| **AUD-012** | Il **riferimento** degli obiettivi del simulatore è `--duelli 1000 --seed 1`. Con altri seed è accettato uno scarto fino a **+2 punti** sulle soglie `fissa:*` e `casuale`. |
+| **AUD-013** | Chiarimento del §4.6: in Assalto contro L1 il giocatore, colpito per primo, colpisce poi a segno con un pesante e **guadagna il vantaggio**. In Assalto contro L2 (simultanei) **nessuno** lo guadagna. |
+| **AUD-014** | Chiarimento di R8: la regola 3 ("preparato e hint non pesante → Assalto") **si applica prima** della regola 2. |
+| **AUD-015** | Chiarimento del §7: le candidate dell'anteprima sono le mosse della categoria che il nemico **può effettivamente giocare** (fiato, spazio alle spalle). Usa solo informazioni visibili. |
+| **AUD-018** | Regola nuova per l'IA: se non ci sono candidate, il nemico sceglie una mossa con **lo stesso archetipo della postura attuale**. Un test di validazione dei dati garantisce che esista sempre, per ogni fase di ogni nemico. |
+| **AUD-016** | Accettato: nell'arena gli intervalli di danno sono un interruttore A/B, e sarà il playtest a decidere per il gioco (PLAYTEST §5). |
