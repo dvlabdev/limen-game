@@ -12,9 +12,11 @@ Il progetto è un gioco a turni in TypeScript compilato in un singolo file HTML.
 |---|---|---|
 | **Planning** | `DESIGN.md`, `docs/*_SPEC.md`, `CLAUDE.md` | `src/`, `sim/`, `test/` |
 | **Codice** | `src/` (tranne `src/ui/symbols.ts` e gli stili), `sim/`, `test/`, `scripts/`, `package.json`, `tsconfig.json`, `docs/*_REPORT.md` | I documenti di design e le specifiche |
-| **Grafica/UI** | `src/ui/symbols.ts`, `src/ui/styles.css`, gli asset, `docs/UI_SPEC.md` | La logica in `src/core/` |
+| **Grafica/UI** | `design/`, `docs/UI_SPEC.md`; dopo la consegna dell'arena anche `src/ui/symbols.ts` e `src/ui/styles.css` | La logica in `src/core/` |
 
 - Le sessioni comunicano **tramite i file del repository**.
+- **Mentre l'arena è in implementazione**, Grafica lavora solo in `design/` e `docs/UI_SPEC.md`. L'integrazione in `src/ui/` avviene dopo, coordinata da Planning.
+- **Git in una cartella condivisa:** si aggiungono solo i propri file con `git add <percorsi>`, mai `git add -A` o `git add .`. Se c'è un `index.lock`, aspetta e riprova.
 - Il contratto tra logica e interfaccia è `src/core/view.ts` (`DuelView`). Si modifica solo d'accordo con Planning.
 - Tutte le sessioni lavorano nella stessa cartella, che è su Google Drive: un solo scrittore per file, niente worktree.
 
