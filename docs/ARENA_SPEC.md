@@ -1,6 +1,6 @@
 # Arena di prova del duello: specifica operativa
 
-> **Versione:** 1.0.1 (15 ottobre 2026: dispositivo di riferimento S23) · **Proprietario:** Planning · **Esecutore:** sessione Codice
+> **Versione:** 1.0.2 (15 ottobre 2026: dispositivo di riferimento S23; mossa "Finta" del Duellante rinominata "Battuta") · **Proprietario:** Planning · **Esecutore:** sessione Codice
 > **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5 (combattimento) e [CLAUDE.md](../CLAUDE.md) (regole delle sessioni).
 
 ## 0. Scopo
@@ -249,7 +249,7 @@ Gli attacchi sono indicati come *forza, portata, velocità, danno*. In "Profilo"
 | Nemico | Vig. | Fiato | Vel. | Gradi P/S | Mosse | Profilo |
 |---|---|---|---|---|---|---|
 | **Recluta** | 16 | 4 | 1 | 1/1 | Fendente (assalto: pesante, corta, normale, 3–5); Copertura (guardia, senza attacco) | Sequenza Fendente, Copertura. Nessun adattamento. |
-| **Duellante** | 20 | 6 | 3 | 2/1 | Stoccata (assalto: leggero, corta, rapido, 2–3); Finta (assalto: leggero, corta, rapido, 2–3, `sfondaGuardia`); Parata (guardia: leggero, corta, rapido, 1–2); Affondo (assalto: pesante, corta, normale, 4–6) | Stoccata 5, Finta 1, Parata 2, Affondo 1. Adattamento ×3. |
+| **Duellante** | 20 | 6 | 3 | 2/1 | Stoccata (assalto: leggero, corta, rapido, 2–3); Battuta (assalto: leggero, corta, rapido, 2–3, `sfondaGuardia`: colpo sulla lama che apre la guardia); Parata (guardia: leggero, corta, rapido, 1–2); Affondo (assalto: pesante, corta, normale, 4–6) | Stoccata 5, Battuta 1, Parata 2, Affondo 1. Adattamento ×3. |
 | **Bruto** | 30 | 5 | 1 | 1/1 | Maglio (assalto: pesante, corta, lento, 6–8); Spallata (assalto: pesante, corta, normale, 4–5, `sfondaGuardia`); Raccogliersi (preparazione) | Maglio 4, Spallata 2, Raccogliersi 2 (×3 con `fiatoSotto(2)`). Adattamento ×2. |
 | **Lanciere** | 22 | 5 | 2 | 1/1 | Affondo lungo (assalto: leggero, lunga, normale, 3–4); Colpo d'asta (assalto: pesante, lunga, lento, 5–6); Tenere a bada (distanza) | Affondo lungo 4, Colpo d'asta 2, Tenere a bada 2 (×2 con `vigoreSotto(0.4)`). Adattamento ×2. |
 | **Mietitore** (boss) | 45 | 6 | 2 | 3/2 | **Fase 1:** Falciata (assalto: pesante, corta, normale, 5–7); Mietere (assalto: leggero, lunga, normale, 3–4); Guardia d'osso (guardia); Raccogliersi (preparazione). **Fase 2:** le stesse più **Carica** (assalto: pesante, corta, normale, 7–9, `inarrestabile`). | **Fase 1:** Falciata 3, Mietere 3, Guardia d'osso 2, Raccogliersi 1. Adattamento ×2. **Fase 2:** Carica 4, Falciata 2, Mietere 2, Guardia d'osso 1, Raccogliersi 1. Adattamento ×3. |

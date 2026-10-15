@@ -47,7 +47,7 @@ Il telegrafo è la posa di **anticipazione** che il nemico tiene durante la fase
 | Categoria | Criteri della posa | Ritmo del ciclo |
 |---|---|---|
 | **Pesante** | Carica ampia: arma dietro o sopra la testa, busto ruotato all'indietro, peso sul piede posteriore | Lento e teso, circa 1,2 s |
-| **Leggero** | Carica minima: arma vicina al corpo, peso avanti sulle punte, piccole finte | Rapido e nervoso, circa 0,5 s |
+| **Leggero** | Carica minima: arma vicina al corpo, peso avanti sulle punte, piccoli scatti della lama | Rapido e nervoso, circa 0,5 s |
 | **Difesa** | Arma o scudo davanti, baricentro basso, immobilità | Quasi fermo, respiro lento |
 | **Preparazione** | Raccoglimento: busto chiuso, testa china, inchiostro che converge sulla figura | Respiro profondo, circa 1,5 s |
 

@@ -187,6 +187,15 @@ Ogni reazione ha 2–3 gradi di miglioramento (per esempio Parata → Parata fer
 - Nei **danni**: intervalli stretti (🟡 circa ±20–30%), **sempre visibili** nell'interfaccia, sia inflitti sia subiti.
 - Niente critici casuali: il colpo pieno arriva dal vantaggio.
 
+### 5.5a Finte 🟡 (principio da tenere presente, implementazione non obbligatoria)
+In un duello all'arma bianca l'inganno fa parte del combattimento. Se si introducono, le finte devono rispettare questi principi:
+- **Rare:** solo alcuni nemici, al massimo una ogni 3 turni, mai due di fila. L'hint deve restare **affidabile per lo più**, altrimenti il pilastro "leggere il nemico" crolla.
+- **Riconoscibili:** il telegrafo della finta ha un **difetto visibile** (per esempio il peso sul piede sbagliato o una carica senza tensione). Chi osserva bene lo coglie; la conoscenza (indagine "Schema", bestiario) insegna a vederlo.
+- **Spiegate:** dopo la risoluzione il registro e la scena dicono "Era una finta".
+- **Meccanica candidata:** una mossa con `finta: { mostra: <categoria> }`. L'hint mostra la categoria falsa e il risolutore esegue la mossa vera.
+- **Prova:** eventuale arena v1.1, con un interruttore A/B spento di default e il controllo del simulatore.
+- Termine riservato: "finta" indica solo l'inganno sull'hint. La mossa che apre la guardia si chiama **Battuta**.
+
 ### 5.6 Nemici ✅
 - Usano lo **stesso sistema** del viandante, ma con posture e nomi propri dal sapore più fantasioso (per esempio la "Carica" del Mietitore).
 - ⬜ Boss a più fasi: ogni fase premia un tipo di preparazione (conoscenza, equipaggiamento, alleati).
@@ -288,3 +297,4 @@ Lo sostituisce l'arena (9.2a): il motore del duello è TypeScript puro, separato
 | 7 | Scopo, tesoro e mistero della locanda | 7 | No |
 | 8 | Contratto dati UI ↔ logica | 9 | Risolta per l'arena (`DuelView`) |
 | 9 | Il duello è divertente? Posture dominanti? Valore dei gradi delle reazioni? | 5 | È la domanda dell'arena |
+| 10 | Finte: introdurle? Con quale frequenza e con quali difetti visibili? (vedi 5.5a) | 5 | No: eventuale arena v1.1 |
