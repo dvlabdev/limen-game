@@ -424,3 +424,10 @@ Limiti: come in §1, gli screenshot del browser integrato a 360 px sono deformat
 4. **Altezza della griglia** con hint completi e anteprima (circa 850 px contro i 700 utili): va bene lo scorrimento, o si compatta la griglia?
 5. **Telemetria su database:** confermare `doc(record.id).set` (§8.7, punto 5) al posto di `add`.
 6. **Punto di attenzione per C2c:** il test di `claude-db` con il database vero spetta alla pubblicazione come pagina privata (`capabilities: { db: {}, user: {} }`). Con i permessi predefiniti scrivono il proprietario e i Contributori; chi gioca da Visualizzatore ricade in locale con l'avviso.
+
+### 8.9 Pubblicazione come pagina privata (C2c, punto 1)
+
+- **Artifact privato:** https://claude.ai/artifact/8ib2HCY2fAPmyVWzSEkiY2 (versione 1), titolo "Limen · Arena", icona "game", `capabilities: { db: {}, user: {} }`, contratto 0.2.80. Costruito da `dist/index.html` del commit `808711a` (versione "808711a 2026-10-15" nel menu). Per ripubblicare: stesso percorso di file, oppure l'URL in `url`.
+- **Preparazione del file:** lo strumento avvolge la pagina in uno scheletro, quindi dal `dist/index.html` ho tolto doctype, `<html>`, `<head>` e `<body>` e ho tenuto `<title>`, `<style>`, `<div id="app">` e `<script>` (copia in lavoro, `dist/` non è cambiato). Nessuna risorsa esterna.
+- **Verifica funzionale:** una `ArtifactData` `list` della collezione `telemetria` (anche con `as_level: view`): vuota, come atteso prima del primo duello. **Non provato:** un duello vero nella pagina pubblicata, cioè la scrittura nel database da parte dell'app (resta la prova con il database vero, §8.4), e la lettura di un documento reale.
+- **Limite noto del tema:** il CSS segue `prefers-color-scheme` ma non l'attributo `data-theme` del visualizzatore (manca il blocco `:root[data-theme="dark"]` e la guardia `:not([data-theme="light"])`): se l'utente forza un tema diverso da quello del sistema, la pagina non lo segue. È una modifica di `styles.css` (proprietà di Grafica dalla fine di C2), non fatta qui.
