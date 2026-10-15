@@ -49,7 +49,7 @@ p { margin: 0; max-width: 64ch; }
 .comandi { display: flex; flex-wrap: wrap; gap: 6px; }
 .comandi button {
   font: 500 13px/1 var(--f-testo); color: var(--inchiostro); background: transparent;
-  border: 1px solid var(--filo); padding: 8px 10px; min-height: 36px; cursor: pointer;
+  border: 1px solid var(--filo); padding: 8px 12px; min-height: 44px; cursor: pointer;
 }
 .comandi button[aria-pressed="true"] { background: var(--inchiostro); color: var(--carta); border-color: var(--inchiostro); }
 button:focus-visible { outline: 2px solid var(--pericolo); outline-offset: 2px; }
@@ -67,7 +67,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .colpo table { border-collapse: collapse; min-width: 560px; width: 100%; }
 .colpo th, .colpo td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--filo); }
 .colpo th[scope="row"] { text-align: left; font: 400 18px/1 var(--f-display); white-space: nowrap; padding-right: 10px; }
-.colpo thead th { font: 500 10.5px/1.2 var(--f-dato); color: var(--seppia); letter-spacing: .02em; vertical-align: bottom; }
+.colpo thead th { font: 500 12px/1.2 var(--f-dato); color: var(--seppia); letter-spacing: .02em; vertical-align: bottom; }
 .colpo td svg { display: block; margin-inline: auto; }
 
 /* Tavola di una direzione */
@@ -81,7 +81,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 0; border-top: 1px solid var(--filo); border-left: 1px solid var(--filo); }
 .cella { display: grid; justify-items: center; gap: 8px; padding: 16px 6px 12px; border-right: 1px solid var(--filo); border-bottom: 1px solid var(--filo); text-align: center; min-width: 0; }
 .cella .nome { font-size: 14.5px; line-height: 1.2; }
-.cella .dato { font-size: 10.5px; overflow-wrap: anywhere; }
+.cella .dato { font-size: 12px; overflow-wrap: anywhere; }
 .pericolo { color: var(--pericolo); }
 
 .scala { display: grid; gap: 10px; }
@@ -122,8 +122,8 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
   border-block: 1px solid var(--filo); background: var(--carta-2);
 }
 .hint .cat { font: 400 22px/1 var(--f-display); color: var(--pericolo); }
-.hint .sub { font-size: 12.5px; color: var(--seppia); }
-.registro { padding: 8px 14px; font-size: 13px; color: var(--seppia); display: flex; gap: 6px; align-items: center; border-bottom: 1px solid var(--filo); }
+.hint .sub { font-size: 14px; color: var(--seppia); }
+.registro { padding: 8px 14px; font-size: 14px; color: var(--seppia); display: flex; gap: 6px; align-items: center; border-bottom: 1px solid var(--filo); }
 .posture { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 12px; }
 .pbtn {
   display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; align-items: center;
@@ -142,7 +142,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .tab-conf { overflow-x: auto; }
 .tab-conf table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 15px; }
 .tab-conf th, .tab-conf td { padding: 8px 10px; border-bottom: 1px solid var(--filo); text-align: left; vertical-align: top; }
-.tab-conf thead th { font: 500 11px/1.2 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.tab-conf thead th { font: 500 12px/1.2 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
 .tab-conf td:first-child { font: 400 18px/1.2 var(--f-display); white-space: nowrap; }
 .consiglio { padding: 14px 16px; border: 1.5px solid var(--inchiostro); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

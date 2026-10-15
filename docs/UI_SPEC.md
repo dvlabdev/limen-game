@@ -3,7 +3,7 @@
 > **Versione:** 1.1 (15 ottobre 2026) · **Proprietario:** Grafica/UI · **Destinatari:** Planning (approvazione delle estensioni), Codice (integrazione)
 > **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5, §8 e §8.1, [ARENA_SPEC.md](ARENA_SPEC.md) §3, §7 e §8, [CLAUDE.md](../CLAUDE.md).
 > **Direzione scelta dall'utente:** A, **Xilografia**, con gli **stati nel bollino tondo** (dalla direzione C).
-> **Novità della 1.1:** scena a tutto schermo con l'interfaccia integrata e ventaglio di medaglioni delle posture (DESIGN §8.1, commit b84c95d).
+> **Novità della 1.1:** scena a tutto schermo con l'interfaccia integrata e ventaglio di medaglioni delle posture (DESIGN §8.1, commit b84c95d); misure sul dispositivo di riferimento S23 (CLAUDE.md).
 
 | Risorsa | Dove |
 |---|---|
@@ -122,42 +122,42 @@ Inchiostro, carta e un solo colore di pericolo. Nessun altro accento.
 ## 5. Scena del duello (DESIGN §8.1)
 Telefono sempre in verticale. La scena occupa tutto lo schermo e l'interfaccia vive dentro di essa. I personaggi sono di profilo, uno di fronte all'altro: il viandante a sinistra, il nemico a destra. Fino alla fase delle marionette, i mockup usano **sagome segnaposto**.
 
-### 5.1 Composizione a 375 × 560 px utili
-Le coordinate sono quelle del mockup del catalogo (origine in alto a sinistra; 560 = 667 meno le barre del browser). Sono un riferimento per la futura `SCENA_SPEC.md`, non pixel obbligatori.
+### 5.1 Composizione su S23: 360 × 700 px utili
+Il dispositivo di riferimento è il Samsung Galaxy S23 (CLAUDE.md): viewport 360 × 780, circa 700 px utili nell'app Claude. Le coordinate sono quelle del mockup del catalogo, con origine in alto a sinistra. Sono un riferimento per `SCENA_SPEC.md`, non pixel obbligatori. Le figure sono alte circa 120 px, come chiede SCENA_SPEC.
 
 | Elemento | Posizione | Note |
 |---|---|---|
 | Contatore dei turni | in alto a sinistra, y 12 | Testo seppia |
-| **HUD del viandante** | centrato su x 150, y 96–142, largo 128 | Nome e bollini degli stati, vigore (cuore e barra), pallini del fiato |
-| **HUD del nemico** | centrato su x 290, y 96–142, largo 128 | Come sopra, con il bollino `stato.fase2` per il boss |
-| **Hint** | sopra la testa del nemico; il blocco cresce verso l'alto dalla y 254 | §5.3 |
-| **Cartiglio dell'anteprima** | x 8, y 156: sempre nello stesso punto, sopra il ventaglio | Postura selezionata, ↓ subito e ↑ inflitto, "Tocca di nuovo per confermare" |
+| **HUD del viandante** | centrato su x 130, y 230–276, largo 128 | Nome e bollini degli stati, vigore (cuore e barra), pallini del fiato |
+| **HUD del nemico** | centrato su x 280, y 230–276, largo 128 | Come sopra, con il bollino `stato.fase2` per il boss |
+| **Hint** | sopra la testa del nemico (x 275); il blocco cresce verso l'alto dalla y 411, fino a y 311 con l'hint completo | §5.3 |
+| **Cartiglio dell'anteprima** | x 8, y 288: sempre nello stesso punto, sopra il ventaglio | Postura selezionata, ↓ subito e ↑ inflitto, "Tocca di nuovo per confermare" |
 | **Ventaglio** | arco intorno al viandante, §5.2 | Si apre solo nella fase di scelta |
-| Figure | terreno a y 440; viandante a x 160, nemico a x 290 | Quinta del fondale dietro, in `--filo` |
+| Figure | terreno a y 560; viandante a x 160, nemico a x 284, scala 1,15 (circa 120 px) | Quinta del fondale dietro, in `--filo`; sopra l'HUD resta cielo libero per il fondale |
 | Testo del colpo | nel punto d'impatto, sulla figura colpita | Danno o esito in `--pericolo` con l'icona dell'evento, §5.4 |
-| **Cassetto del registro** | in basso, y 516–560 | Chiuso mostra l'ultima riga; si apre con un tocco |
+| **Cassetto del registro** | in basso, y 656–700 | Chiuso mostra l'ultima riga; si apre con un tocco |
 
-Nessun elemento si sovrappone a un altro e nessuno esce dallo schermo: il catalogo lo verifica misurando i riquadri.
+**Verificato a 360 × 780:** nessun elemento si sovrappone a un altro, nessuno esce dallo schermo, niente scroll orizzontale, testi di almeno 12 px, bersagli di almeno 44 px. Nel catalogo il mockup occupa l'intera larghezza dello schermo del telefono, quindi su un S23 si vede in scala 1:1.
 
 ### 5.2 Ventaglio dei medaglioni
-- **Geometria:** arco di centro (160, 360), cioè il busto del viandante, e raggio 128.
+- **Geometria:** arco di centro (160, 491), cioè il busto del viandante, e raggio 124.
 - **Ordine, dalla schiena verso il nemico:**
 
   | Postura | Angolo | Centro (x, y) |
   |---|---|---|
-  | Distanza | 205° | (44, 414) |
-  | Attesa | 162° | (38, 320) |
-  | Guardia | 118° | (100, 247) |
-  | Assalto | 75° | (193, 236) |
+  | Distanza | 205° | (48, 543) |
+  | Attesa | 165° | (40, 459) |
+  | Guardia | 118° | (102, 382) |
+  | Assalto | 75° | (192, 371) |
 
   Più un medaglione è vicino al nemico, più la postura è aggressiva. Una guida tratteggiata in `--seppia` disegna l'arco.
-- **Medaglioni:** 52 px, più di 44 px di bersaglio, con almeno 40 px liberi tra un medaglione e l'altro. Sotto ciascuno c'è un'etichetta con il nome e il costo: pallino pieno e "1" per cambiare, pallino vuoto e "0" per la postura attuale.
+- **Medaglioni:** 52 px, più di 44 px di bersaglio, con almeno 30 px liberi tra un medaglione e l'altro. Sotto ciascuno c'è un'etichetta con il nome e il costo: pallino pieno e "1" per cambiare, pallino vuoto e "0" per la postura attuale.
 - **Stati e interazione:**
 
   | Stato | Aspetto | Come ci si arriva |
   |---|---|---|
   | Riposo | Anello singolo | Ventaglio aperto, nessuna scelta |
-  | Selezionato | Doppio anello, ingrandito a 1,15 | **Primo tocco.** Il cartiglio fisso mostra l'anteprima |
+  | Selezionato | Doppio anello, ingrandito a 1,08 | **Primo tocco.** Il cartiglio fisso mostra l'anteprima |
   | Confermato | Anello spesso; gli altri medaglioni scendono al 30% | **Secondo tocco** sullo stesso medaglione. Poi il ventaglio si chiude e parte la risoluzione |
   | Non disponibile | Al 30% e senza risposta al tocco | Cambio non consentito per mancanza di fiato |
 
@@ -167,7 +167,7 @@ Nessun elemento si sovrappone a un altro e nessuno esce dallo schermo: il catalo
 ### 5.3 Hint sopra il nemico
 - Il simbolo dell'intenzione (44 px) sta in una **zona riservata sopra la testa del nemico**, accanto alla posa che telegrafa il colpo. Simbolo e posa si leggono insieme.
 - Sotto il simbolo c'è il nome della categoria, e con `hintCompleti` quello della mossa. Con `hintCompleti` seguono anche la fila dei modificatori e il danno (§2.3). Il blocco cresce verso l'alto e non deve mai raggiungere l'HUD.
-- Nella prima versione della scena (UI_SPEC 1.0) l'hint al centro dello schermo misurava 636 px contro 513 e spingeva fuori la conferma. La collocazione sopra il nemico, ora decisa in DESIGN §8.1, è anche la più compatta.
+- Nella prima versione della scena (UI_SPEC 1.0, su 560 px utili) l'hint al centro misurava 636 px contro 513 e spingeva fuori la conferma. La collocazione sopra il nemico, ora decisa in DESIGN §8.1, è anche la più compatta.
 
 ### 5.4 Danni e registro
 - **Danni nel punto del colpo:** un'etichetta breve in `--pericolo` sulla figura colpita, con l'icona dell'evento a 16 px: `evento.colpo` con il numero, oppure `evento.parata`, `evento.evitato` o `evento.schivata` con la parola.

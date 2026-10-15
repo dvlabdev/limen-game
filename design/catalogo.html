@@ -3,7 +3,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: prima il duello a 375 px (dove i simboli lavorano), poi la grammatica, poi il catalogo per famiglia con le taglie in chiaro e scuro. */
+/* Layout: prima il duello su S23 (360 px) (dove i simboli lavorano), poi la grammatica, poi il catalogo per famiglia con le taglie in chiaro e scuro. */
 :root {
   --carta: #e9e2d3;
   --carta-2: #ddd4c1;
@@ -53,7 +53,7 @@ svg.icona { display: block; flex: none; }
 .comandi { display: flex; flex-wrap: wrap; gap: 6px; }
 .comandi button {
   font: 500 13px/1 var(--f-testo); color: var(--inchiostro); background: transparent;
-  border: 1px solid var(--filo); padding: 8px 10px; min-height: 36px; cursor: pointer;
+  border: 1px solid var(--filo); padding: 8px 12px; min-height: 44px; cursor: pointer;
 }
 .comandi button[aria-pressed="true"] { background: var(--inchiostro); color: var(--carta); border-color: var(--inchiostro); }
 button:focus-visible { outline: 2px solid var(--pericolo); outline-offset: 2px; }
@@ -61,9 +61,13 @@ button:focus-visible { outline: 2px solid var(--pericolo); outline-offset: 2px; 
 header.apertura { display: grid; gap: 14px; padding-block: 36px 24px; }
 section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid var(--filo); }
 
-/* Mockup del duello a 375 px */
+/* Mockup del duello, variante classica */
 .duelli { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align-items: flex-start; }
-.duelli figure { margin: 0; display: grid; gap: 10px; width: 375px; max-width: 100%; }
+.duelli figure { margin: 0; display: grid; gap: 10px; width: 362px; max-width: 100%; }
+@media (max-width: 394px) {
+  .duelli figure { width: calc(100% + 32px); max-width: none; margin-inline: -16px; }
+  .duelli figcaption { padding-inline: 16px; }
+}
 .duelli figcaption { font-size: 14px; color: var(--seppia); }
 .telefono { width: 100%; border: 1px solid var(--filo); background: var(--carta); color: var(--inchiostro); font-size: 14px; line-height: 1.3; }
 .riga-c { display: grid; gap: 7px; padding: 12px 14px; }
@@ -78,11 +82,11 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .pips .sep { width: 4px; }
 .hint { display: grid; justify-items: center; gap: 6px; padding: 16px 14px 14px; border-block: 1px solid var(--filo); background: var(--carta-2); }
 .hint .cat { font: 400 24px/1 var(--f-display); color: var(--pericolo); }
-.hint .sub { font-size: 13px; color: var(--seppia); }
+.hint .sub { font-size: 14px; color: var(--seppia); }
 .mods { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; color: var(--pericolo); }
-.mods span { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }
+.mods span { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; }
 .mods .danno { font: 500 14px/1 var(--f-dato); }
-.registro { display: grid; gap: 4px; padding: 8px 14px; font-size: 13px; color: var(--seppia); border-bottom: 1px solid var(--filo); }
+.registro { display: grid; gap: 4px; padding: 8px 14px; font-size: 14px; color: var(--seppia); border-bottom: 1px solid var(--filo); }
 .registro div { display: flex; gap: 7px; align-items: center; }
 .registro div:first-child { color: var(--inchiostro); }
 .posture { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 12px; }
@@ -93,7 +97,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .pbtn .icona { grid-row: span 3; }
 .pbtn .pn { font: 400 18px/1 var(--f-display); }
 .pbtn .pc { font-size: 12px; color: var(--seppia); display: flex; align-items: center; gap: 4px; }
-.pbtn .pa { font: 500 11px/1.25 var(--f-dato); color: var(--seppia); }
+.pbtn .pa { font: 500 12px/1.25 var(--f-dato); color: var(--seppia); }
 .pbtn.sel { background: var(--inchiostro); color: var(--carta); }
 .pbtn.sel .pc, .pbtn.sel .pa { color: var(--carta); }
 .pbtn.att { border-style: dashed; }
@@ -106,11 +110,11 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .telefono .pbtn .icona { grid-row: span 2; }
 .telefono .pbtn .pa { grid-column: 2 / 4; font-size: 12px; }
 .telefono .pbtn .pa b { font-weight: 500; margin-right: 1px; }
-.piega { position: absolute; left: -1px; right: -1px; top: 560px; border-top: 2px dashed var(--pericolo); pointer-events: none; }
-.piega span { position: absolute; right: 6px; top: 3px; font: 500 10.5px/1 var(--f-dato); color: var(--pericolo); background: var(--carta); padding: 2px 4px; }
+.piega { position: absolute; left: -1px; right: -1px; top: 700px; border-top: 2px dashed var(--pericolo); pointer-events: none; }
+.piega span { position: absolute; right: 6px; top: 3px; font: 500 12px/1 var(--f-dato); color: var(--pericolo); background: var(--carta); padding: 2px 4px; }
 .scena { position: relative; background: var(--carta-2); }
 .scena .fig { display: block; width: 100%; height: auto; }
-.scena .segnaposto { position: absolute; left: 8px; top: 6px; font: 500 10px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.scena .segnaposto { position: absolute; left: 8px; top: 6px; font: 500 12px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
 .scena .sopra { position: absolute; top: 2px; transform: translateX(-50%); color: var(--pericolo); }
 .targhe { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 6px 12px; background: var(--carta-2); border-bottom: 1px solid var(--filo); }
 .targa { display: grid; gap: 3px; min-width: 0; font-size: 12px; }
@@ -119,42 +123,42 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .targa .n { font: 400 15px/1 var(--f-display); margin-right: 2px; }
 .targa .vig { gap: 5px; }
 .targa .vig .tacca { height: 6px; }
-.targa .vig .num { font-size: 11px; min-width: 3.4em; }
+.targa .vig .num { font-size: 12px; min-width: 3.4em; }
 .striscia-hint { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 12px; padding: 7px 12px; border-bottom: 1px solid var(--filo); color: var(--pericolo); }
 .striscia-hint .cat { font: 400 19px/1 var(--f-display); }
 .striscia-hint span { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; }
 .striscia-hint .danno { font: 500 13px/1 var(--f-dato); }
-/* Scena a tutto schermo (DESIGN §8.1): coordinate in px su un telefono 375 × 560 utili */
+/* Scena a tutto schermo (DESIGN §8.1): coordinate in px su S23, 360 × 700 utili */
 .schermo-wrap { max-width: 100%; overflow-x: auto; }
-.schermo { position: relative; width: 375px; height: 560px; overflow: hidden; background: var(--carta-2); color: var(--inchiostro); border: 1px solid var(--filo); font-size: 13px; line-height: 1.25; }
-.schermo .fondo { position: absolute; left: 0; top: 0; width: 375px; height: 560px; }
+.schermo { position: relative; width: 360px; height: 700px; overflow: hidden; background: var(--carta-2); color: var(--inchiostro); border: 1px solid var(--filo); font-size: 14px; line-height: 1.25; }
+.schermo .fondo { position: absolute; left: 0; top: 0; width: 360px; height: 700px; }
 .schermo .quinta { color: var(--filo); }
 .schermo .guida { color: var(--seppia); }
-.turno { position: absolute; top: 12px; left: 12px; font: 500 11px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
-.hud { position: absolute; top: 96px; width: 128px; display: grid; gap: 4px; }
+.turno { position: absolute; top: 12px; left: 12px; font: 500 12px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.hud { position: absolute; top: 230px; width: 128px; display: grid; gap: 4px; }
 .hud .r { display: flex; align-items: center; gap: 4px; }
 .hud .n { font: 400 15px/1 var(--f-display); margin-right: 2px; }
 .hud .tacca { flex: 1; height: 7px; border: 1px solid var(--inchiostro); position: relative; background: var(--carta); }
 .hud .tacca i { position: absolute; inset: 0 auto 0 0; background: var(--inchiostro); }
-.hud .num { font: 500 11px/1 var(--f-dato); font-variant-numeric: tabular-nums; }
+.hud .num { font: 500 12px/1 var(--f-dato); font-variant-numeric: tabular-nums; }
 .sopra-nemico { position: absolute; transform: translateX(-50%); display: grid; justify-items: center; gap: 3px; color: var(--pericolo); text-align: center; }
 .sopra-nemico .cat { font: 400 15px/1 var(--f-display); }
 .sopra-nemico .mods { display: flex; gap: 6px; align-items: center; justify-content: center; font: 500 12px/1 var(--f-dato); }
 .med { position: absolute; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; background: var(--carta); color: var(--inchiostro); }
 .med svg { display: block; }
-.med.sel { transform: scale(1.15); }
+.med.sel { transform: scale(1.08); }
 .med.spento { opacity: .3; }
-.med-et { position: absolute; transform: translateX(-50%); font-size: 11.5px; white-space: nowrap; display: flex; gap: 3px; align-items: center; background: var(--carta-2); padding: 0 3px; }
+.med-et { position: absolute; transform: translateX(-50%); font-size: 12px; white-space: nowrap; display: flex; gap: 3px; align-items: center; background: var(--carta-2); padding: 0 3px; }
 .med-et.spento { opacity: .3; }
 .cartiglio { position: absolute; background: var(--carta); border: 1.5px solid var(--inchiostro); padding: 5px 7px; display: grid; gap: 3px; }
 .cartiglio .d { font: 500 13px/1 var(--f-dato); }
 .cartiglio .d b { font-weight: 500; color: var(--pericolo); }
-.cartiglio small { font-size: 11px; color: var(--seppia); }
+.cartiglio small { font-size: 12px; color: var(--seppia); }
 .colpo-testo { position: absolute; color: var(--pericolo); font: 500 14px/1 var(--f-dato); display: flex; gap: 4px; align-items: center; background: var(--carta-2); padding: 2px 4px; }
-.cassetto { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: var(--carta); border-top: 1.5px solid var(--inchiostro); display: flex; align-items: center; gap: 8px; padding: 6px 12px 0; font-size: 13px; }
+.cassetto { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: var(--carta); border-top: 1.5px solid var(--inchiostro); display: flex; align-items: center; gap: 8px; padding: 6px 12px 0; font-size: 14px; }
 .cassetto .maniglia { position: absolute; top: 5px; left: 50%; width: 36px; height: 3px; margin-left: -18px; background: var(--seppia); }
 .cassetto .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cassetto .e { font: 500 10.5px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.cassetto .e { font: 500 12px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
 .stati-med { display: flex; flex-wrap: wrap; gap: 14px; padding: 12px 10px; justify-content: space-around; }
 .stati-med .t { display: grid; justify-items: center; gap: 5px; }
 .stati-med .disco { border-radius: 50%; background: var(--carta); }
@@ -162,7 +166,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .valuta { display: grid; gap: 10px; }
 .valuta table { border-collapse: collapse; width: 100%; font-size: 15px; }
 .valuta th, .valuta td { padding: 7px 8px; border-bottom: 1px solid var(--filo); text-align: left; vertical-align: top; }
-.valuta thead th { font: 500 11px/1.2 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.valuta thead th { font: 500 12px/1.2 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
 .valuta-wrap { overflow-x: auto; }
 .valuta-wrap table { min-width: 520px; }
 
@@ -183,11 +187,11 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .scheda .capo { display: grid; gap: 3px; padding: 10px 12px; }
 .scheda .capo .r1 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
 .scheda .capo b { font: 400 19px/1.1 var(--f-display); }
-.scheda .nota { font-size: 13.5px; line-height: 1.35; color: var(--seppia); }
-.est { font: 500 10.5px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; border: 1px solid currentColor; padding: 3px 5px; color: var(--pericolo); }
+.scheda .nota { font-size: 14px; line-height: 1.35; color: var(--seppia); }
+.est { font: 500 12px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; border: 1px solid currentColor; padding: 3px 5px; color: var(--pericolo); }
 .taglie { display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; padding: 12px 10px 8px; background: var(--carta); color: var(--inchiostro); }
 .taglie .t { display: grid; justify-items: center; gap: 4px; }
-.taglie .t .dato { font-size: 10px; }
+.taglie .t .dato { font-size: 12px; }
 
 .grigio-prova { display: grid; gap: 14px; }
 .grigio-prova .riga { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--filo); filter: grayscale(1); }
@@ -213,8 +217,8 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
   </header>
 
   <section aria-labelledby="h-duello">
-    <h2 id="h-duello">Il duello a 375 px</h2>
-    <p>La scena occupa tutto lo schermo (375 × 560 px utili, telefono in verticale) e l'interfaccia vive dentro di essa: vigore e fiato sopra ogni personaggio, hint sopra la testa del nemico, ventaglio di medaglioni dietro il viandante, registro in un cassetto. Le figure sono sagome segnaposto di profilo.</p>
+    <h2 id="h-duello">Il duello su S23</h2>
+    <p>La scena occupa tutto lo schermo (Samsung S23: 360 × 700 px utili nell'app, in verticale) e l'interfaccia vive dentro di essa: vigore e fiato sopra ogni personaggio, hint sopra la testa del nemico, ventaglio di medaglioni dietro il viandante, registro in un cassetto. Le figure sono sagome segnaposto di profilo.</p>
     <div class="duelli" id="duelli"></div>
   </section>
 
@@ -305,7 +309,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
       centro + '<div class="registro">' + reg + "</div>" +
       '<div class="posture" style="padding-top:10px">' + post + "</div>" +
       '<button type="button" class="conferma" tabindex="-1">Conferma</button>' +
-      '<div class="piega"><span>fine schermo · 560 px</span></div></div>';
+      '<div class="piega"><span>fine schermo S23 · 700 px</span></div></div>';
   }
 
   var bollini = function (ids) { return ids.map(function (i) { return '<span title="' + P[i].etichetta + '">' + ic(i, 16, "", true) + "</span>"; }).join(""); };
@@ -331,27 +335,29 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
               { id: "posture.attesa", costo: 1, anteprima: '<b>↓</b>7–9 <b>↑</b>0' },
               { id: "posture.distanza", costo: 0, nota: "attuale", stato: "att sel", anteprima: '<b>↓</b>0 <b>↑</b>0' }]
   });
-  // --- Scena a tutto schermo con il ventaglio (DESIGN §8.1, b84c95d) ------------------------
-  // Geometria su 375 × 560: terreno a y 440, viandante centrato a x 160 (scala 1,5), nemico a x 290 (scala 1,45).
-  // Ventaglio: arco di centro (160, 360) e raggio 128, da 205° (schiena) a 75° (verso il nemico).
-  var VENTAGLIO = [["distanza", 205], ["attesa", 162], ["guardia", 118], ["assalto", 75]].map(function (v) {
+  // --- Scena a tutto schermo con il ventaglio (DESIGN §8.1) -----------------------------------
+  // Schermo di riferimento: Samsung S23 (CLAUDE.md), 360 × 700 px utili nell'app. Terreno a y 560.
+  // Figure alte circa 120 px (SCENA_SPEC): viandante a x 160, nemico a x 284, scala 1,15.
+  // Ventaglio: arco di centro (160, 491), il busto del viandante, raggio 124, da 205° (schiena) a 75° (verso il nemico).
+  var SCR = { W: 360, H: 700, TERRA: 560, K: 1.15, XV: 160, XN: 284, CX: 160, CY: 491, R: 124 };
+  var VENTAGLIO = [["distanza", 205], ["attesa", 165], ["guardia", 118], ["assalto", 75]].map(function (v) {
     var a = v[1] * Math.PI / 180;
-    return { p: v[0], x: +(160 + 128 * Math.cos(a)).toFixed(1), y: +(360 - 128 * Math.sin(a)).toFixed(1) };
+    return { p: v[0], x: +(SCR.CX + SCR.R * Math.cos(a)).toFixed(1), y: +(SCR.CY - SCR.R * Math.sin(a)).toFixed(1) };
   });
-  var TESTA_NEMICO = { x: 278.4, y: 260 };
+  var TESTA_NEMICO = { x: +(SCR.XN + (262 - 270) * SCR.K).toFixed(1), y: +(SCR.TERRA - (166 - 42) * SCR.K).toFixed(1) };
   function sagome() {
-    var c = VENTAGLIO[0], d = VENTAGLIO[3];
+    var c = VENTAGLIO[0], d = VENTAGLIO[3], T = SCR.TERRA;
     var tratteggio = "";
-    for (var yy = 452; yy < 516; yy += 9) for (var xx = (yy % 2 ? 6 : 16); xx < 375; xx += 22) tratteggio += "M" + xx + " " + (yy + 4) + "L" + (xx + 8) + " " + yy;
-    return '<svg class="fondo" viewBox="0 0 375 560" fill="currentColor" aria-hidden="true">' +
-      '<path class="quinta" d="M0 392L40 372L78 384L130 360L190 380L240 356L300 378L340 364L375 376V440H0Z"/>' +
-      '<path d="M0 440H375V443H0Z"/>' +
+    for (var yy = T + 12; yy < 652; yy += 9) for (var xx = (yy % 2 ? 6 : 16); xx < SCR.W; xx += 22) tratteggio += "M" + xx + " " + (yy + 4) + "L" + (xx + 8) + " " + yy;
+    return '<svg class="fondo" viewBox="0 0 ' + SCR.W + " " + SCR.H + '" fill="currentColor" aria-hidden="true">' +
+      '<path class="quinta" d="M0 512L40 492L78 504L130 480L190 500L240 476L300 498L340 484L360 492V560H0Z"/>' +
+      '<path d="M0 ' + T + "H" + SCR.W + "V" + (T + 3) + 'H0Z"/>' +
       '<path d="' + tratteggio + '" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
-      '<path class="guida" d="M' + c.x + " " + c.y + "A128 128 0 0 1 " + d.x + " " + d.y + '" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 5"/>' +
-      '<g transform="translate(160 440) scale(1.5) translate(-108 -166)">' +
+      '<path class="guida" d="M' + c.x + " " + c.y + "A" + SCR.R + " " + SCR.R + " 0 0 1 " + d.x + " " + d.y + '" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 5"/>' +
+      '<g transform="translate(' + SCR.XV + " " + T + ") scale(" + SCR.K + ') translate(-108 -166)">' +
         '<path d="M92 166L100 126H114L122 166H113L107 138L101 166Z M98 84L84 140L100 128Z M97 128L100 84H116L120 128Z M114 90L134 102L131 107L112 98Z"/>' +
         '<circle cx="108" cy="72" r="11"/><path d="M133 104L166 80M129 98L137 110" fill="none" stroke="currentColor" stroke-width="3.2"/></g>' +
-      '<g transform="translate(290 440) scale(1.45) translate(-270 -166)">' +
+      '<g transform="translate(' + SCR.XN + " " + T + ") scale(" + SCR.K + ') translate(-270 -166)">' +
         '<path d="M248 166L256 116H282L292 166H280L270 132L260 166Z M248 118L244 70H290L294 118Z M284 78L300 60L306 64L290 84Z"/>' +
         '<circle cx="262" cy="56" r="14"/><path d="M294 74L334 34" fill="none" stroke="currentColor" stroke-width="4"/>' +
         '<path d="M350.9 35.5L339.5 46.9L321.2 28.5L332.5 17.1Z"/></g>' +
@@ -370,19 +376,19 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
       var st = o.posture[v.p] || {};
       var stato = st.stato || "riposo";
       var cls = stato === "selezionato" ? " sel" : (o.spenti && stato !== "confermato" ? " spento" : "");
-      var costo = ic(st.attuale ? "risorsa.fiato.vuoto" : "risorsa.fiato.pieno", 9) + (st.attuale ? "0" : "1");
+      var costo = ic(st.attuale ? "risorsa.fiato.vuoto" : "risorsa.fiato.pieno", 10) + (st.attuale ? "0" : "1");
       return '<div class="med' + cls + '" style="left:' + v.x + "px;top:" + v.y + 'px" title="' + P["posture." + v.p].etichetta + '">' + icMed(v.p, stato, 52) + "</div>" +
         '<div class="med-et' + (cls === " spento" ? " spento" : "") + '" style="left:' + v.x + "px;top:" + (v.y + (stato === "selezionato" ? 33 : 29)) + 'px">' + P["posture." + v.p].etichetta + " · " + costo + "</div>";
     }).join("");
     var cart = "";
     if (o.cartiglio) {
-      cart = '<div class="cartiglio" style="left:8px;top:156px"><span class="d">' + P["posture." + o.cartiglio.p].etichetta + " " + o.cartiglio.testo + "</span><small>" + o.cartiglio.nota + "</small></div>";
+      cart = '<div class="cartiglio" style="left:8px;top:288px"><span class="d">' + P["posture." + o.cartiglio.p].etichetta + " " + o.cartiglio.testo + "</span><small>" + o.cartiglio.nota + "</small></div>";
     }
     var mods = o.mods ? '<span class="mods">' + o.mods.map(function (m) { return ic(m, 16, "", true); }).join("") + ic("evento.colpo", 14) + o.danno + "</span>" : "";
     return '<div class="schermo-wrap"><div class="schermo">' + sagome() +
       '<span class="turno">Turno ' + o.turno + " / 25</span>" +
-      hud(o.gioc, 150) + hud(o.nemico, 290) +
-      '<div class="sopra-nemico" style="left:' + TESTA_NEMICO.x + "px;bottom:" + (560 - TESTA_NEMICO.y + 6) + 'px">' + ic(o.hint, 44, "", true) + '<span class="cat">' + o.cat + "</span>" + mods + "</div>" +
+      hud(o.gioc, 130) + hud(o.nemico, 280) +
+      '<div class="sopra-nemico" style="left:' + TESTA_NEMICO.x + "px;bottom:" + (SCR.H - TESTA_NEMICO.y + 6) + 'px">' + ic(o.hint, 44, "", true) + '<span class="cat">' + o.cat + "</span>" + mods + "</div>" +
       meds + cart + (o.colpo ? '<div class="colpo-testo" style="left:' + o.colpo.x + "px;top:" + o.colpo.y + 'px">' + ic(o.colpo.icona, 16) + o.colpo.testo + "</div>" : "") +
       '<div class="cassetto"><span class="maniglia"></span>' + ic(o.registro[0], 16) + '<span class="t">' + o.registro[1] + '</span><span class="e">Registro</span></div>' +
       "</div></div>";
@@ -400,7 +406,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     gioc: { nome: "Viandante", stati: "", pct: 63, vig: "19/30", fiato: [1, 6] },
     nemico: { nome: "Mietitore", stati: bollini(["stato.fase2"]), pct: 42, vig: "19/45", fiato: [2, 6] },
     posture: { distanza: { stato: "confermato", attuale: true } }, spenti: true,
-    colpo: { x: 182, y: 318, icona: "evento.evitato", testo: "Evitato" },
+    colpo: { x: 176, y: 468, icona: "evento.evitato", testo: "Evitato" },
     registro: ["evento.contrattacco", "Schivi la Falciata e contrattacchi: 4."]
   });
   document.getElementById("duelli").innerHTML =
