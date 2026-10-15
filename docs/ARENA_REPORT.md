@@ -12,7 +12,7 @@
 | F2 Nemici | fatta; **obiettivi del §9 raggiunti solo in parte**, vedi §2 e §5 | `F2 Nemici: …` |
 | F2b Revisione 1.1 | fatta: R1–R8, test §12.3, nuovo bilanciamento (§7); obiettivi raggiunti tranne i turni del Lanciere | `F2b Revisione 1.1: …` |
 | F3 Arena | fatta: duello completo contro i cinque nemici, pannello, interruttori A/B e telemetria funzionanti | `F3 Arena: …` |
-| F4 Verifica | fatta: build finale provata nel browser integrato a 360×780 (S23), vedi sotto | `F4 Verifica: …` |
+| F4 Verifica | fatta a 360×780 (S23), vedi sotto, e **ripetuta con la revisione 1.1**: §7.8 | `F4 Verifica: …` |
 
 Comandi verificati su Node 24.19.0 (Windows):
 
@@ -304,3 +304,12 @@ L'unico obiettivo mancato è il **turno medio del `lettore` contro il Lanciere**
 2. **Lanciere, turni del `lettore`:** 8,7 contro 4–8. È accettabile un obiettivo di 4–9 per il Lanciere, o preferite meno Tenere a bada a scapito di `fissa:assalto`?
 3. **Stallo di `fissa:attesa` contro il Lanciere** (68% di pareggi): serve un obiettivo anche per `fissa:attesa`, o una regola (per esempio un attacco a distanza del Lanciere che raggiunge l'Attesa)?
 4. **Caso "Attesa raggiunta da un attacco interrotto" (R3):** non è raggiungibile con le mosse attuali. Va bene lasciarlo senza test finché non esisterà una mossa che lo produce?
+
+### 7.8 Verifica F4 ripetuta con la revisione 1.1 (360×780)
+
+Build finale `dist/index.html` nel browser integrato con viewport emulato 360×780:
+
+- **30 duelli giocati fino in fondo**: cinque nemici × sei configurazioni (base, hint completi, anteprima dei danni, adattamento spento, grado di Distanza 2, grado di Distanza 3), con lo stesso script nella pagina di F4 aggiornato a R8 (clic veri sui pulsanti, ripiego su Guardia quando la Distanza non è disponibile). Tutti conclusi; nessun overflow orizzontale; telemetria con `gradi.distanza` nei record (50 record in totale in questa sessione di prova).
+- **Gradi della Distanza e spazio alle spalle, provati nell'interfaccia** (Bruto, grado 3): il primo turno il registro dice "Resti a Distanza: Spallata è un colpo corto e non ti raggiunge" e "Fermi il colpo con l'arresto: 2 danni al Bruto e prendi il vantaggio"; il secondo compare "Hai le spalle al muro: non puoi più arretrare, cambia postura" con il chip "Spalle al muro"; il terzo il pulsante Distanza è disabilitato con la dicitura "niente spazio", le altre posture risultano "gratis", e il cambio a Guardia costa 0 fiato.
+- Il selettore "Grado di Distanza" e le diciture "fiato insufficiente" / "niente spazio" funzionano; gli altri controlli (misure, bersagli, fonti) sono quelli già riportati nel §1.
+- Limiti: come in §1 (screenshot a 360px del browser integrato deformati, nessuna prova su un S23 vero; gioco pilotato da script, un solo giudizio "umano" su turni singoli). Non ho verificato visivamente i nuovi simboli segnaposto (sono glifi Unicode provvisori).
