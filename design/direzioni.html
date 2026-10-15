@@ -1,0 +1,364 @@
+<title>Simboli di Limen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: colonna di lettura stretta; ogni direzione è una "tavola" con griglia di icone, scala delle taglie e mockup del duello. */
+:root {
+  --carta: #e9e2d3;
+  --carta-2: #ddd4c1;
+  --inchiostro: #1c1915;
+  --seppia: #685c4d;
+  --filo: #c2b69e;
+  --pericolo: #a1311f;
+  --f-display: "IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --f-testo: "Alegreya Sans", "Gill Sans", "Segoe UI", system-ui, sans-serif;
+  --f-dato: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --carta: #141210; --carta-2: #1f1b17; --inchiostro: #e4d9c4; --seppia: #a39682;
+    --filo: #3b342b; --pericolo: #e2654b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --carta: #141210; --carta-2: #1f1b17; --inchiostro: #e4d9c4; --seppia: #a39682;
+  --filo: #3b342b; --pericolo: #e2654b; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--carta); color: var(--inchiostro);
+  font: 400 17px/1.55 var(--f-testo);
+  padding-inline: 16px; padding-block: 0 64px;
+}
+main { max-width: 860px; margin-inline: auto; }
+main.grigi { filter: grayscale(1); }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 400; text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(30px, 6vw, 46px); }
+h2 { font-size: clamp(25px, 4.6vw, 34px); }
+h3 { font-size: 20px; }
+p { margin: 0; max-width: 64ch; }
+.occhiello { font: 500 12px/1 var(--f-dato); letter-spacing: .08em; text-transform: uppercase; color: var(--seppia); }
+.dato { font-family: var(--f-dato); font-size: 12.5px; color: var(--seppia); }
+
+.barra {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+  padding-block: 10px; background: var(--carta); border-bottom: 1px solid var(--filo);
+}
+.comandi { display: flex; flex-wrap: wrap; gap: 6px; }
+.comandi button {
+  font: 500 13px/1 var(--f-testo); color: var(--inchiostro); background: transparent;
+  border: 1px solid var(--filo); padding: 8px 10px; min-height: 36px; cursor: pointer;
+}
+.comandi button[aria-pressed="true"] { background: var(--inchiostro); color: var(--carta); border-color: var(--inchiostro); }
+button:focus-visible { outline: 2px solid var(--pericolo); outline-offset: 2px; }
+
+header.apertura { display: grid; gap: 14px; padding-block: 36px 28px; }
+section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid var(--filo); }
+
+.regole { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.regole li { display: grid; grid-template-columns: 9.5em 1fr; gap: 12px; }
+.regole b { font-weight: 700; }
+@media (max-width: 520px) { .regole li { grid-template-columns: 1fr; gap: 2px; } }
+
+/* Confronto a colpo d'occhio */
+.colpo { overflow-x: auto; }
+.colpo table { border-collapse: collapse; min-width: 560px; width: 100%; }
+.colpo th, .colpo td { padding: 8px 4px; text-align: center; border-bottom: 1px solid var(--filo); }
+.colpo th[scope="row"] { text-align: left; font: 400 18px/1 var(--f-display); white-space: nowrap; padding-right: 10px; }
+.colpo thead th { font: 500 10.5px/1.2 var(--f-dato); color: var(--seppia); letter-spacing: .02em; vertical-align: bottom; }
+.colpo td svg { display: block; margin-inline: auto; }
+
+/* Tavola di una direzione */
+.testa { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.lettera { font: 400 44px/1 var(--f-display); }
+.pro-contro { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 28px; }
+.pro-contro h3 { font: 500 12px/1 var(--f-dato); letter-spacing: .08em; text-transform: uppercase; color: var(--seppia); margin-bottom: 6px; }
+.pro-contro ul { margin: 0; padding-left: 1.1em; }
+.pro-contro li + li { margin-top: 4px; }
+
+.griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: 0; border-top: 1px solid var(--filo); border-left: 1px solid var(--filo); }
+.cella { display: grid; justify-items: center; gap: 8px; padding: 16px 6px 12px; border-right: 1px solid var(--filo); border-bottom: 1px solid var(--filo); text-align: center; min-width: 0; }
+.cella .nome { font-size: 14.5px; line-height: 1.2; }
+.cella .dato { font-size: 10.5px; overflow-wrap: anywhere; }
+.pericolo { color: var(--pericolo); }
+
+.scala { display: grid; gap: 10px; }
+.striscia { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 14px; }
+.striscia .dato { width: 3.2em; }
+
+.affianca { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 700px) { .affianca { grid-template-columns: 1fr; } }
+.tema-box { padding: 14px; background: var(--carta); color: var(--inchiostro); border: 1px solid var(--filo); display: grid; gap: 8px; }
+.tema-box.inverso {
+  --carta: #141210; --inchiostro: #e4d9c4; --seppia: #a39682; --filo: #3b342b; --pericolo: #e2654b; --carta-2: #1f1b17;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tema-box.inverso { --carta: #e9e2d3; --inchiostro: #1c1915; --seppia: #685c4d; --filo: #c2b69e; --pericolo: #a1311f; }
+}
+:root[data-theme="dark"] .tema-box.inverso { --carta: #e9e2d3; --inchiostro: #1c1915; --seppia: #685c4d; --filo: #c2b69e; --pericolo: #a1311f; }
+.tema-box .striscia { gap: 10px; }
+
+/* Mockup del duello: telefono da 375px ridotto */
+.telefono {
+  width: 100%; max-width: 360px; margin-inline: auto;
+  border: 1px solid var(--filo); background: var(--carta); display: grid; gap: 0;
+  font-size: 14px; line-height: 1.3;
+}
+.riga-c { display: grid; gap: 6px; padding: 12px 14px; }
+.riga-c .alto { display: flex; align-items: center; gap: 8px; }
+.riga-c .alto .n { font: 400 19px/1 var(--f-display); flex: 1; }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--seppia); }
+.vig { display: flex; align-items: center; gap: 8px; }
+.vig .tacca { flex: 1; height: 8px; border: 1px solid var(--inchiostro); position: relative; }
+.vig .tacca i { position: absolute; inset: 0 auto 0 0; background: var(--inchiostro); }
+.vig .num { font: 500 13px/1 var(--f-dato); font-variant-numeric: tabular-nums; min-width: 4.2em; text-align: right; }
+.pips { display: flex; align-items: center; gap: 5px; }
+.pips b { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--inchiostro); }
+.pips b.p { background: var(--inchiostro); }
+.hint {
+  display: grid; justify-items: center; gap: 4px; padding: 16px 14px 14px;
+  border-block: 1px solid var(--filo); background: var(--carta-2);
+}
+.hint .cat { font: 400 22px/1 var(--f-display); color: var(--pericolo); }
+.hint .sub { font-size: 12.5px; color: var(--seppia); }
+.registro { padding: 8px 14px; font-size: 13px; color: var(--seppia); display: flex; gap: 6px; align-items: center; border-bottom: 1px solid var(--filo); }
+.posture { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 12px; }
+.pbtn {
+  display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto auto; column-gap: 10px; align-items: center;
+  min-height: 64px; padding: 10px; border: 1.5px solid var(--inchiostro); background: transparent; color: var(--inchiostro);
+  text-align: left;
+}
+.pbtn svg { grid-row: 1 / 3; }
+.pbtn .pn { font: 400 18px/1 var(--f-display); }
+.pbtn .pc { font-size: 12px; color: var(--seppia); display: flex; align-items: center; gap: 3px; }
+.pbtn.sel { background: var(--inchiostro); color: var(--carta); }
+.pbtn.sel .pc { color: var(--carta); opacity: .8; }
+.pbtn.att { border-style: dashed; }
+.conferma { margin: 0 14px 14px; min-height: 48px; font: 400 20px/1 var(--f-display); background: var(--pericolo); color: var(--carta); border: 0; }
+
+.chiusa { display: grid; gap: 12px; }
+.tab-conf { overflow-x: auto; }
+.tab-conf table { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 15px; }
+.tab-conf th, .tab-conf td { padding: 8px 10px; border-bottom: 1px solid var(--filo); text-align: left; vertical-align: top; }
+.tab-conf thead th { font: 500 11px/1.2 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.tab-conf td:first-child { font: 400 18px/1.2 var(--f-display); white-space: nowrap; }
+.consiglio { padding: 14px 16px; border: 1.5px solid var(--inchiostro); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main id="main">
+  <div class="barra">
+    <span class="occhiello">Limen · Grafica/UI · studio</span>
+    <div class="comandi" role="group" aria-label="Vista">
+      <button type="button" id="t-sis" data-t="">Sistema</button>
+      <button type="button" id="t-chi" data-t="light">Chiaro</button>
+      <button type="button" id="t-scu" data-t="dark">Scuro</button>
+      <button type="button" id="t-gri" aria-pressed="false">Grigi</button>
+    </div>
+  </div>
+
+  <header class="apertura">
+    <span class="occhiello">Arena di prova · simboli del duello</span>
+    <h1>Tre direzioni per i simboli del duello</h1>
+    <p>Lo stesso sottoinsieme di dieci simboli disegnato in tre modi: le quattro posture, le quattro intenzioni del nemico, il vantaggio e il fiato. La geometria di base è comune; cambia la tecnica. Scegli quella da portare sull'intero set.</p>
+    <p class="dato">Griglia 24 · area sicura 2–22 · tutto in currentColor · nessun font né immagine esterna</p>
+    <p><b>Scelta (15 ottobre 2026):</b> direzione A, con gli stati nel bollino tondo di C. Il set completo e definitivo (con il maglio ridisegnato) è nel <a href="https://claude.ai/artifact/PM9R7nCVicu1zkRpDJu5Js" style="color:inherit">catalogo dei simboli</a>.</p>
+  </header>
+
+  <section aria-labelledby="h-regole">
+    <h2 id="h-regole">Regole comuni a tutte e tre</h2>
+    <ul class="regole">
+      <li><b>Direzione</b><span>Il nemico sta in alto, il giocatore in basso. Gli attacchi nemici puntano <em>verso il basso</em>; l'Assalto del giocatore punta <em>verso l'alto</em>.</span></li>
+      <li><b>Massa = forza</b><span>Pesante è una massa larga (il maglio), leggero è una sagoma sottile (il pugnale). Si distinguono anche in scala di grigi e da daltonici.</span></li>
+      <li><b>Sagoma per postura</b><span>Assalto diagonale, Guardia chiusa e convessa, Attesa curva, Distanza orizzontale e aperta. Quattro silhouette che non si somigliano.</span></li>
+      <li><b>La postura dice la reazione</b><span>Spada: nessuna reazione. Scudo: parata. Arco che aggira il colpo: schivata e contrattacco. Frecce che si allontanano: evita i colpi corti.</span></li>
+      <li><b>Un solo colore di pericolo</b><span>Il rosso marca solo ciò che ti farà male (intenzioni d'attacco, danni). Non porta mai informazione da solo: la forma basta.</span></li>
+      <li><b>Taglie</b><span>Hint 72–96 px, posture 32 px, stati 20–24 px, registro 16 px.</span></li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="h-colpo">
+    <h2 id="h-colpo">A colpo d'occhio</h2>
+    <div class="colpo" id="colpo"></div>
+  </section>
+
+  <div id="tavole"></div>
+
+  <section class="chiusa" aria-labelledby="h-scelta">
+    <h2 id="h-scelta">Confronto</h2>
+    <div class="tab-conf">
+      <table>
+        <thead><tr><th scope="col">Direzione</th><th scope="col">A 16 px</th><th scope="col">Carattere</th><th scope="col">Rischio</th></tr></thead>
+        <tbody>
+          <tr><td>A · Xilografia</td><td>Ottima: le masse restano piene, i tagli spariscono senza danni</td><td>Stampa popolare, carte da gioco antiche, legno inciso</td><td>Può risultare pesante se tutto è pieno: serve il rosso con parsimonia</td></tr>
+          <tr><td>B · Bulino</td><td>Discreta: il tratto da 1,6 diventa un capello, il tratteggio va tolto</td><td>Tavola d'erbario, manuale di scherma, incisione su rame</td><td>Meno impatto nell'hint; su schermi economici le linee sottili sfarfallano</td></tr>
+          <tr><td>C · Sigillo</td><td>Buona per la cornice, debole per il segno interno (ridotto al 60%)</td><td>Timbri, sigilli di ceralacca, araldica</td><td>La cornice ruba spazio al segno; ogni famiglia ha una forma, ottimo per imparare</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="consiglio">
+      <p><b>La mia raccomandazione:</b> A, la Xilografia, per i simboli; con la cornice tonda del Sigillo (C) solo per gli <em>stati</em>, perché un piccolo medaglione accanto al nome si legge come "condizione" e non si confonde con le azioni. Ma la scelta è tua: rispondi in chat con A, B, C o una combinazione.</p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var H = function (c, s) { return c ? " " + s : ""; };
+
+  // Direzione A: masse piene, spigoli sfaccettati, tagli di sgorbia (fill-rule evenodd).
+  var A = {
+    "posture.assalto": function (c) { return '<g transform="rotate(45 12 12)"><path fill-rule="evenodd" d="M12 1.5L14.2 5V15H9.8V5Z' + H(c, "M11.6 6.5V13.5H12.4V6.5Z") + '"/><path d="M6 15.5H18L17 17.5H7Z"/><path d="M11 17.5H13V20.3H11Z"/><path d="M12 20.1L13.5 21.6L12 23.1L10.5 21.6Z"/></g>'; },
+    "posture.guardia": function (c) { return '<path fill-rule="evenodd" d="M4 3.5H20V11L18.5 16L12 21.5L5.5 16L4 11Z' + H(c, "M5.5 5H18.5V10.8L17.2 15.3L12 19.6L6.8 15.3L5.5 10.8Z M6.3 5.8H17.7V10.7L16.5 14.9L12 18.6L7.5 14.9L6.3 10.7Z M11.3 7.5H12.7V16.3L12 17L11.3 16.3Z") + '"/>'; },
+    "posture.attesa": function () { return '<path d="M8 20.5C3 16 3.5 7 12.6 4.5" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M17.4 3.2L13.4 7.6L11.8 1.4Z"/><path d="M15.5 11L18 13.5L15.5 16L13 13.5Z"/>'; },
+    "posture.distanza": function () { return '<path d="M2 12L8 6.5V9.8H10.4V14.2H8V17.5Z M22 12L16 6.5V9.8H13.6V14.2H16V17.5Z M11.3 3.5H12.7V8H11.3Z M11.3 16H12.7V20.5H11.3Z"/>'; },
+    "intent.pesante": function (c) { return '<path d="M11 2H13V10.4H11Z"/><path fill-rule="evenodd" d="M5.5 10H18.5L20 11.5V16.5L18.5 18H5.5L4 16.5V11.5Z' + H(c, "M6.6 11.5H7.4V16.5H6.6Z M16.6 11.5H17.4V16.5H16.6Z") + '"/><path d="M12 19.4V22.4M7.6 19.4L5.6 21.8M16.4 19.4L18.4 21.8" fill="none" stroke="currentColor" stroke-width="1.6"/>'; },
+    "intent.leggero": function (c) { return '<path fill-rule="evenodd" d="M12 22.5L13.3 19.5V9.5H10.7V19.5Z' + H(c, "M11.65 11V18.5H12.35V11Z") + '"/><path d="M7.5 7.5H16.5L15.5 9.5H8.5Z"/><path d="M11.1 3.6H12.9V7.5H11.1Z"/><path d="M12 1.2L13.3 2.5L12 3.8L10.7 2.5Z"/><path d="M7.5 11V16M16.5 13V18" fill="none" stroke="currentColor" stroke-width="1.6"/>'; },
+    "intent.difesa": function (c) { return '<path fill-rule="evenodd" d="M3 7H7.5V10H9.75V7H14.25V10H16.5V7H21V20H3Z' + H(c, "M4.5 14.6H19.5V15.4H4.5Z M7.6 11H8.4V14.6H7.6Z M15.6 11H16.4V14.6H15.6Z M11.6 15.4H12.4V18.6H11.6Z") + '"/>'; },
+    "intent.preparazione": function () { return '<path d="M8.5 2.5H15.5L12 7Z M8.5 21.5H15.5L12 17Z M2.5 8.5V15.5L7 12Z M21.5 8.5V15.5L17 12Z M12 8.8L15.2 12L12 15.2L8.8 12Z"/>'; },
+    "stato.vantaggio": function () { return '<path d="M12 2.5L20.5 11L18 13.5L12 7.5L6 13.5L3.5 11Z M12 10L20.5 18.5L18 21L12 15L6 21L3.5 18.5Z"/>'; },
+    "risorsa.fiato": function () { return '<g fill="none" stroke="currentColor" stroke-width="2.4"><path d="M2.5 8.5H13A3 3 0 1 0 10 5.5"/><path d="M2.5 13H17.5A3 3 0 1 1 14.5 16"/><path d="M2.5 17.5H9"/></g>'; }
+  };
+
+  // Direzione B: linea incisa 1,6, angoli vivi, tratteggio fine sulle masse.
+  var B = {
+    "posture.assalto": '<g transform="rotate(45 12 12)"><path d="M12 2L14 5V15H10V5Z"/><path d="M12 6.5V13" stroke-width="1"/><path d="M6.5 16.2H17.5"/><path d="M12 16.2V20"/><circle cx="12" cy="21.4" r="1.3"/></g>',
+    "posture.guardia": '<path d="M4.5 4H19.5V11C19.5 16 16.5 19.4 12 21C7.5 19.4 4.5 16 4.5 11Z"/><path d="M12 4V21"/><path d="M7 6.5V16.3M9.5 6.5V18.6" stroke-width=".9"/>',
+    "posture.attesa": '<path d="M8 20.5C3 16 3.5 7 14.5 4"/><path d="M11.8 7.4L14.5 4L10.4 2.4"/><circle cx="15.5" cy="13.5" r="2" fill="currentColor" stroke="none"/>',
+    "posture.distanza": '<path d="M2.5 12H9.5M14.5 12H21.5"/><path d="M6 8.5L2.5 12L6 15.5M18 8.5L21.5 12L18 15.5"/><path d="M12 4V8.5M12 15.5V20"/>',
+    "intent.pesante": '<path d="M11 2.5H13V10.5H11Z"/><path d="M4.5 10.5H19.5V17.5H4.5Z"/><path d="M15.5 10.5V17.5M17.5 10.5V17.5" stroke-width=".9"/><path d="M12 19.6V22.2M7.6 19.6L5.8 21.6M16.4 19.6L18.2 21.6"/>',
+    "intent.leggero": '<path d="M12 22L13.2 19V9.8H10.8V19Z"/><path d="M7.8 8.6H16.2"/><path d="M12 8.6V4.6"/><circle cx="12" cy="3.2" r="1.2"/><path d="M7.5 11V16M16.5 13V18" stroke-width="1"/>',
+    "intent.difesa": '<path d="M3 7H7.5V10H9.75V7H14.25V10H16.5V7H21V20H3Z"/><path d="M3 15H21M8 10V15M16 10V15M12 15V20" stroke-width=".9"/>',
+    "intent.preparazione": '<circle cx="12" cy="12" r="2.4"/><path d="M12 2.5V7.6M12 21.5V16.4M2.5 12H7.6M21.5 12H16.4"/><path d="M9.9 5.5L12 7.6L14.1 5.5M9.9 18.5L12 16.4L14.1 18.5M5.5 9.9L7.6 12L5.5 14.1M18.5 9.9L16.4 12L18.5 14.1"/>',
+    "stato.vantaggio": '<path d="M4 12L12 4L20 12M4 19.5L12 11.5L20 19.5"/>',
+    "risorsa.fiato": '<path d="M2.5 8.5H13A3 3 0 1 0 10 5.5M2.5 13H17.5A3 3 0 1 1 14.5 16M2.5 17.5H9"/>'
+  };
+
+  // Direzione C: il segno pieno di A, ritagliato in una cornice per famiglia.
+  var CORNICI = {
+    posture: { d: "M5.5 1.5H18.5L22.5 5.5V18.5L18.5 22.5H5.5L1.5 18.5V5.5Z", cx: 12, cy: 12, k: .64 },
+    intent: { d: "M2 2H22V13.2L12 22.8L2 13.2Z", cx: 12, cy: 10.8, k: .58 },
+    stato: { d: "M1.5 12A10.5 10.5 0 1 0 22.5 12A10.5 10.5 0 1 0 1.5 12Z", cx: 12, cy: 12, k: .6 }
+  };
+  var nMask = 0;
+  function sigillo(id) {
+    var fam = id.split(".")[0], f = CORNICI[fam], g = A[id](false);
+    if (!f) return g;
+    var m = "lm" + (nMask++);
+    var t = function (k) { return "translate(" + f.cx + " " + f.cy + ") scale(" + k + ") translate(" + (-f.cx) + " " + (-f.cy) + ")"; };
+    var tg = "translate(" + f.cx + " " + f.cy + ") scale(" + f.k + ") translate(-12 -12)";
+    return '<mask id="' + m + '" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="#fff"/>' +
+      '<path d="' + f.d + '" fill="none" stroke="#000" stroke-width=".7" transform="' + t(.86) + '"/>' +
+      '<g fill="#000" color="#000" transform="' + tg + '">' + g + '</g></mask><path d="' + f.d + '" mask="url(#' + m + ')"/>';
+  }
+
+  var DIREZIONI = {
+    A: { nome: "Xilografia", corpo: function (id) { return A[id](true); }, piccolo: function (id) { return A[id](false); },
+         radice: 'fill="currentColor"' },
+    B: { nome: "Bulino", corpo: function (id) { return B[id]; }, piccolo: function (id) { return B[id].replace(/<path d="[^"]*" stroke-width="\.9"\/>/g, ""); },
+         radice: 'fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter"' },
+    C: { nome: "Sigillo", corpo: sigillo, piccolo: sigillo, radice: 'fill="currentColor"' }
+  };
+
+  var SOTTO = [
+    ["posture.assalto", "Assalto"], ["posture.guardia", "Guardia"], ["posture.attesa", "Attesa"], ["posture.distanza", "Distanza"],
+    ["intent.pesante", "Pesante"], ["intent.leggero", "Leggero"], ["intent.difesa", "Difesa"], ["intent.preparazione", "Preparazione"],
+    ["stato.vantaggio", "Vantaggio"], ["risorsa.fiato", "Fiato"]
+  ];
+  var ATTACCO = { "intent.pesante": 1, "intent.leggero": 1 };
+
+  function icona(dir, id, px, etichetta) {
+    var D = DIREZIONI[dir];
+    var interno = px < 24 ? D.piccolo(id) : D.corpo(id);
+    var a11y = etichetta ? 'role="img" aria-label="' + etichetta + '"' : 'aria-hidden="true"';
+    return '<svg viewBox="0 0 24 24" width="' + px + '" height="' + px + '" ' + D.radice + " " + a11y + ">" + interno + "</svg>";
+  }
+
+  // Confronto a colpo d'occhio
+  var t = '<table><thead><tr><th scope="col"></th>';
+  SOTTO.forEach(function (s) { t += '<th scope="col">' + s[1] + "</th>"; });
+  t += "</tr></thead><tbody>";
+  ["A", "B", "C"].forEach(function (d) {
+    t += '<tr><th scope="row">' + d + " · " + DIREZIONI[d].nome + "</th>";
+    SOTTO.forEach(function (s) { t += '<td class="' + (ATTACCO[s[0]] ? "pericolo" : "") + '">' + icona(d, s[0], 32, s[1]) + "</td>"; });
+    t += "</tr>";
+  });
+  document.getElementById("colpo").innerHTML = t + "</tbody></table>";
+
+  var TESTI = {
+    A: { sotto: "Masse piene, spigoli sfaccettati, tagli bianchi di sgorbia",
+         pro: ["La più leggibile a 16 px: è una silhouette piena.", "È la xilografia di DESIGN §8, letteralmente.", "I tagli bianchi danno ricchezza a 48 px e spariscono puliti sotto i 24."],
+         contro: ["Molto nero sullo schermo: chiede rigore nell'uso del rosso.", "I tagli vanno tolti sotto i 24 px (variante piccola già prevista)."] },
+    B: { sotto: "Linea incisa a spessore costante, angoli vivi, tratteggio fine",
+         pro: ["Elegante, da libro illustrato e manuale di scherma.", "Leggera nell'interfaccia: lascia respirare numeri e testo.", "Facile da estendere: ogni nuova icona è un disegno a tratto."],
+         contro: ["Debole a 16 px e nell'hint, che vuole impatto.", "Il tratteggio si perde sotto i 32 px.", "Distingue pesante e leggero meno nettamente."] },
+    C: { sotto: "Il segno pieno ritagliato in una cornice per famiglia, come un timbro",
+         pro: ["La famiglia si riconosce dalla cornice: ottagono per le posture, scudo rovesciato per le intenzioni, sigillo tondo per gli stati.", "Fortissimo come blocco di colore nell'hint."],
+         contro: ["Il segno interno è al 60%: a 16–24 px si legge male.", "Le posture nei pulsanti diventano cornice dentro cornice.", "Più complesso da integrare (maschere)."] }
+  };
+
+  function mockup(d) {
+    var I = function (id, px, cls) { return '<span class="' + (cls || "") + '" style="display:inline-flex">' + icona(d, id, px) + "</span>"; };
+    var pip = function (n, max) { var s = ""; for (var i = 0; i < max; i++) s += '<b class="' + (i < n ? "p" : "") + '"></b>'; return s; };
+    var post = [["posture.assalto", "Assalto", "1", ""], ["posture.guardia", "Guardia", "0 · attuale", "att"], ["posture.attesa", "Attesa", "1", "sel"], ["posture.distanza", "Distanza", "1", ""]];
+    var btn = post.map(function (p) {
+      return '<div class="pbtn ' + p[3] + '">' + icona(d, p[0], 32) + '<span class="pn">' + p[1] + '</span><span class="pc">' + icona(d, "risorsa.fiato", 13) + p[2] + "</span></div>";
+    }).join("");
+    return '<div class="telefono" aria-label="Mockup della schermata del duello, direzione ' + d + '">' +
+      '<div class="riga-c"><div class="alto"><span class="n">Bruto</span><span class="badge">' + I("posture.assalto", 20) + "Assalto</span></div>" +
+      '<div class="vig"><span class="tacca"><i style="width:73%"></i></span><span class="num">22/30</span></div>' +
+      '<div class="pips">' + I("risorsa.fiato", 16) + pip(3, 5) + "</div></div>" +
+      '<div class="hint">' + I("intent.pesante", 84, "pericolo") + '<span class="cat">Pesante</span><span class="sub">il Bruto prepara un colpo pesante</span></div>' +
+      '<div class="registro">' + I("posture.guardia", 16) + "<span>Hai parato: 6 → 2.</span></div>" +
+      '<div class="riga-c"><div class="alto"><span class="n">Viandante</span><span class="badge">' + I("stato.vantaggio", 20) + "Vantaggio</span></div>" +
+      '<div class="vig"><span class="tacca"><i style="width:80%"></i></span><span class="num">24/30</span></div>' +
+      '<div class="pips">' + I("risorsa.fiato", 16) + pip(4, 6) + "</div></div>" +
+      '<div class="posture">' + btn + "</div>" +
+      '<button type="button" class="conferma" tabindex="-1">Conferma</button></div>';
+  }
+
+  function striscia(d, px) {
+    var s = '<div class="striscia"><span class="dato">' + px + " px</span>";
+    SOTTO.forEach(function (x) { s += '<span class="' + (ATTACCO[x[0]] ? "pericolo" : "") + '" style="display:inline-flex">' + icona(d, x[0], px) + "</span>"; });
+    return s + "</div>";
+  }
+
+  var html = "";
+  ["A", "B", "C"].forEach(function (d) {
+    var T = TESTI[d];
+    var celle = SOTTO.map(function (s) {
+      return '<div class="cella"><span class="' + (ATTACCO[s[0]] ? "pericolo" : "") + '" style="display:inline-flex">' + icona(d, s[0], 48, s[1]) + '</span><span class="nome">' + s[1] + '</span><span class="dato">' + s[0] + "</span></div>";
+    }).join("");
+    html += '<section id="dir-' + d + '" aria-labelledby="h-' + d + '">' +
+      '<div class="testa"><span class="lettera" aria-hidden="true">' + d + '</span><h2 id="h-' + d + '">' + DIREZIONI[d].nome + '</h2><p class="dato">' + T.sotto + "</p></div>" +
+      '<div class="pro-contro"><div><h3>Punti di forza</h3><ul><li>' + T.pro.join("</li><li>") + '</li></ul></div><div><h3>Limiti</h3><ul><li>' + T.contro.join("</li><li>") + "</li></ul></div></div>" +
+      '<div class="griglia">' + celle + "</div>" +
+      '<div class="affianca"><div class="tema-box"><span class="occhiello">Tema attuale</span>' + striscia(d, 32) + striscia(d, 24) + striscia(d, 16) + "</div>" +
+      '<div class="tema-box inverso"><span class="occhiello">Tema opposto</span>' + striscia(d, 32) + striscia(d, 24) + striscia(d, 16) + "</div></div>" +
+      mockup(d) + "</section>";
+  });
+  document.getElementById("tavole").innerHTML = html;
+
+  // Tema e scala di grigi
+  var root = document.documentElement;
+  var bt = [document.getElementById("t-sis"), document.getElementById("t-chi"), document.getElementById("t-scu")];
+  function applica(v) {
+    if (v) root.setAttribute("data-theme", v); else root.removeAttribute("data-theme");
+    bt.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-t") === v)); });
+    try { localStorage.setItem("limen.simboli.tema", v); } catch (e) { /* storage non disponibile */ }
+  }
+  var salvato = "";
+  try { salvato = localStorage.getItem("limen.simboli.tema") || ""; } catch (e) { salvato = ""; }
+  applica(salvato);
+  bt.forEach(function (b) { b.addEventListener("click", function () { applica(b.getAttribute("data-t")); }); });
+  var g = document.getElementById("t-gri");
+  g.addEventListener("click", function () {
+    var on = g.getAttribute("aria-pressed") !== "true";
+    g.setAttribute("aria-pressed", String(on));
+    document.getElementById("main").classList.toggle("grigi", on);
+  });
+})();
+</script>

@@ -1,0 +1,315 @@
+<title>Simbolario di Limen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IM+Fell+English+SC&family=Alegreya+Sans:ital,wght@0,400;0,500;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: prima il duello a 375 px (dove i simboli lavorano), poi la grammatica, poi il catalogo per famiglia con le taglie in chiaro e scuro. */
+:root {
+  --carta: #e9e2d3;
+  --carta-2: #ddd4c1;
+  --inchiostro: #1c1915;
+  --seppia: #685c4d;
+  --filo: #c2b69e;
+  --pericolo: #a1311f;
+  --f-display: "IM Fell English SC", "Iowan Old Style", Georgia, serif;
+  --f-testo: "Alegreya Sans", "Gill Sans", "Segoe UI", system-ui, sans-serif;
+  --f-dato: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --carta: #141210; --carta-2: #1f1b17; --inchiostro: #e4d9c4; --seppia: #a39682;
+    --filo: #3b342b; --pericolo: #e2654b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --carta: #141210; --carta-2: #1f1b17; --inchiostro: #e4d9c4; --seppia: #a39682;
+  --filo: #3b342b; --pericolo: #e2654b; color-scheme: dark;
+}
+.chiaro { --carta: #e9e2d3; --carta-2: #ddd4c1; --inchiostro: #1c1915; --seppia: #685c4d; --filo: #c2b69e; --pericolo: #a1311f; }
+.scuro { --carta: #141210; --carta-2: #1f1b17; --inchiostro: #e4d9c4; --seppia: #a39682; --filo: #3b342b; --pericolo: #e2654b; }
+* { box-sizing: border-box; }
+body {
+  background: var(--carta); color: var(--inchiostro);
+  font: 400 17px/1.55 var(--f-testo);
+  padding-inline: 16px; padding-block: 0 64px;
+}
+main { max-width: 1040px; margin-inline: auto; }
+main.grigi { filter: grayscale(1); }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 400; text-wrap: balance; line-height: 1.15; margin: 0; }
+h1 { font-size: clamp(32px, 6vw, 50px); }
+h2 { font-size: clamp(25px, 4.4vw, 34px); }
+h3 { font-size: 21px; }
+p { margin: 0; max-width: 66ch; }
+.occhiello { font: 500 12px/1 var(--f-dato); letter-spacing: .08em; text-transform: uppercase; color: var(--seppia); }
+.dato { font-family: var(--f-dato); font-size: 12.5px; color: var(--seppia); }
+.pericolo { color: var(--pericolo); }
+svg.icona { display: block; flex: none; }
+
+.barra {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between;
+  padding-block: 10px; background: var(--carta); border-bottom: 1px solid var(--filo);
+}
+.comandi { display: flex; flex-wrap: wrap; gap: 6px; }
+.comandi button {
+  font: 500 13px/1 var(--f-testo); color: var(--inchiostro); background: transparent;
+  border: 1px solid var(--filo); padding: 8px 10px; min-height: 36px; cursor: pointer;
+}
+.comandi button[aria-pressed="true"] { background: var(--inchiostro); color: var(--carta); border-color: var(--inchiostro); }
+button:focus-visible { outline: 2px solid var(--pericolo); outline-offset: 2px; }
+
+header.apertura { display: grid; gap: 14px; padding-block: 36px 24px; }
+section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid var(--filo); }
+
+/* Mockup del duello a 375 px */
+.duelli { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; align-items: flex-start; }
+.duelli figure { margin: 0; display: grid; gap: 10px; width: 375px; max-width: 100%; }
+.duelli figcaption { font-size: 14px; color: var(--seppia); }
+.telefono { width: 100%; border: 1px solid var(--filo); background: var(--carta); color: var(--inchiostro); font-size: 14px; line-height: 1.3; }
+.riga-c { display: grid; gap: 7px; padding: 12px 14px; }
+.alto { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.alto .n { font: 400 20px/1 var(--f-display); flex: 1; min-width: 6em; }
+.chip { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; padding: 3px 7px 3px 4px; border: 1px solid var(--filo); }
+.vig { display: flex; align-items: center; gap: 8px; }
+.vig .tacca { flex: 1; height: 8px; border: 1px solid var(--inchiostro); position: relative; }
+.vig .tacca i { position: absolute; inset: 0 auto 0 0; background: var(--inchiostro); }
+.vig .num { font: 500 13px/1 var(--f-dato); font-variant-numeric: tabular-nums; min-width: 3.6em; text-align: right; }
+.pips { display: flex; align-items: center; gap: 4px; }
+.pips .sep { width: 4px; }
+.hint { display: grid; justify-items: center; gap: 6px; padding: 16px 14px 14px; border-block: 1px solid var(--filo); background: var(--carta-2); }
+.hint .cat { font: 400 24px/1 var(--f-display); color: var(--pericolo); }
+.hint .sub { font-size: 13px; color: var(--seppia); }
+.mods { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 14px; color: var(--pericolo); }
+.mods span { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; }
+.mods .danno { font: 500 14px/1 var(--f-dato); }
+.registro { display: grid; gap: 4px; padding: 8px 14px; font-size: 13px; color: var(--seppia); border-bottom: 1px solid var(--filo); }
+.registro div { display: flex; gap: 7px; align-items: center; }
+.registro div:first-child { color: var(--inchiostro); }
+.posture { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 0 14px 12px; }
+.pbtn {
+  display: grid; grid-template-columns: auto 1fr; column-gap: 10px; row-gap: 2px; align-items: center;
+  min-height: 64px; padding: 10px; border: 1.5px solid var(--inchiostro); color: var(--inchiostro); text-align: left;
+}
+.pbtn .icona { grid-row: span 3; }
+.pbtn .pn { font: 400 18px/1 var(--f-display); }
+.pbtn .pc { font-size: 12px; color: var(--seppia); display: flex; align-items: center; gap: 4px; }
+.pbtn .pa { font: 500 11px/1.25 var(--f-dato); color: var(--seppia); }
+.pbtn.sel { background: var(--inchiostro); color: var(--carta); }
+.pbtn.sel .pc, .pbtn.sel .pa { color: var(--carta); }
+.pbtn.att { border-style: dashed; }
+.pbtn.off { opacity: .45; }
+.conferma { display: block; width: calc(100% - 28px); margin: 0 14px 14px; min-height: 48px; font: 400 21px/1 var(--f-display); background: var(--pericolo); color: var(--carta); border: 0; }
+
+/* Grammatica */
+.regole { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
+.regole li { display: grid; grid-template-columns: 10em 1fr; gap: 12px; align-items: start; }
+.regole .es { display: flex; gap: 6px; align-items: center; margin-top: 4px; }
+@media (max-width: 560px) { .regole li { grid-template-columns: 1fr; gap: 2px; } }
+.palette { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.campione { border: 1px solid var(--filo); display: grid; }
+.campione .tinta { height: 44px; }
+.campione .t { padding: 8px 10px; display: grid; gap: 2px; font-size: 14px; }
+
+/* Catalogo */
+.famiglia { display: grid; gap: 12px; }
+.schede { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)); gap: 12px; }
+.scheda { border: 1px solid var(--filo); display: grid; min-width: 0; }
+.scheda .capo { display: grid; gap: 3px; padding: 10px 12px; }
+.scheda .capo .r1 { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+.scheda .capo b { font: 400 19px/1.1 var(--f-display); }
+.scheda .nota { font-size: 13.5px; line-height: 1.35; color: var(--seppia); }
+.est { font: 500 10.5px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; border: 1px solid currentColor; padding: 3px 5px; color: var(--pericolo); }
+.taglie { display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; padding: 12px 10px 8px; background: var(--carta); color: var(--inchiostro); }
+.taglie .t { display: grid; justify-items: center; gap: 4px; }
+.taglie .t .dato { font-size: 10px; }
+
+.grigio-prova { display: grid; gap: 14px; }
+.grigio-prova .riga { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--filo); filter: grayscale(1); }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<main id="main">
+  <div class="barra">
+    <span class="occhiello">Limen · Grafica/UI · catalogo</span>
+    <div class="comandi" role="group" aria-label="Vista">
+      <button type="button" id="t-sis" data-t="">Sistema</button>
+      <button type="button" id="t-chi" data-t="light">Chiaro</button>
+      <button type="button" id="t-scu" data-t="dark">Scuro</button>
+      <button type="button" id="t-gri" aria-pressed="false">Grigi</button>
+    </div>
+  </div>
+
+  <header class="apertura">
+    <span class="occhiello">Direzione A · Xilografia · stati nel bollino</span>
+    <h1>Simbolario del duello</h1>
+    <p>Tutti i simboli dell'arena di prova: gli id del contratto (ARENA_SPEC §7) più le estensioni proposte. Masse piene, tagli bianchi di sgorbia, un solo colore per il pericolo. Ogni simbolo si legge anche senza colore.</p>
+    <p class="dato" id="conteggio"></p>
+  </header>
+
+  <section aria-labelledby="h-duello">
+    <h2 id="h-duello">Il duello a 375 px</h2>
+    <div class="duelli" id="duelli"></div>
+  </section>
+
+  <section aria-labelledby="h-gram">
+    <h2 id="h-gram">Grammatica</h2>
+    <ul class="regole" id="regole"></ul>
+    <h3>Palette</h3>
+    <div class="palette" id="palette"></div>
+  </section>
+
+  <section aria-labelledby="h-cat">
+    <h2 id="h-cat">Catalogo</h2>
+    <p>Ogni simbolo a 16, 24, 32 e 48 px, nel tema chiaro e nel tema scuro. Sotto i 24 px si usa la variante senza tagli. La taglia minima è quella sotto cui il simbolo smette di leggersi.</p>
+    <div id="catalogo" style="display:grid;gap:32px"></div>
+  </section>
+
+  <section aria-labelledby="h-grigi">
+    <h2 id="h-grigi">Prova in scala di grigi</h2>
+    <p>Lo stesso set senza colore: il rosso del pericolo diventa un grigio scuro e nessuna informazione si perde. Coppie da controllare: pesante e leggero, parata e sfonda la guardia, interrotto e inarrestabile, preparazione e preparato.</p>
+    <div class="grigio-prova" id="grigi"></div>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var DATI = [{"id":"posture.assalto","etichetta":"Assalto","famiglia":"posture","nota":"Spada che punta in alto verso il nemico: attacca, nessuna reazione.","min":20,"pericolo":false,"estensione":false,"bollino":false,"svg":"<g transform=\"rotate(45 12 12)\"><path fill-rule=\"evenodd\" d=\"M12 1.5L14.2 5V15H9.8V5Z M11.6 6.5V13.5H12.4V6.5Z\"/><path d=\"M6 15.5H18L17 17.5H7Z\"/><path d=\"M11 17.5H13V20.3H11Z\"/><path d=\"M12 20.1L13.5 21.6L12 23.1L10.5 21.6Z\"/></g>","piccolo":"<g transform=\"rotate(45 12 12)\"><path d=\"M12 1.5L14.2 5V15H9.8V5Z\"/><path d=\"M6 15.5H18L17 17.5H7Z\"/><path d=\"M11 17.5H13V20.3H11Z\"/><path d=\"M12 20.1L13.5 21.6L12 23.1L10.5 21.6Z\"/></g>"},{"id":"posture.guardia","etichetta":"Guardia","famiglia":"posture","nota":"Scudo: para.","min":16,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path fill-rule=\"evenodd\" d=\"M4 3.5H20V11L18.5 16L12 21.5L5.5 16L4 11Z M5.5 5H18.5V10.8L17.2 15.3L12 19.6L6.8 15.3L5.5 10.8Z M6.3 5.8H17.7V10.7L16.5 14.9L12 18.6L7.5 14.9L6.3 10.7Z M11.3 7.5H12.7V16.3L12 17L11.3 16.3Z\"/>","piccolo":"<path d=\"M4 3.5H20V11L18.5 16L12 21.5L5.5 16L4 11Z\"/>"},{"id":"posture.attesa","etichetta":"Attesa","famiglia":"posture","nota":"Arco che aggira il colpo (il disco): schiva e contrattacca.","min":20,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M8 20.5C3 16 3.5 7 12.6 4.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.2\"/><path d=\"M17.4 3.2L13.4 7.6L11.8 1.4Z\"/><path d=\"M13.2 13.5A2.3 2.3 0 1 0 17.8 13.5A2.3 2.3 0 1 0 13.2 13.5Z\"/>","piccolo":null},{"id":"posture.distanza","etichetta":"Distanza","famiglia":"posture","nota":"Frecce che si allontanano dal vuoto centrale: evita i colpi corti.","min":16,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M2 12L8 6.5V9.8H10.4V14.2H8V17.5Z M22 12L16 6.5V9.8H13.6V14.2H16V17.5Z M11.3 3.5H12.7V8H11.3Z M11.3 16H12.7V20.5H11.3Z\"/>","piccolo":null},{"id":"posture.preparazione","etichetta":"Preparazione","famiglia":"posture","nota":"Solo nemici. Stesso disegno di intent.preparazione: la forza converge nel nucleo.","min":16,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M8.5 2.5H15.5L12 7Z M8.5 21.5H15.5L12 17Z M2.5 8.5V15.5L7 12Z M21.5 8.5V15.5L17 12Z M12 8.8L15.2 12L12 15.2L8.8 12Z\"/>","piccolo":null},{"id":"intent.pesante","etichetta":"Colpo pesante","famiglia":"intent","nota":"Maglio che cala in diagonale: la testa larga è in basso, verso il giocatore.","min":20,"pericolo":true,"estensione":false,"bollino":false,"svg":"<g transform=\"translate(1 0) rotate(30 12 12)\"><path d=\"M11 2H13V11.5H11Z\"/><path fill-rule=\"evenodd\" d=\"M6 11.5H18L19.5 13V17L18 18.5H6L4.5 17V13Z M7.1 13V17H7.9V13Z M16.1 13V17H16.9V13Z\"/></g>","piccolo":"<g transform=\"translate(1 0) rotate(30 12 12)\"><path d=\"M11 2H13V11.5H11Z\"/><path d=\"M6 11.5H18L19.5 13V17L18 18.5H6L4.5 17V13Z\"/></g>"},{"id":"intent.leggero","etichetta":"Colpo leggero","famiglia":"intent","nota":"Pugnale che punta in basso: sagoma sottile, linee di velocità.","min":20,"pericolo":true,"estensione":false,"bollino":false,"svg":"<path fill-rule=\"evenodd\" d=\"M12 22.5L13.3 19.5V9.5H10.7V19.5Z M11.65 11V18.5H12.35V11Z\"/><path d=\"M7.5 7.5H16.5L15.5 9.5H8.5Z\"/><path d=\"M11.1 3.6H12.9V7.5H11.1Z\"/><path d=\"M12 1.2L13.3 2.5L12 3.8L10.7 2.5Z\"/><path d=\"M7.5 11V16M16.5 13V18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/>","piccolo":"<path d=\"M12 22.5L13.3 19.5V9.5H10.7V19.5Z\"/><path d=\"M7.5 7.5H16.5L15.5 9.5H8.5Z\"/><path d=\"M11.1 3.6H12.9V7.5H11.1Z\"/><path d=\"M12 1.2L13.3 2.5L12 3.8L10.7 2.5Z\"/><path d=\"M7.5 11V16M16.5 13V18\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\"/>"},{"id":"intent.difesa","etichetta":"Difesa","famiglia":"intent","nota":"Muro merlato: il nemico si chiude (guardia, attesa o distanza).","min":16,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path fill-rule=\"evenodd\" d=\"M3 7H7.5V10H9.75V7H14.25V10H16.5V7H21V20H3Z M4.5 14.6H19.5V15.4H4.5Z M7.6 11H8.4V14.6H7.6Z M15.6 11H16.4V14.6H15.6Z M11.6 15.4H12.4V18.6H11.6Z\"/>","piccolo":"<path d=\"M3 7H7.5V10H9.75V7H14.25V10H16.5V7H21V20H3Z\"/>"},{"id":"intent.preparazione","etichetta":"Preparazione","famiglia":"intent","nota":"Quattro punte che convergono nel nucleo: il nemico raccoglie le forze.","min":16,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M8.5 2.5H15.5L12 7Z M8.5 21.5H15.5L12 17Z M2.5 8.5V15.5L7 12Z M21.5 8.5V15.5L17 12Z M12 8.8L15.2 12L12 15.2L8.8 12Z\"/>","piccolo":null},{"id":"stato.vantaggio","etichetta":"Vantaggio","famiglia":"stato","nota":"Due gradi in salita: colpisci per primo e al massimo.","min":16,"pericolo":false,"estensione":false,"bollino":true,"svg":"<path fill-rule=\"evenodd\" d=\"M1.5 12A10.5 10.5 0 1 0 22.5 12A10.5 10.5 0 1 0 1.5 12Z M3 12A9 9 0 1 0 21 12A9 9 0 1 0 3 12Z M3.7 12A8.3 8.3 0 1 0 20.3 12A8.3 8.3 0 1 0 3.7 12Z M12 6.49L16.93 11.42L15.48 12.87L12 9.39L8.52 12.87L7.07 11.42ZM12 10.84L16.93 15.77L15.48 17.22L12 13.74L8.52 17.22L7.07 15.77Z\"/>","piccolo":null},{"id":"stato.preparato","etichetta":"Preparato","famiglia":"stato","nota":"Il nucleo ora irradia: il prossimo colpo vale ×1,5.","min":16,"pericolo":false,"estensione":false,"bollino":true,"svg":"<path fill-rule=\"evenodd\" d=\"M1.5 12A10.5 10.5 0 1 0 22.5 12A10.5 10.5 0 1 0 1.5 12Z M3 12A9 9 0 1 0 21 12A9 9 0 1 0 3 12Z M3.7 12A8.3 8.3 0 1 0 20.3 12A8.3 8.3 0 1 0 3.7 12Z M12 9.1L14.9 12L12 14.9L9.1 12ZM10.55 8.23H13.45L12 5.91ZM10.55 15.77H13.45L12 18.09ZM8.23 10.55V13.45L5.91 12ZM15.77 10.55V13.45L18.09 12Z\"/>","piccolo":null},{"id":"stato.fase2","etichetta":"Seconda fase","famiglia":"stato","nota":"Numerale II: il boss cambia modo di combattere.","min":16,"pericolo":false,"estensione":false,"bollino":true,"svg":"<path fill-rule=\"evenodd\" d=\"M1.5 12A10.5 10.5 0 1 0 22.5 12A10.5 10.5 0 1 0 1.5 12Z M3 12A9 9 0 1 0 21 12A9 9 0 1 0 3 12Z M3.7 12A8.3 8.3 0 1 0 20.3 12A8.3 8.3 0 1 0 3.7 12Z M7.36 6.78H16.64V8.23H14.61V15.77H16.64V17.22H7.36V15.77H9.39V8.23H7.36ZM10.84 8.23H13.16V15.77H10.84Z\"/>","piccolo":null},{"id":"risorsa.vigore","etichetta":"Vigore","famiglia":"risorsa","nota":"Cuore sfaccettato.","min":12,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path fill-rule=\"evenodd\" d=\"M12 21L3 12V7.5L5.8 4.5H9.2L12 7.3L14.8 4.5H18.2L21 7.5V12Z M5.2 8.1L6.6 6.3H8.1L6.6 8.1V10.8H5.2Z\"/>","piccolo":"<path d=\"M12 21L3 12V7.5L5.8 4.5H9.2L12 7.3L14.8 4.5H18.2L21 7.5V12Z\"/>"},{"id":"risorsa.fiato","etichetta":"Fiato","famiglia":"risorsa","nota":"Tre linee di vento.","min":12,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M2.5 8.5H13A3 3 0 1 0 10 5.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\"/><path d=\"M2.5 13H17.5A3 3 0 1 1 14.5 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\"/><path d=\"M2.5 17.5H9\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\"/>","piccolo":null},{"id":"risorsa.fiato.pieno","etichetta":"Fiato disponibile","famiglia":"risorsa","nota":"Pallino pieno. Estensione proposta.","min":8,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path d=\"M4 12A8 8 0 1 0 20 12A8 8 0 1 0 4 12Z\"/>","piccolo":null},{"id":"risorsa.fiato.vuoto","etichetta":"Fiato speso","famiglia":"risorsa","nota":"Pallino vuoto: anello. Estensione proposta.","min":8,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path fill-rule=\"evenodd\" d=\"M4 12A8 8 0 1 0 20 12A8 8 0 1 0 4 12Z M7 12A5 5 0 1 0 17 12A5 5 0 1 0 7 12Z\"/>","piccolo":null},{"id":"evento.colpo","etichetta":"Colpo a segno","famiglia":"evento","nota":"Scintilla a otto punte.","min":12,"pericolo":true,"estensione":false,"bollino":false,"svg":"<path d=\"M12 2L13.53 8.3L17.66 6.34L15.7 10.47L22 12L15.7 13.53L17.66 17.66L13.53 15.7L12 22L10.47 15.7L6.34 17.66L8.3 13.53L2 12L8.3 10.47L6.34 6.34L10.47 8.3Z\"/>","piccolo":null},{"id":"evento.parata","etichetta":"Parata","famiglia":"evento","nota":"Scudo con la scintilla sull'angolo.","min":12,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M2.5 6.5H14.5V12.5L13.3 16.1L8.5 20L3.7 16.1L2.5 12.5Z\"/><path d=\"M18 1.5L19.2 4.8L22.5 6L19.2 7.2L18 10.5L16.8 7.2L13.5 6L16.8 4.8Z\"/>","piccolo":null},{"id":"evento.schivata","etichetta":"Schivata","famiglia":"evento","nota":"L'arco dell'Attesa; il colpo passa a vuoto (tratteggio).","min":12,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M8 20.5C3 16 3.5 7 12.6 4.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3.2\"/><path d=\"M17.4 3.2L13.4 7.6L11.8 1.4Z\"/><path d=\"M15.6 9.5H17.6V11.7H15.6Z M15.6 13.3H17.6V15.5H15.6Z M15.6 17.1H17.6V19.3H15.6Z\"/>","piccolo":null},{"id":"evento.contrattacco","etichetta":"Contrattacco","famiglia":"evento","nota":"Inversione: scende, gira e torna su verso il nemico.","min":12,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M6.5 3.5V12.5C6.5 17.5 8.8 20.5 12 20.5C15.2 20.5 17.5 17.5 17.5 12.5V9.5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"3\"/><path d=\"M17.5 2.5L21.8 9.5H13.2Z\"/>","piccolo":null},{"id":"evento.evitato","etichetta":"Evitato","famiglia":"evento","nota":"La freccia si ferma prima della linea: il colpo non arriva.","min":12,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M10.9 2H13.1V6.5H10.9Z M7.5 6.5H16.5L12 11Z M6 18.5H18V21H6Z\"/>","piccolo":null},{"id":"evento.interrotto","etichetta":"Interrotto","famiglia":"evento","nota":"Freccia spezzata dalla frattura.","min":12,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M10.8 2H13.2V7.4L12 8.8L10.8 7.8Z M12.3 12L13.5 11L14.7 12.4V15.2H18.8L13.5 21.8L8.2 15.2H12.3Z\"/>","piccolo":null},{"id":"evento.rotta","etichetta":"Preparazione rotta","famiglia":"evento","nota":"Il nucleo della preparazione spaccato in due.","min":12,"pericolo":false,"estensione":false,"bollino":false,"svg":"<path d=\"M10.8 3L1.8 12L10.8 21L11.4 18L9.8 15L11.8 11L9.6 7.5Z M13.2 3L12 7.5L14.2 11L12.2 15L13.8 18L13.2 21L22.2 12Z\"/>","piccolo":null},{"id":"mod.portata.corta","etichetta":"Portata corta","famiglia":"mod","nota":"Squadra stretta: arriva solo vicino.","min":16,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path d=\"M7.5 8H10V13.5H14V8H16.5V16.5H7.5Z\"/>","piccolo":null},{"id":"mod.portata.lunga","etichetta":"Portata lunga","famiglia":"mod","nota":"Squadra larga: arriva anche in Distanza.","min":16,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path d=\"M1.5 8H4V13.5H20V8H22.5V16.5H1.5Z\"/>","piccolo":null},{"id":"mod.velocita.rapido","etichetta":"Rapido","famiglia":"mod","nota":"Due punte: batte l'Attesa.","min":16,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path d=\"M2.5 5H7L14 12L7 19H2.5L9.5 12Z M10 5H14.5L21.5 12L14.5 19H10L17 12Z\"/>","piccolo":null},{"id":"mod.velocita.normale","etichetta":"Velocità normale","famiglia":"mod","nota":"Una punta.","min":16,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path d=\"M6.5 5H11L18 12L11 19H6.5L13.5 12Z\"/>","piccolo":null},{"id":"mod.velocita.lento","etichetta":"Lento","famiglia":"mod","nota":"Peso da bilancia.","min":16,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path fill-rule=\"evenodd\" d=\"M9.4 5.5A2.6 2.6 0 1 0 14.6 5.5A2.6 2.6 0 1 0 9.4 5.5Z M10.9 5.5A1.1 1.1 0 1 0 13.1 5.5A1.1 1.1 0 1 0 10.9 5.5Z\"/><path d=\"M7.5 9H16.5L20.5 20.5H3.5Z\"/>","piccolo":null},{"id":"mod.sfondaGuardia","etichetta":"Sfonda la guardia","famiglia":"mod","nota":"Scudo spaccato dalla frattura: ignora la Parata.","min":16,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path d=\"M10.8 3.5H2.8V11L4.3 16L10.8 21.5L9.8 16.5L11.8 12L9.3 8Z M13.2 3.5L11.7 8L14.2 12L12.2 16.5L13.2 21.5L19.7 16L21.2 11V3.5Z\"/>","piccolo":null},{"id":"mod.inarrestabile","etichetta":"Inarrestabile","famiglia":"mod","nota":"La freccia passa attraverso la barra spezzata: non si interrompe.","min":16,"pericolo":false,"estensione":true,"bollino":false,"svg":"<path d=\"M10.8 2H13.2V15H17L12 22L7 15H10.8Z M2 10.5H8.5L7.5 12L8.5 13.5H2Z M22 10.5H15.5L16.5 12L15.5 13.5H22Z\"/>","piccolo":null}];
+  var P = {};
+  DATI.forEach(function (s) { P[s.id] = s; });
+
+  function ic(id, px, cls, parlante) {
+    var s = P[id];
+    var corpo = (px < 24 && s.piccolo) || s.svg;
+    var a = parlante ? 'role="img" aria-label="' + s.etichetta + '"' : 'aria-hidden="true"';
+    return '<svg class="icona ' + (cls || "") + '" viewBox="0 0 24 24" width="' + px + '" height="' + px + '" fill="currentColor" focusable="false" ' + a + ">" + corpo + "</svg>";
+  }
+  function pips(n, max) {
+    var s = "";
+    for (var i = 0; i < max; i++) s += ic(i < n ? "risorsa.fiato.pieno" : "risorsa.fiato.vuoto", 12);
+    return s;
+  }
+
+  document.getElementById("conteggio").textContent =
+    DATI.length + " simboli · " + DATI.filter(function (s) { return s.estensione; }).length + " estensioni proposte · griglia 24 · currentColor";
+
+  // --- Mockup -------------------------------------------------------------------------------
+  function telefono(o) {
+    var post = o.posture.map(function (p) {
+      return '<div class="pbtn ' + (p.stato || "") + '">' + ic(p.id, 32) + '<span class="pn">' + P[p.id].etichetta + "</span>" +
+        '<span class="pc">' + (p.costo ? ic("risorsa.fiato.pieno", 10) + " " + p.costo : "gratis") + (p.nota ? " · " + p.nota : "") + "</span>" +
+        (p.anteprima ? '<span class="pa">' + p.anteprima + "</span>" : "") + "</div>";
+    }).join("");
+    var mods = o.mods ? '<div class="mods">' + o.mods.map(function (m) { return "<span>" + ic(m, 18) + P[m].etichetta + "</span>"; }).join("") +
+      '<span class="danno">' + ic("evento.colpo", 16) + o.danno + "</span></div>" : "";
+    var reg = o.registro.map(function (r) { return "<div>" + ic(r[0], 16, r[2] ? "pericolo" : "") + "<span>" + r[1] + "</span></div>"; }).join("");
+    return '<div class="telefono">' +
+      '<div class="riga-c"><div class="alto"><span class="n">' + o.nemico.nome + "</span>" + o.nemico.chip + "</div>" +
+      '<div class="vig">' + ic("risorsa.vigore", 16) + '<span class="tacca"><i style="width:' + o.nemico.pct + '%"></i></span><span class="num">' + o.nemico.vig + "</span></div>" +
+      '<div class="pips">' + ic("risorsa.fiato", 16) + '<span class="sep"></span>' + pips(o.nemico.fiato[0], o.nemico.fiato[1]) + "</div></div>" +
+      '<div class="hint">' + ic(o.hint, 88, "pericolo", true) + '<span class="cat">' + o.cat + '</span><span class="sub">' + o.sub + "</span>" + mods + "</div>" +
+      '<div class="registro">' + reg + "</div>" +
+      '<div class="riga-c"><div class="alto"><span class="n">Viandante</span>' + o.gioc.chip + "</div>" +
+      '<div class="vig">' + ic("risorsa.vigore", 16) + '<span class="tacca"><i style="width:' + o.gioc.pct + '%"></i></span><span class="num">' + o.gioc.vig + "</span></div>" +
+      '<div class="pips">' + ic("risorsa.fiato", 16) + '<span class="sep"></span>' + pips(o.gioc.fiato[0], o.gioc.fiato[1]) + "</div></div>" +
+      '<div class="posture">' + post + "</div>" +
+      '<button type="button" class="conferma" tabindex="-1">Conferma</button></div>';
+  }
+  var chip = function (id, testo) { return '<span class="chip">' + ic(id, 20) + testo + "</span>"; };
+  var m1 = telefono({
+    nemico: { nome: "Bruto", chip: chip("posture.assalto", "Assalto"), pct: 73, vig: "22/30", fiato: [3, 5] },
+    hint: "intent.pesante", cat: "Colpo pesante", sub: "Il Bruto prepara un colpo pesante",
+    registro: [["evento.parata", "Hai parato: 6 → 2."], ["evento.colpo", "Il Maglio ti prende: 2.", true]],
+    gioc: { chip: chip("stato.vantaggio", "Vantaggio"), pct: 80, vig: "24/30", fiato: [4, 6] },
+    posture: [{ id: "posture.assalto", costo: 1 }, { id: "posture.guardia", costo: 0, nota: "attuale", stato: "att" },
+              { id: "posture.attesa", costo: 1, stato: "sel" }, { id: "posture.distanza", costo: 1 }]
+  });
+  var m2 = telefono({
+    nemico: { nome: "Mietitore", chip: chip("stato.fase2", "Fase 2") + chip("posture.assalto", "Assalto"), pct: 42, vig: "19/45", fiato: [2, 6] },
+    hint: "intent.pesante", cat: "Carica", sub: "Hint completo: la mossa esatta e i suoi tratti",
+    mods: ["mod.portata.corta", "mod.velocita.normale", "mod.inarrestabile"], danno: "7–9",
+    registro: [["evento.contrattacco", "Schivi la Falciata e contrattacchi: 4."], ["stato.preparato", "Il Mietitore è preparato: ×1,5."]],
+    gioc: { chip: "", pct: 63, vig: "19/30", fiato: [1, 6] },
+    posture: [{ id: "posture.assalto", costo: 1, anteprima: "subisci 7–9 · infliggi 4–6" },
+              { id: "posture.guardia", costo: 1, anteprima: "subisci 3–4 · infliggi 1–2" },
+              { id: "posture.attesa", costo: 1, anteprima: "subisci 7–9 · infliggi 0" },
+              { id: "posture.distanza", costo: 0, nota: "attuale", stato: "att sel", anteprima: "subisci 0 · infliggi 0" }]
+  });
+  document.getElementById("duelli").innerHTML =
+    '<figure>' + m1 + '<figcaption>Hint per categoria. Il giocatore ha il vantaggio e sta per passare da Guardia ad Attesa.</figcaption></figure>' +
+    '<figure>' + m2 + '<figcaption>Hint completo e anteprima dei danni (interruttori A/B), boss in seconda fase. Con un solo fiato l\'Attesa è consentita ma la schivata non scatta, e l\'anteprima lo mostra.</figcaption></figure>';
+
+  // --- Grammatica --------------------------------------------------------------------------
+  var es = function (ids, px) { return '<span class="es">' + ids.map(function (i) { return '<span class="' + (P[i].pericolo ? "pericolo" : "") + '">' + ic(i, px || 28) + "</span>"; }).join("") + "</span>"; };
+  var regole = [
+    ["Direzione", "Il nemico è in alto, il giocatore in basso. Ciò che il nemico ti scaglia contro punta in basso; ciò che tu scagli contro di lui punta in alto.", ["intent.pesante", "intent.leggero", "posture.assalto", "evento.contrattacco"]],
+    ["Massa = forza", "Pesante è una massa larga, leggero una sagoma sottile. Differenza leggibile anche in grigio.", ["intent.pesante", "intent.leggero"]],
+    ["Sagoma per postura", "Diagonale, chiusa, curva, orizzontale: quattro silhouette che non si somigliano. Ognuna dice la sua reazione.", ["posture.assalto", "posture.guardia", "posture.attesa", "posture.distanza"]],
+    ["Bollino = stato", "Gli stati vivono nel disco con filetto: si leggono come condizioni, non come azioni.", ["stato.vantaggio", "stato.preparato", "stato.fase2"]],
+    ["Nucleo", "Il rombo è la concentrazione: converge (preparazione), irradia (preparato), si spacca (rotta).", ["intent.preparazione", "stato.preparato", "evento.rotta"]],
+    ["Frattura", "La linea a zig-zag con le metà sfalsate vuol dire rotto o negato.", ["mod.sfondaGuardia", "evento.interrotto", "evento.rotta"]],
+    ["Scintilla e vuoto", "La scintilla è l'impatto; il tratteggio e lo spazio vuoto sono il colpo che non arriva.", ["evento.colpo", "evento.parata", "evento.schivata", "evento.evitato"]],
+    ["Modificatori", "Sagome piene e semplici, per 16–20 px, in fila sotto l'hint: portata, velocità, tratti.", ["mod.portata.corta", "mod.portata.lunga", "mod.velocita.rapido", "mod.velocita.lento", "mod.inarrestabile"]],
+    ["Griglia", "viewBox 24, area sicura 2–22, linee 1,6–3,2, tagli 0,7–0,8. Spigoli sfaccettati, nessun raccordo morbido. Solo currentColor.", ["posture.guardia", "intent.difesa", "risorsa.vigore"]]
+  ];
+  document.getElementById("regole").innerHTML = regole.map(function (r) {
+    return "<li><b>" + r[0] + "</b><div>" + r[1] + es(r[2]) + "</div></li>";
+  }).join("");
+
+  var PAL = [
+    ["--carta", "Carta", "#e9e2d3", "#141210", "Fondo"],
+    ["--carta-2", "Carta ombra", "#ddd4c1", "#1f1b17", "Fondo dell'hint, pannelli"],
+    ["--inchiostro", "Inchiostro", "#1c1915", "#e4d9c4", "Testo e simboli"],
+    ["--seppia", "Seppia", "#685c4d", "#a39682", "Testo secondario, costi"],
+    ["--filo", "Filo", "#c2b69e", "#3b342b", "Linee e bordi"],
+    ["--pericolo", "Pericolo", "#a1311f", "#e2654b", "Intenzioni d'attacco, danni, Conferma"]
+  ];
+  document.getElementById("palette").innerHTML = PAL.map(function (p) {
+    return '<div class="campione"><div class="tinta" style="background:var(' + p[0] + ')"></div><div class="t"><b>' + p[1] + '</b><span class="dato">' + p[0] + "</span><span class=\"dato\">" + p[2] + " · " + p[3] + "</span><span>" + p[4] + "</span></div></div>";
+  }).join("");
+
+  // --- Catalogo ----------------------------------------------------------------------------
+  var FAM = [["posture", "Posture"], ["intent", "Intenzioni"], ["stato", "Stati"], ["risorsa", "Risorse"], ["evento", "Eventi del registro"], ["mod", "Modificatori dell'hint completo"]];
+  var taglie = function (s, tema) {
+    return '<div class="taglie ' + tema + '">' + [16, 24, 32, 48].map(function (px) {
+      return '<span class="t"><span class="' + (s.pericolo ? "pericolo" : "") + '">' + ic(s.id, px) + '</span><span class="dato">' + px + "</span></span>";
+    }).join("") + "</div>";
+  };
+  document.getElementById("catalogo").innerHTML = FAM.map(function (f) {
+    var schede = DATI.filter(function (s) { return s.famiglia === f[0]; }).map(function (s) {
+      return '<article class="scheda"><div class="capo"><div class="r1"><b>' + s.etichetta + "</b>" + (s.estensione ? '<span class="est">Proposta</span>' : "") + "</div>" +
+        '<span class="dato">' + s.id + " · min " + s.min + " px</span><span class=\"nota\">" + s.nota + "</span></div>" +
+        taglie(s, "chiaro") + taglie(s, "scuro") + "</article>";
+    }).join("");
+    return '<div class="famiglia"><h3>' + f[1] + '</h3><div class="schede">' + schede + "</div></div>";
+  }).join("");
+
+  // --- Grigi -------------------------------------------------------------------------------
+  var riga = function (tema) {
+    return '<div class="riga ' + tema + '" style="background:var(--carta);color:var(--inchiostro)">' + DATI.map(function (s) {
+      return '<span class="' + (s.pericolo ? "pericolo" : "") + '" title="' + s.etichetta + '">' + ic(s.id, 28) + "</span>";
+    }).join("") + "</div>";
+  };
+  document.getElementById("grigi").innerHTML = riga("chiaro") + riga("scuro") +
+    '<div class="duelli" style="filter:grayscale(1)"><figure>' + m1 + "<figcaption>Il primo mockup senza colore.</figcaption></figure></div>";
+
+  // --- Tema e grigi ------------------------------------------------------------------------
+  var root = document.documentElement;
+  var bt = [document.getElementById("t-sis"), document.getElementById("t-chi"), document.getElementById("t-scu")];
+  function applica(v) {
+    if (v) root.setAttribute("data-theme", v); else root.removeAttribute("data-theme");
+    bt.forEach(function (b) { b.setAttribute("aria-pressed", String(b.getAttribute("data-t") === v)); });
+    try { localStorage.setItem("limen.simboli.tema", v); } catch (e) { /* storage non disponibile */ }
+  }
+  var salvato = "";
+  try { salvato = localStorage.getItem("limen.simboli.tema") || ""; } catch (e) { salvato = ""; }
+  applica(salvato);
+  bt.forEach(function (b) { b.addEventListener("click", function () { applica(b.getAttribute("data-t")); }); });
+  var g = document.getElementById("t-gri");
+  g.addEventListener("click", function () {
+    var on = g.getAttribute("aria-pressed") !== "true";
+    g.setAttribute("aria-pressed", String(on));
+    document.getElementById("main").classList.toggle("grigi", on);
+  });
+})();
+</script>
