@@ -1,6 +1,6 @@
 # Scena del duello: specifica
 
-> **Versione:** 0.1, bozza da rivedere (15 ottobre 2026) · **Proprietario:** Planning
+> **Versione:** 0.2, bozza da rivedere (15 ottobre 2026): §1 allineata al modello delle posture (DESIGN §5.2) e ad ARENA_SPEC 1.1 · **Proprietario:** Planning
 > **Stato:** è scritta solo la §1 (linguaggio delle pose). Le parti su rig, animazioni, contratto `DuelView.scena` e laboratorio arriveranno dopo l'approvazione della §1.
 > **Riferimenti:** DESIGN §8.1 (scena, profilo, ventaglio); CLAUDE.md (dispositivo di riferimento S23).
 
@@ -14,7 +14,7 @@ Ogni posa si descrive su cinque assi. Usarne pochi e sempre gli stessi rende le 
 |---|---|
 | **A. Baricentro e busto** | Avanti (inclinato verso il nemico) · centrato ed eretto · basso e raccolto · indietro (inclinato via dal nemico) |
 | **B. Altezza della testa** | Alta · media · bassa (circa −15%, accovacciato) |
-| **C. Arma** | Caricata alta, pronta a colpire · davanti al corpo, a coprire · bassa lungo il fianco, pronta · protesa e bassa verso il nemico, a tenere a bada |
+| **C. Arma** | Caricata alta, pronta a colpire · davanti al corpo, a coprire · bassa lungo il fianco, pronta · protesa verso il nemico all'altezza del petto, a tenere a bada |
 | **D. Base dei piedi** | Larga, piede anteriore avanzato · media · stretta, sulle punte · arretrata, peso sul piede posteriore |
 | **E. Posizione in scena** | Un passo avanti · posizione base · posizione base · **un passo indietro**: lo spazio tra le figure cresce |
 
@@ -25,6 +25,8 @@ Ogni posa si descrive su cinque assi. Usarne pochi e sempre gli stessi rende le 
 | **Guardia** | Centrato, eretto | Alta | Davanti al corpo | Media, ginocchia flesse | Base | **Muro**: compatta e verticale | *Posta frontale* o *di corona* |
 | **Attesa** | Basso e raccolto | Bassa | Bassa, di traverso davanti alle gambe | Stretta, sulle punte | Base | **Molla**: raccolta, pronta a scattare | *Dente di zenghiaro*, *tutta porta di ferro* |
 | **Distanza** | Indietro | Media | **Protesa verso il nemico all'altezza del petto**, punta "in presenza" | Arretrata | Un passo indietro | **Ritirata con minaccia**: il corpo si allontana, la punta resta | *Posta longa*, fuori misura |
+
+Le sagome traducono il modello di DESIGN §5.2: l'**Assalto** colpisce adesso, la **Guardia** copre adesso, l'**Attesa** si carica per dopo (è una preparazione) e la **Distanza** esce dal colpo cedendo terreno.
 
 I riferimenti storici e le loro fonti sono in [docs/ricerca/POSTURE_ANALISI.md](ricerca/POSTURE_ANALISI.md). Servono come modello per il disegno; la regola di distinzione resta comunque prioritaria.
 
@@ -40,8 +42,10 @@ Gli stati modificano la posa senza cancellarla: la postura deve restare riconosc
 | **Fiato basso (≤ 2)** | Respiro di riposo più ampio e rapido | Pallini del fiato |
 | **Fiato a zero** | Spalle cadute, arma più bassa di circa 10° | Pallini vuoti e lampeggianti |
 | **Vantaggio** | Busto più alto di 1–2°, nessun tremito | Simbolo `stato.vantaggio` sopra la testa |
-| **Preparato** (solo nemici) | Postura invariata, inchiostro addensato sull'arma | Simbolo `stato.preparato` |
-| **Cambio di postura** | Transizione di 250–350 ms con un passo, che rende visibile il costo in fiato | Il pallino di fiato speso si svuota |
+| **Preparato** (viandante e nemici) | Postura invariata, inchiostro addensato sull'arma. Per il viandante nasce dall'Attesa non raggiunta da attacchi; per il nemico dal raccogliersi o dall'Invito. | Simbolo `stato.preparato` |
+| **Spazio alle spalle** (0–2) | La figura arretra di un passo per ogni Distanza consecutiva. Dietro il viandante c'è un **segno sul terreno** (bordo, solco, quinta) sempre visibile. | Contatore `spazio` |
+| **Spalle al muro** (spazio = 2) | Il tallone tocca il bordo, il busto è leggermente schiacciato in avanti | Simbolo `stato.spalle`; il medaglione della Distanza è spento |
+| **Cambio di postura** | Transizione di 250–350 ms con un passo, che rende visibile il costo in fiato. Il cambio gratuito con le spalle al muro è uno scatto in avanti, senza pallino speso. | Il pallino di fiato speso si svuota |
 
 ### 1.4 Telegrafi dei nemici: le quattro categorie dell'hint
 Il telegrafo è la posa di **anticipazione** che il nemico tiene durante la fase di scelta, ripetuta in ciclo.
@@ -57,6 +61,14 @@ Il telegrafo è la posa di **anticipazione** che il nemico tiene durante la fase
 - Due mosse della stessa categoria e dello stesso nemico usano **lo stesso telegrafo**.
 - I tratti permanenti del nemico, come la lancia lunga del Lanciere, restano visibili: riconoscerli fa parte del conoscere il nemico.
 - Con "hint completi" attivo i telegrafi possono differenziarsi per mossa.
+- **Categoria "difesa" (ARENA_SPEC 1.1):** comprende mosse con archetipi diversi, che per lo stesso nemico condividono un unico telegrafo:
+  - Duellante: Parata e **Invito**;
+  - Bruto: **Incassare**;
+  - Lanciere: Tenere a bada;
+  - Recluta: Copertura;
+  - Mietitore: Guardia d'osso.
+
+  Il giocatore non deve poter distinguere dalla posa una parata (*guardia*) da un invito al contrattacco (*attesa*): è la lettura più interessante della categoria. La differenza si scopre solo nella risoluzione.
 
 ### 1.5 Risoluzione: pose di esito
 Ogni evento del risolutore ha una posa o un'animazione di esito, **nell'ordine degli eventi**: l'animazione non può mai mostrare un esito diverso da quello calcolato.
@@ -67,6 +79,10 @@ Ogni evento del risolutore ha una posa o un'animazione di esito, **nell'ordine d
 | **Parata** | L'arma intercetta il colpo; scintilla o schizzo d'inchiostro nel punto di contatto. Il difensore non arretra o arretra di poco. |
 | **Schivata** | Il corpo esce dalla traiettoria (si abbassa o ruota); eventuale contrattacco subito dopo. |
 | **Evitato (Distanza)** | Il colpo corto si ferma a vuoto davanti alla figura arretrata. |
+| **Incalza** | Chi attacca la Distanza avanza di mezzo passo, comunque vada il colpo; la figura che arretra si avvicina al bordo. Compare `stato.vantaggio` sull'attaccante e `evento.incalza`. |
+| **Punta** (Distanza 2) | L'attaccante entra e trova la punta protesa: si ferma, ha un piccolo rinculo, una goccia d'inchiostro. Nessun avanzamento. |
+| **Arresto** (Distanza 3) | La punta ferma l'avanzata a metà strada: fermo d'impatto di 80 ms, l'attaccante arretra. `stato.vantaggio` passa al difensore. |
+| **Preparato** | L'inchiostro converge sull'arma della figura in Attesa (o in raccoglimento) a fine turno. |
 | **Interruzione** | L'animazione della vittima si spezza a metà carica; segno `evento.interrotto`. |
 | **Preparazione rotta** | Il raccoglimento si spezza; l'inchiostro addensato si disperde. |
 | **A terra / vittoria** | Pose finali, senza ciclo. |
@@ -83,5 +99,6 @@ Ogni evento del risolutore ha una posa o un'animazione di esito, **nell'ordine d
 2. **Matrice di distinzione:** una tabella dimostra che ogni coppia di posture differisce su almeno 2 assi tra A, B e C.
 3. **Leggibilità del telegrafo:** la categoria si riconosce entro **0,5 s** di ciclo.
 4. **Scala di grigi e daltonismo:** nessuna distinzione affidata solo al colore.
-5. **Regola d'informazione (§1.4):** verificata dall'Audit su tutte le coppie di mosse della stessa categoria.
-6. **Visibilità su S23:** prova a 360×780 nell'app Claude, come da CLAUDE.md.
+5. **Regola d'informazione (§1.4):** verificata dall'Audit su tutte le coppie di mosse della stessa categoria, comprese Parata e Invito del Duellante.
+6. **Spazio leggibile:** il segno del bordo e la posizione della figura comunicano lo spazio rimasto (0, 1, 2) senza bisogno di testo.
+7. **Visibilità su S23:** prova a 360×780 nell'app Claude, come da CLAUDE.md.
