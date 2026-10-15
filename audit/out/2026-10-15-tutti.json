@@ -1,0 +1,483 @@
+{
+  "data": "2026-10-15",
+  "commit": "9d9efc3",
+  "gate": "tutti",
+  "node": "v24.19.0",
+  "totali": {
+    "Bloccante": 0,
+    "Maggiore": 1,
+    "Minore": 1,
+    "Osservazione": 3
+  },
+  "controlli": [
+    {
+      "id": "A01",
+      "titolo": "Purezza del core",
+      "riferimento": "CLAUDE.md §Codice; ARENA_SPEC §2",
+      "gates": [
+        "G1"
+      ],
+      "ms": 9,
+      "voci": [],
+      "note": [
+        "Nessun uso vietato in src/core né in src/data (commenti esclusi)."
+      ]
+    },
+    {
+      "id": "A02",
+      "titolo": "Dipendenze",
+      "riferimento": "ARENA_SPEC §1; CLAUDE.md §Codice",
+      "gates": [
+        "G1"
+      ],
+      "ms": 2,
+      "voci": [],
+      "note": [
+        "devDependencies: esbuild@^0.28.2, typescript@^7.0.2",
+        "engines.node >=24",
+        "Nessuna dipendenza di runtime; script dev, build, test, typecheck e sim presenti."
+      ]
+    },
+    {
+      "id": "A03",
+      "titolo": "Configurazione TypeScript e sintassi cancellabile",
+      "riferimento": "ARENA_SPEC §1; CLAUDE.md §Codice",
+      "gates": [
+        "G1"
+      ],
+      "ms": 31,
+      "voci": [],
+      "note": [
+        "tsconfig: strict, erasableSyntaxOnly, allowImportingTsExtensions, noEmit verificati; module/moduleResolution nodenext/nodenext.",
+        "22 file .ts esaminati in src, sim, scripts e test: 0 usi di sintassi non cancellabile o import senza .ts."
+      ]
+    },
+    {
+      "id": "A04",
+      "titolo": "Copertura dei simboli",
+      "riferimento": "ARENA_SPEC §7, §12.2 R7; UI_SPEC §7, §8",
+      "gates": [
+        "G3",
+        "G4"
+      ],
+      "ms": 224,
+      "voci": [
+        {
+          "gravita": "Osservazione",
+          "testo": "13 estensioni di UI_SPEC §8 ancora da approvare e da aggiungere ad ARENA_SPEC §7 (UI_SPEC §10 domanda 1): mod.inarrestabile, mod.portata.corta, mod.portata.lunga, mod.sfondaGuardia, mod.velocita.lento, mod.velocita.normale, mod.velocita.rapido, posture.assalto.medaglione, posture.attesa.medaglione, posture.distanza.medaglione, posture.guardia.medaglione, risorsa.fiato.pieno, risorsa.fiato.vuoto",
+          "riferimento": "UI_SPEC §8, §10; CLAUDE.md (contratto modificabile solo con Planning)",
+          "evidenza": "docs/ARENA_SPEC.md §7"
+        }
+      ],
+      "note": [
+        "Contratto ARENA_SPEC §7 + R7: 25 id; estensioni proposte in UI_SPEC §8: 13 id.",
+        "src/ui/symbols.ts: 25 id, uno a uno con il contratto.",
+        "design/symbols.proposed.ts: 38 id = contratto (25) + estensioni (13).",
+        "design/icons: 38 id = contratto (25) + estensioni (13).",
+        "UI_SPEC §7 elenca 38 id: coincide con contratto + estensioni.",
+        "toDuelView ha emesso 23 id distinti, tutti nel contratto. Mai emessi dalla vista (li usa la UI o non capitano): risorsa.fiato, risorsa.vigore.",
+        "Id letterali usati da src/ui/render.ts (risorsa.fiato, risorsa.vigore, stato.fase2): tutti nel contratto."
+      ],
+      "dati": {
+        "contratto": [
+          "evento.arresto",
+          "evento.colpo",
+          "evento.contrattacco",
+          "evento.evitato",
+          "evento.incalza",
+          "evento.interrotto",
+          "evento.parata",
+          "evento.punta",
+          "evento.rotta",
+          "evento.schivata",
+          "intent.difesa",
+          "intent.leggero",
+          "intent.pesante",
+          "intent.preparazione",
+          "posture.assalto",
+          "posture.attesa",
+          "posture.distanza",
+          "posture.guardia",
+          "posture.preparazione",
+          "risorsa.fiato",
+          "risorsa.vigore",
+          "stato.fase2",
+          "stato.preparato",
+          "stato.spalle",
+          "stato.vantaggio"
+        ],
+        "estensioni": [
+          "mod.inarrestabile",
+          "mod.portata.corta",
+          "mod.portata.lunga",
+          "mod.sfondaGuardia",
+          "mod.velocita.lento",
+          "mod.velocita.normale",
+          "mod.velocita.rapido",
+          "posture.assalto.medaglione",
+          "posture.attesa.medaglione",
+          "posture.distanza.medaglione",
+          "posture.guardia.medaglione",
+          "risorsa.fiato.pieno",
+          "risorsa.fiato.vuoto"
+        ],
+        "emessi": [
+          "evento.arresto",
+          "evento.colpo",
+          "evento.contrattacco",
+          "evento.evitato",
+          "evento.incalza",
+          "evento.interrotto",
+          "evento.parata",
+          "evento.punta",
+          "evento.rotta",
+          "evento.schivata",
+          "intent.difesa",
+          "intent.leggero",
+          "intent.pesante",
+          "intent.preparazione",
+          "posture.assalto",
+          "posture.attesa",
+          "posture.distanza",
+          "posture.guardia",
+          "posture.preparazione",
+          "stato.fase2",
+          "stato.preparato",
+          "stato.spalle",
+          "stato.vantaggio"
+        ]
+      }
+    },
+    {
+      "id": "A05",
+      "titolo": "Matrice di accettazione indipendente e test dedicati",
+      "riferimento": "ARENA_SPEC 1.1.1 §4.4–§4.7, §5, §7, §12.2–§12.3",
+      "gates": [
+        "G1"
+      ],
+      "ms": 35,
+      "voci": [
+        {
+          "gravita": "Maggiore",
+          "testo": "Derivato: scambio simultaneo con il vantaggio di entrambi, i due colpi sono al massimo: infligge 6 (atteso 6), subisce 5 (atteso 7): il colpo risolto per secondo ha perso il vantaggio durante lo scambio",
+          "riferimento": "ARENA_SPEC §4.3.4.4 (\"sullo stato precedente\"), §4.4.2, §3 (risolutore simmetrico), DESIGN §5.6",
+          "evidenza": "audit/checks/a05-matrice.ts"
+        }
+      ],
+      "note": [
+        "Matrice: 24/24 celle conformi (danni, vantaggio, preparato, fiato ed eventi).",
+        "Test dedicati e casi derivati: 51/52 conformi.",
+        "Non verificabile: \"Attesa preparata quando l'attacco nemico viene interrotto\" (§12.3, §12.6 4): nessuna mossa produce il caso."
+      ]
+    },
+    {
+      "id": "A06",
+      "titolo": "Invarianti con fuzz a seed fisso",
+      "riferimento": "ARENA_SPEC §4, §5.1, §7, §12.2 R2",
+      "gates": [
+        "G1"
+      ],
+      "ms": 1779,
+      "voci": [],
+      "note": [
+        "12031 turni in 1510 duelli (seed dell'Audit 20261015); esiti: {\"sconfitta\":968,\"vittoria\":541,\"pareggio\":1}.",
+        "235 scelte non consentite correttamente rifiutate da resolveTurn.",
+        "Turni con scambio simultaneo e vantaggio di entrambi (caso A05 derivato): 11."
+      ],
+      "dati": {
+        "turni": 12031,
+        "duelli": 1510,
+        "esiti": {
+          "sconfitta": 968,
+          "vittoria": 541,
+          "pareggio": 1
+        },
+        "rifiutiCorretti": 235,
+        "simultaneiDoppioVantaggio": 11
+      }
+    },
+    {
+      "id": "A07",
+      "titolo": "Valori iniziali tracciati nel report",
+      "riferimento": "ARENA_SPEC §4.1, §4.2, §6, §9, §12.2; ARENA_REPORT §7.2",
+      "gates": [
+        "G2"
+      ],
+      "ms": 7,
+      "voci": [],
+      "note": [
+        "balance: giocatore.vigore 20 invece di 30, annotato nel report e accettato da ARENA_SPEC §12.1 3.",
+        "36 numeri dei nemici diversi dalla specifica; 36 annotati in ARENA_REPORT §7.2 con lo stesso valore del codice.",
+        "Gradi, archetipi, forza/portata/velocità, tratti, adattamenti, modificatori e sequenza confrontati con §6 e R4–R5."
+      ]
+    },
+    {
+      "id": "A08",
+      "titolo": "Simulatore: obiettivi e numeri del report",
+      "riferimento": "ARENA_SPEC §9, §11, §12.4, §12.6; ARENA_REPORT §7.4–§7.5",
+      "gates": [
+        "G2"
+      ],
+      "ms": 4872,
+      "voci": [
+        {
+          "gravita": "Osservazione",
+          "testo": "Obiettivo \"< 25%\" non robusto: lanciere/fissa:assalto supera il 25% con 1 seed su 4 (24.0, 25.2, 24.6, 24.1)",
+          "riferimento": "ARENA_SPEC §9, §12.4; ARENA_REPORT §7.5",
+          "evidenza": "node audit/run.ts --solo A08"
+        }
+      ],
+      "note": [
+        "obiettivi (gradi 1, adattamento on): 30 celle confrontate con il report, 0 fuori tolleranza (±2 punti, ±0,15 turni).",
+        "informativa (gradi 3, adattamento on): 30 celle confrontate con il report, 0 fuori tolleranza (±2 punti, ±0,15 turni).",
+        "informativa (gradi 1, adattamento off): 30 celle confrontate con il report, 0 fuori tolleranza (±2 punti, ±0,15 turni).",
+        "Obiettivi §9/§12.4: 35/35 rispettati con seed 1.",
+        "Lanciere: 8.7 turni, fuori da 4–8 della 1.1 ma dentro 4–9 di §12.6 2 (accettato da Planning).",
+        "Celle con margine stretto (≥ 20%) rilanciate su altri seed: bruto/fissa:attesa: seed 1 24.1; seed 9000 23.3, seed 20001 22.2, seed 31337 24.5, seed 777777 23.8 | lanciere/fissa:assalto: seed 1 23.9; seed 9000 24.0, seed 20001 25.2, seed 31337 24.6, seed 777777 24.1",
+        "Il lettore riscritto dall'Audit da R8 dà risultati identici a quello di sim/run.ts (1000 duelli × 5 nemici)."
+      ],
+      "dati": {
+        "obiettivi": [
+          [
+            "lettore ≥ 90% contro la Recluta",
+            true,
+            "100.0"
+          ],
+          [
+            "lettore 60–85% contro duellante",
+            true,
+            "69.3"
+          ],
+          [
+            "lettore 60–85% contro bruto",
+            true,
+            "68.6"
+          ],
+          [
+            "lettore 60–85% contro lanciere",
+            true,
+            "61.7"
+          ],
+          [
+            "lettore 35–65% contro il Mietitore",
+            true,
+            "53.6"
+          ],
+          [
+            "fissa:assalto < 25% contro duellante",
+            true,
+            "17.0"
+          ],
+          [
+            "fissa:guardia < 25% contro duellante",
+            true,
+            "11.4"
+          ],
+          [
+            "fissa:attesa < 25% contro duellante",
+            true,
+            "13.2"
+          ],
+          [
+            "fissa:distanza < 25% contro duellante",
+            true,
+            "0.4"
+          ],
+          [
+            "casuale < 30% contro duellante",
+            true,
+            "13.6"
+          ],
+          [
+            "fissa:assalto < 25% contro bruto",
+            true,
+            "17.0"
+          ],
+          [
+            "fissa:guardia < 25% contro bruto",
+            true,
+            "0.0"
+          ],
+          [
+            "fissa:attesa < 25% contro bruto",
+            true,
+            "24.1"
+          ],
+          [
+            "fissa:distanza < 25% contro bruto",
+            true,
+            "0.0"
+          ],
+          [
+            "casuale < 30% contro bruto",
+            true,
+            "1.8"
+          ],
+          [
+            "fissa:assalto < 25% contro lanciere",
+            true,
+            "23.9"
+          ],
+          [
+            "fissa:guardia < 25% contro lanciere",
+            true,
+            "6.8"
+          ],
+          [
+            "fissa:attesa < 25% contro lanciere",
+            true,
+            "0.0"
+          ],
+          [
+            "fissa:distanza < 25% contro lanciere",
+            true,
+            "0.0"
+          ],
+          [
+            "casuale < 30% contro lanciere",
+            true,
+            "19.3"
+          ],
+          [
+            "fissa:assalto < 25% contro mietitore",
+            true,
+            "13.5"
+          ],
+          [
+            "fissa:guardia < 25% contro mietitore",
+            true,
+            "0.0"
+          ],
+          [
+            "fissa:attesa < 25% contro mietitore",
+            true,
+            "10.0"
+          ],
+          [
+            "fissa:distanza < 25% contro mietitore",
+            true,
+            "0.0"
+          ],
+          [
+            "casuale < 30% contro mietitore",
+            true,
+            "2.1"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro recluta",
+            true,
+            "0.0 (0.0)"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro duellante",
+            true,
+            "0.4 (15.4)"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro bruto",
+            true,
+            "0.0 (0.0)"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro lanciere",
+            true,
+            "0.0 (0.0)"
+          ],
+          [
+            "fissa:distanza < 25% vittorie e < 50% pareggi contro mietitore",
+            true,
+            "0.0 (0.6)"
+          ],
+          [
+            "turni medi lettore 4–8 contro recluta",
+            true,
+            "7.0"
+          ],
+          [
+            "turni medi lettore 4–8 contro duellante",
+            true,
+            "7.4"
+          ],
+          [
+            "turni medi lettore 4–8 contro bruto",
+            true,
+            "7.8"
+          ],
+          [
+            "turni medi lettore contro il Lanciere: 4–9 (§12.6 2)",
+            true,
+            "8.7"
+          ],
+          [
+            "turni medi lettore ≤ 14 contro il Mietitore",
+            true,
+            "11.1"
+          ]
+        ],
+        "celleStrette": [
+          "bruto/fissa:attesa: seed 1 24.1; seed 9000 23.3, seed 20001 22.2, seed 31337 24.5, seed 777777 23.8",
+          "lanciere/fissa:assalto: seed 1 23.9; seed 9000 24.0, seed 20001 25.2, seed 31337 24.6, seed 777777 24.1"
+        ]
+      }
+    },
+    {
+      "id": "A09",
+      "titolo": "Build a file singolo",
+      "riferimento": "ARENA_SPEC §1; DESIGN §1.4",
+      "gates": [
+        "G3"
+      ],
+      "ms": 91,
+      "voci": [],
+      "note": [
+        "dist/index.html: 35.9 KB, nessun src/href/@import verso risorse esterne.",
+        "dist/index.html coincide byte per byte con la build in memoria del commit corrente."
+      ]
+    },
+    {
+      "id": "A10",
+      "titolo": "Vocabolario",
+      "riferimento": "DESIGN §5; ARENA_SPEC §3, §6, §7; UI_SPEC §7; SCENA_SPEC §1.4",
+      "gates": [
+        "G3",
+        "G4"
+      ],
+      "ms": 7,
+      "voci": [
+        {
+          "gravita": "Minore",
+          "testo": "Lo stato \"preparato\" si legge ancora \"Raccolto\"/\"era raccolto\" nell'interfaccia, mentre ARENA_SPEC (§3, R3) e UI_SPEC §7 usano \"Preparato\"",
+          "riferimento": "ARENA_SPEC §3, §12.2 R3; UI_SPEC §7; CLAUDE.md (termini di dominio come in DESIGN)",
+          "evidenza": "src/ui/symbols.ts:21, src/core/view.ts:150"
+        },
+        {
+          "gravita": "Osservazione",
+          "testo": "Etichette segnaposto di src/ui/symbols.ts diverse da UI_SPEC §7 (si allineano all'integrazione dei simboli): stato.preparato \"Raccolto\" → \"Preparato\"; evento.colpo \"Colpo\" → \"Colpo a segno\"; evento.rotta \"Rotta\" → \"Preparazione rotta\"",
+          "riferimento": "UI_SPEC §7, §9",
+          "evidenza": "src/ui/symbols.ts"
+        }
+      ],
+      "note": [
+        "Nomi di posture, nemici e mosse confrontati con DESIGN §5.2, ARENA_SPEC §6/R5 e SCENA_SPEC §1.4.",
+        "Nessun uso del termine riservato \"finta\" in dati, vista e UI.",
+        "Etichette dei 38 simboli proposti identiche a UI_SPEC §7."
+      ]
+    },
+    {
+      "id": "B08a",
+      "titolo": "Grammatica dei simboli (parte automatica di B08)",
+      "riferimento": "UI_SPEC §2–§3, §7, §9",
+      "gates": [
+        "G4"
+      ],
+      "ms": 351,
+      "voci": [],
+      "note": [
+        "38/38 icone conformi: viewBox 24, solo currentColor, niente id/maschere/testo, title = etichetta, uguali al modulo proposto; bollini e anelli con i raggi dichiarati.",
+        "Variante piccola presente esattamente per i 6 simboli con tagli (T).",
+        "Medaglioni: riposo, selezionato e confermato confrontati con la tabella di UI_SPEC §3.",
+        "design/symbols.proposed.ts compila con tsc --strict --erasableSyntaxOnly."
+      ]
+    }
+  ]
+}

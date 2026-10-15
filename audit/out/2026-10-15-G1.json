@@ -1,0 +1,104 @@
+{
+  "data": "2026-10-15",
+  "commit": "9d9efc3",
+  "gate": "G1",
+  "node": "v24.19.0",
+  "totali": {
+    "Bloccante": 0,
+    "Maggiore": 1,
+    "Minore": 0,
+    "Osservazione": 0
+  },
+  "controlli": [
+    {
+      "id": "A01",
+      "titolo": "Purezza del core",
+      "riferimento": "CLAUDE.md §Codice; ARENA_SPEC §2",
+      "gates": [
+        "G1"
+      ],
+      "ms": 15,
+      "voci": [],
+      "note": [
+        "Nessun uso vietato in src/core né in src/data (commenti esclusi)."
+      ]
+    },
+    {
+      "id": "A02",
+      "titolo": "Dipendenze",
+      "riferimento": "ARENA_SPEC §1; CLAUDE.md §Codice",
+      "gates": [
+        "G1"
+      ],
+      "ms": 1,
+      "voci": [],
+      "note": [
+        "devDependencies: esbuild@^0.28.2, typescript@^7.0.2",
+        "engines.node >=24",
+        "Nessuna dipendenza di runtime; script dev, build, test, typecheck e sim presenti."
+      ]
+    },
+    {
+      "id": "A03",
+      "titolo": "Configurazione TypeScript e sintassi cancellabile",
+      "riferimento": "ARENA_SPEC §1; CLAUDE.md §Codice",
+      "gates": [
+        "G1"
+      ],
+      "ms": 31,
+      "voci": [],
+      "note": [
+        "tsconfig: strict, erasableSyntaxOnly, allowImportingTsExtensions, noEmit verificati; module/moduleResolution nodenext/nodenext.",
+        "22 file .ts esaminati in src, sim, scripts e test: 0 usi di sintassi non cancellabile o import senza .ts."
+      ]
+    },
+    {
+      "id": "A05",
+      "titolo": "Matrice di accettazione indipendente e test dedicati",
+      "riferimento": "ARENA_SPEC 1.1.1 §4.4–§4.7, §5, §7, §12.2–§12.3",
+      "gates": [
+        "G1"
+      ],
+      "ms": 30,
+      "voci": [
+        {
+          "gravita": "Maggiore",
+          "testo": "Derivato: scambio simultaneo con il vantaggio di entrambi, i due colpi sono al massimo: infligge 6 (atteso 6), subisce 5 (atteso 7): il colpo risolto per secondo ha perso il vantaggio durante lo scambio",
+          "riferimento": "ARENA_SPEC §4.3.4.4 (\"sullo stato precedente\"), §4.4.2, §3 (risolutore simmetrico), DESIGN §5.6",
+          "evidenza": "audit/checks/a05-matrice.ts"
+        }
+      ],
+      "note": [
+        "Matrice: 24/24 celle conformi (danni, vantaggio, preparato, fiato ed eventi).",
+        "Test dedicati e casi derivati: 51/52 conformi.",
+        "Non verificabile: \"Attesa preparata quando l'attacco nemico viene interrotto\" (§12.3, §12.6 4): nessuna mossa produce il caso."
+      ]
+    },
+    {
+      "id": "A06",
+      "titolo": "Invarianti con fuzz a seed fisso",
+      "riferimento": "ARENA_SPEC §4, §5.1, §7, §12.2 R2",
+      "gates": [
+        "G1"
+      ],
+      "ms": 1903,
+      "voci": [],
+      "note": [
+        "12031 turni in 1510 duelli (seed dell'Audit 20261015); esiti: {\"sconfitta\":968,\"vittoria\":541,\"pareggio\":1}.",
+        "235 scelte non consentite correttamente rifiutate da resolveTurn.",
+        "Turni con scambio simultaneo e vantaggio di entrambi (caso A05 derivato): 11."
+      ],
+      "dati": {
+        "turni": 12031,
+        "duelli": 1510,
+        "esiti": {
+          "sconfitta": 968,
+          "vittoria": 541,
+          "pareggio": 1
+        },
+        "rifiutiCorretti": 235,
+        "simultaneiDoppioVantaggio": 11
+      }
+    }
+  ]
+}

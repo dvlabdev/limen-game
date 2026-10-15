@@ -1,0 +1,155 @@
+{
+  "data": "2026-10-15",
+  "commit": "9d9efc3",
+  "gate": "G4",
+  "node": "v24.19.0",
+  "totali": {
+    "Bloccante": 0,
+    "Maggiore": 0,
+    "Minore": 1,
+    "Osservazione": 2
+  },
+  "controlli": [
+    {
+      "id": "A04",
+      "titolo": "Copertura dei simboli",
+      "riferimento": "ARENA_SPEC §7, §12.2 R7; UI_SPEC §7, §8",
+      "gates": [
+        "G3",
+        "G4"
+      ],
+      "ms": 179,
+      "voci": [
+        {
+          "gravita": "Osservazione",
+          "testo": "13 estensioni di UI_SPEC §8 ancora da approvare e da aggiungere ad ARENA_SPEC §7 (UI_SPEC §10 domanda 1): mod.inarrestabile, mod.portata.corta, mod.portata.lunga, mod.sfondaGuardia, mod.velocita.lento, mod.velocita.normale, mod.velocita.rapido, posture.assalto.medaglione, posture.attesa.medaglione, posture.distanza.medaglione, posture.guardia.medaglione, risorsa.fiato.pieno, risorsa.fiato.vuoto",
+          "riferimento": "UI_SPEC §8, §10; CLAUDE.md (contratto modificabile solo con Planning)",
+          "evidenza": "docs/ARENA_SPEC.md §7"
+        }
+      ],
+      "note": [
+        "Contratto ARENA_SPEC §7 + R7: 25 id; estensioni proposte in UI_SPEC §8: 13 id.",
+        "src/ui/symbols.ts: 25 id, uno a uno con il contratto.",
+        "design/symbols.proposed.ts: 38 id = contratto (25) + estensioni (13).",
+        "design/icons: 38 id = contratto (25) + estensioni (13).",
+        "UI_SPEC §7 elenca 38 id: coincide con contratto + estensioni.",
+        "toDuelView ha emesso 23 id distinti, tutti nel contratto. Mai emessi dalla vista (li usa la UI o non capitano): risorsa.fiato, risorsa.vigore.",
+        "Id letterali usati da src/ui/render.ts (risorsa.fiato, risorsa.vigore, stato.fase2): tutti nel contratto."
+      ],
+      "dati": {
+        "contratto": [
+          "evento.arresto",
+          "evento.colpo",
+          "evento.contrattacco",
+          "evento.evitato",
+          "evento.incalza",
+          "evento.interrotto",
+          "evento.parata",
+          "evento.punta",
+          "evento.rotta",
+          "evento.schivata",
+          "intent.difesa",
+          "intent.leggero",
+          "intent.pesante",
+          "intent.preparazione",
+          "posture.assalto",
+          "posture.attesa",
+          "posture.distanza",
+          "posture.guardia",
+          "posture.preparazione",
+          "risorsa.fiato",
+          "risorsa.vigore",
+          "stato.fase2",
+          "stato.preparato",
+          "stato.spalle",
+          "stato.vantaggio"
+        ],
+        "estensioni": [
+          "mod.inarrestabile",
+          "mod.portata.corta",
+          "mod.portata.lunga",
+          "mod.sfondaGuardia",
+          "mod.velocita.lento",
+          "mod.velocita.normale",
+          "mod.velocita.rapido",
+          "posture.assalto.medaglione",
+          "posture.attesa.medaglione",
+          "posture.distanza.medaglione",
+          "posture.guardia.medaglione",
+          "risorsa.fiato.pieno",
+          "risorsa.fiato.vuoto"
+        ],
+        "emessi": [
+          "evento.arresto",
+          "evento.colpo",
+          "evento.contrattacco",
+          "evento.evitato",
+          "evento.incalza",
+          "evento.interrotto",
+          "evento.parata",
+          "evento.punta",
+          "evento.rotta",
+          "evento.schivata",
+          "intent.difesa",
+          "intent.leggero",
+          "intent.pesante",
+          "intent.preparazione",
+          "posture.assalto",
+          "posture.attesa",
+          "posture.distanza",
+          "posture.guardia",
+          "posture.preparazione",
+          "stato.fase2",
+          "stato.preparato",
+          "stato.spalle",
+          "stato.vantaggio"
+        ]
+      }
+    },
+    {
+      "id": "A10",
+      "titolo": "Vocabolario",
+      "riferimento": "DESIGN §5; ARENA_SPEC §3, §6, §7; UI_SPEC §7; SCENA_SPEC §1.4",
+      "gates": [
+        "G3",
+        "G4"
+      ],
+      "ms": 12,
+      "voci": [
+        {
+          "gravita": "Minore",
+          "testo": "Lo stato \"preparato\" si legge ancora \"Raccolto\"/\"era raccolto\" nell'interfaccia, mentre ARENA_SPEC (§3, R3) e UI_SPEC §7 usano \"Preparato\"",
+          "riferimento": "ARENA_SPEC §3, §12.2 R3; UI_SPEC §7; CLAUDE.md (termini di dominio come in DESIGN)",
+          "evidenza": "src/ui/symbols.ts:21, src/core/view.ts:150"
+        },
+        {
+          "gravita": "Osservazione",
+          "testo": "Etichette segnaposto di src/ui/symbols.ts diverse da UI_SPEC §7 (si allineano all'integrazione dei simboli): stato.preparato \"Raccolto\" → \"Preparato\"; evento.colpo \"Colpo\" → \"Colpo a segno\"; evento.rotta \"Rotta\" → \"Preparazione rotta\"",
+          "riferimento": "UI_SPEC §7, §9",
+          "evidenza": "src/ui/symbols.ts"
+        }
+      ],
+      "note": [
+        "Nomi di posture, nemici e mosse confrontati con DESIGN §5.2, ARENA_SPEC §6/R5 e SCENA_SPEC §1.4.",
+        "Nessun uso del termine riservato \"finta\" in dati, vista e UI.",
+        "Etichette dei 38 simboli proposti identiche a UI_SPEC §7."
+      ]
+    },
+    {
+      "id": "B08a",
+      "titolo": "Grammatica dei simboli (parte automatica di B08)",
+      "riferimento": "UI_SPEC §2–§3, §7, §9",
+      "gates": [
+        "G4"
+      ],
+      "ms": 440,
+      "voci": [],
+      "note": [
+        "38/38 icone conformi: viewBox 24, solo currentColor, niente id/maschere/testo, title = etichetta, uguali al modulo proposto; bollini e anelli con i raggi dichiarati.",
+        "Variante piccola presente esattamente per i 6 simboli con tagli (T).",
+        "Medaglioni: riposo, selezionato e confermato confrontati con la tabella di UI_SPEC §3.",
+        "design/symbols.proposed.ts compila con tsc --strict --erasableSyntaxOnly."
+      ]
+    }
+  ]
+}
