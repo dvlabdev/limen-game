@@ -11,7 +11,7 @@
 | C1 | **SCENA_SPEC §1 v0.2**: pose allineate al modello delle posture | Planning | — | **Approvata** |
 | C2 | **Arena giocabile su S23** (ARENA_SPEC 1.2): simboli definitivi, ventaglio e interfaccia nella scena con sagome statiche (A/B con la griglia), pubblicazione come pagina privata Claude con telemetria su database | Codice | B (rilievi bloccanti chiusi) | Da specificare |
 | D | **Playtest** con l'utente ([PLAYTEST](PLAYTEST.md)), analisi della telemetria, decisioni in DESIGN; cancello verso il nucleo | Planning con l'utente | C2 | Bozza del protocollo pronta |
-| E1 | **Specifica della scena** (SCENA_SPEC §2–§5) e **prototipo di animazione**: viandante e Bruto, 6 animazioni, laboratorio pubblicato come pagina privata | Planning, poi Grafica | C1 approvata | Da fare |
+| E1 | **Specifica della scena** (SCENA_SPEC §2–§5) e **prototipo di animazione**: viandante e Bruto, 6 animazioni, laboratorio pubblicato come pagina privata | Planning, poi Grafica | C1 approvata | Specifica in bozza (SCENA_SPEC 0.3) |
 | E2 | Produzione completa della scena, integrazione, audit G5 | Grafica, Codice, Audit | E1 approvato, D | — |
 | F | **Nucleo** (DESIGN §9.2) | Tutte | D positivo, budget dei contenuti | — |
 
