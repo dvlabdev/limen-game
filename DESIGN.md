@@ -227,6 +227,15 @@ Principi già fissati:
 - **Qualità professionale come requisito:** direzione artistica scritta, revisioni con la scelta tra più direzioni e parti grafiche sostituibili. Il rig è separato dal disegno, quindi le parti si possono ridisegnare o affidare a un illustratore senza toccare il codice.
 - **La postura è una posa.** Il nemico **telegrafa** l'intenzione con il corpo: la posa affianca il simbolo dell'hint e non lo sostituisce.
 - **La risoluzione del turno si vede:** colpi, parate, schivate e interruzioni, nell'ordine dell'iniziativa e sempre saltabili con un tocco. Le animazioni derivano dagli eventi del risolutore, così non possono contraddire l'esito.
+- **Inquadratura ✅:** personaggi **di profilo**, uno di fronte all'altro (viandante a sinistra, nemico a destra); telefono **sempre in verticale**. La profondità viene da quinte a strati (primo piano, terreno, fondale) con un leggero parallasse e piccoli movimenti di camera sugli impatti. Su desktop la stessa scena si allarga.
+- **Interfaccia integrata nella scena ✅:** la scena occupa tutto lo schermo.
+  - Vigore e fiato stanno sopra ogni personaggio; l'hint sopra la testa del nemico.
+  - I danni compaiono come testo nel punto del colpo; il registro sta in un cassetto che si apre con un tocco.
+- **Ventaglio delle posture ✅:** 4 medaglioni ad arco dietro il viandante, ordinati dalla schiena verso il nemico: Distanza, Attesa, Guardia, Assalto. Più un medaglione è vicino al nemico, più la postura è aggressiva.
+  - Il ventaglio compare solo nella fase di scelta e si chiude durante la risoluzione.
+  - Primo tocco: seleziona e mostra l'anteprima. Secondo tocco: conferma.
+  - Bersagli di almeno 44px. Più avanti, un'opzione per mancini che rovescia la scena.
+  - Nell'arena la griglia classica resta come riferimento e variante A/B.
 - **Riuso:** la stessa marionetta del viandante si muove anche nell'esplorazione (mappa delle milestone, nucleo §9.2).
 - **Tempi:** fase successiva all'arena (vedi 9.2a), con una specifica dedicata `docs/SCENA_SPEC.md`.
 
