@@ -1,7 +1,7 @@
 # Arena di prova del duello: specifica operativa
 
-> **Versione:** 1.1 (15 ottobre 2026): modello delle posture, nuove regole e risposte al report. **La §12 prevale sulle sezioni precedenti dove le modifica.** · **Proprietario:** Planning · **Esecutore:** sessione Codice
-> Storico: 1.0.1 dispositivo di riferimento S23 · 1.0.2 la mossa "Finta" del Duellante diventa "Battuta"
+> **Versione:** 1.1.1 (15 ottobre 2026): modello delle posture, nuove regole e risposte al report. **La §12 prevale sulle sezioni precedenti dove le modifica.** · **Proprietario:** Planning · **Esecutore:** sessione Codice
+> Storico: 1.0.1 dispositivo di riferimento S23 · 1.0.2 la mossa "Finta" del Duellante diventa "Battuta" · 1.1.1 risposte alle domande del report dopo la F2b (§12.6)
 > **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5 (combattimento) e [CLAUDE.md](../CLAUDE.md) (regole delle sessioni).
 
 ## 0. Scopo
@@ -502,3 +502,13 @@ Altri test richiesti:
    - nel report: tabelle aggiornate e una sezione "Revisione 1.1", con il confronto prima/dopo per le domande 1 e 2.
    - Commit: `F2b Revisione 1.1: …`.
 2. **F4 Verifica**, come da §10, a 360×780 (S23), provando anche i gradi della Distanza e lo spazio alle spalle.
+
+### 12.6 Decisioni dopo la F2b (risposte a ARENA_REPORT §7.7)
+Approvate dall'utente. **Si applicano nella prossima fase di codice** (arena giocabile su S23, ARENA_SPEC 1.2): fino ad allora il codice committato in `8881ea8` è conforme alla 1.1.
+
+| Domanda | Decisione |
+|---|---|
+| **1. Recluta e vincolo su `fissa:distanza`** | La **Recluta è esclusa** dal vincolo del §12.4: è il nemico con cui si impara. I suoi danni tornano miti: Fendente di nuovo intorno a 3–5, con un nuovo bilanciamento che rispetti gli altri obiettivi della Recluta. |
+| **2. Turni del `lettore` contro il Lanciere** | Obiettivo **4–9 turni** per il Lanciere, che tiene la distanza per natura. Gli altri nemici restano a 4–8. |
+| **3. Stallo di `fissa:attesa` contro il Lanciere** | **Accettato senza nuove regole.** Una strategia che non attacca mai non vince, e il pareggio conta come non vittoria. Il vincolo anti-stallo resta solo su `fissa:distanza`. |
+| **4. Attesa raggiunta da un attacco interrotto (R3)** | Va bene **senza test** finché non esiste una mossa che produce il caso. L'Audit lo registra come requisito "non verificabile". |
