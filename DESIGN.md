@@ -251,7 +251,7 @@ Sorgente separata: scopo, tesoro, mistero della locanda e degli NPC che ricordan
 Principi già fissati:
 - **Simbologia chiara** per posture, reazioni, hint, milestone e intervalli di danno.
 - Poco testo a schermo durante il combattimento.
-- 🟡 Estetica da libro illustrato o xilografia (palette limitata, inchiostro, carta, icone forti), realizzabile via codice.
+- 🟡 Estetica da libro illustrato o xilografia (palette limitata, inchiostro, carta, icone forti), realizzabile via codice. **Identità visiva in valutazione** tra tre alternative complete (caratteri, colori, interfaccia, scena): A Stampa, B Codice, C Lanterna (teatro d'ombre). Ricerca di mercato e confronto in [docs/STILE_ALTERNATIVE.md](docs/STILE_ALTERNATIVE.md); scelta a demo finita (ROADMAP, passo S).
 
 ### 8.1 Scena del duello ✅ principio, ⬜ specifica
 - In scena ci sono il **viandante e il nemico**, non solo pulsanti e indicatori.

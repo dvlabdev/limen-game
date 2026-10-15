@@ -1,0 +1,363 @@
+<title>Limen · Tavole di stile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@400;500;700&family=Alegreya+Sans:wght@500;800&family=Alegreya+Sans+SC:wght@500;700&family=Barlow+Semi+Condensed:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Grenze+Gotisch:wght@600&family=IM+Fell+English+SC&family=Marcellus+SC&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: una colonna da telefono (S23, 360px). Pagina neutra come un quaderno di studio; ogni tavola porta la propria identità con token propri. */
+:root {
+  --bg: #efece6;
+  --fg: #1d1c1a;
+  --muted: #5f5b54;
+  --rule: #cfc9be;
+  --panel: #f8f6f2;
+  --f-text: "Spectral", Georgia, "Times New Roman", serif;
+  --f-label: "Barlow Semi Condensed", "Arial Narrow", Arial, sans-serif;
+
+  /* A · Stampa */
+  --a-carta: #e9e2d3; --a-carta2: #ddd4c1; --a-ink: #1c1915; --a-seppia: #685c4d; --a-filo: #c2b69e; --a-rosso: #a1311f;
+  /* B · Codice */
+  --b-carta: #f2e6c8; --b-carta2: #e8d6a8; --b-ink: #2a1c12; --b-seppia: #6e5238; --b-rosso: #a8261b; --b-lapis: #1d4f91; --b-oro: #8a6a1f;
+  /* C · Lanterna (tema scuro, scelta unica per la tavola) */
+  --c-notte: #101219; --c-notte2: #191d27; --c-luna: #e6e1d6; --c-tenue: #9aa0ab; --c-rosso: #ec5b3f;
+  --c-schermo: #e9b25f; --c-schermo2: #cf8f3e; --c-sagoma: #0a0a0c; --c-brace: #7a160d;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171614; --fg: #ece8e1; --muted: #a8a197; --rule: #34312c; --panel: #1f1d1a;
+    --a-carta: #141210; --a-carta2: #1f1b17; --a-ink: #e4d9c4; --a-seppia: #a39682; --a-filo: #3b342b; --a-rosso: #e2654b;
+    --b-carta: #18120c; --b-carta2: #231a11; --b-ink: #f0e2c0; --b-seppia: #b89c74; --b-rosso: #e5603f; --b-lapis: #7ea6e0; --b-oro: #d4ad55;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171614; --fg: #ece8e1; --muted: #a8a197; --rule: #34312c; --panel: #1f1d1a;
+  --a-carta: #141210; --a-carta2: #1f1b17; --a-ink: #e4d9c4; --a-seppia: #a39682; --a-filo: #3b342b; --a-rosso: #e2654b;
+  --b-carta: #18120c; --b-carta2: #231a11; --b-ink: #f0e2c0; --b-seppia: #b89c74; --b-rosso: #e5603f; --b-lapis: #7ea6e0; --b-oro: #d4ad55;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--f-text); font-size: 16px; line-height: 1.55; }
+.pagina { max-width: 420px; margin: 0 auto; padding-inline: 16px; padding-block: 24px 48px; display: grid; gap: 28px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { margin: 0; }
+.etichetta { font-family: var(--f-label); font-weight: 500; font-size: 13px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.testa { display: grid; gap: 8px; }
+.testa h1 { font-family: var(--f-text); font-weight: 600; font-size: 28px; line-height: 1.15; }
+.testa p { color: var(--muted); }
+.indice { display: flex; flex-wrap: wrap; gap: 8px; }
+.indice a { font-family: var(--f-label); font-weight: 700; font-size: 14px; letter-spacing: .04em; color: var(--fg); text-decoration: none; border: 1px solid var(--rule); padding: 10px 14px; min-height: 44px; display: inline-flex; align-items: center; }
+.indice a:focus-visible, .copia:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+
+/* Tavola: ogni alternativa ha il suo blocco con i propri token */
+.tavola { display: grid; gap: 16px; padding-block: 20px; border-top: 1px solid var(--rule); scroll-margin-top: 12px; }
+.tavola .nome { display: grid; gap: 4px; }
+.tavola .nome h2 { font-size: 30px; line-height: 1.1; font-weight: 400; }
+.tavola .idea { font-style: italic; }
+.schermo { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
+.palette { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 8px; }
+.campione { display: grid; gap: 4px; font-family: var(--f-label); font-size: 12px; line-height: 1.3; min-width: 0; }
+.campione i { display: block; height: 40px; border: 1px solid var(--rule); }
+.campione b { font-weight: 700; font-size: 13px; }
+.campione span { color: var(--muted); font-variant-numeric: tabular-nums; }
+.specimen { display: grid; gap: 10px; padding: 16px; }
+.specimen .grande { font-size: 26px; line-height: 1.15; }
+.specimen .num { font-size: 22px; font-variant-numeric: tabular-nums lining-nums; }
+.specimen .nota { font-family: var(--f-label); font-size: 12px; letter-spacing: .04em; }
+.componenti { display: grid; gap: 12px; }
+.riga-comp { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.giudizio { display: grid; gap: 6px; font-size: 15px; }
+.giudizio p b { font-family: var(--f-label); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: 13px; margin-right: 6px; }
+
+/* A · Stampa */
+.t-a .nome h2 { font-family: "IM Fell English SC", Georgia, serif; }
+.t-a .specimen { background: var(--a-carta); color: var(--a-ink); border: 3px double var(--a-ink); }
+.t-a .specimen .grande { font-family: "IM Fell English SC", Georgia, serif; }
+.t-a .specimen .testo { font-family: "Alegreya", Georgia, serif; }
+.t-a .specimen .num { font-family: "Alegreya Sans", Arial, sans-serif; font-weight: 800; color: var(--a-rosso); }
+.t-a .specimen .nota { font-family: "Alegreya Sans SC", Arial, sans-serif; color: var(--a-seppia); }
+.t-a .bottone { font-family: "Alegreya Sans SC", Arial, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: .05em; color: var(--a-ink); background: var(--a-carta); border: 2px solid var(--a-ink); box-shadow: 0 2px 0 var(--a-ink); padding: 10px 18px; min-height: 44px; }
+.t-a .registro { font-family: "Alegreya", Georgia, serif; font-style: italic; background: var(--a-carta2); color: var(--a-ink); border-top: 1px solid var(--a-ink); border-bottom: 1px solid var(--a-ink); padding: 8px 12px; }
+
+/* B · Codice */
+.t-b .nome h2 { font-family: "Grenze Gotisch", Georgia, serif; font-weight: 600; }
+.t-b .specimen { background: var(--b-carta); color: var(--b-ink); border: 2px solid var(--b-oro); outline: 1px solid var(--b-oro); outline-offset: -6px; }
+.t-b .specimen .grande { font-family: "Grenze Gotisch", Georgia, serif; font-weight: 600; color: var(--b-rosso); }
+.t-b .specimen .testo { font-family: "EB Garamond", Georgia, serif; font-size: 17px; }
+.t-b .specimen .testo::first-letter { font-family: "Grenze Gotisch", Georgia, serif; color: var(--b-rosso); font-size: 2.4em; float: left; line-height: .9; margin-right: 6px; }
+.t-b .specimen .num { font-family: "EB Garamond", Georgia, serif; font-weight: 600; color: var(--b-lapis); }
+.t-b .specimen .nota { font-family: "EB Garamond", Georgia, serif; font-variant-caps: all-small-caps; letter-spacing: .08em; font-size: 15px; color: var(--b-seppia); }
+.t-b .bottone { font-family: "EB Garamond", Georgia, serif; font-variant-caps: all-small-caps; letter-spacing: .1em; font-weight: 600; font-size: 18px; color: var(--b-carta); background: var(--b-lapis); border: 2px solid var(--b-oro); padding: 8px 18px; min-height: 44px; }
+.t-b .registro { font-family: "EB Garamond", Georgia, serif; font-style: italic; color: var(--b-ink); background: var(--b-carta2); padding: 8px 12px; border-left: 0; }
+.t-b .registro .rubrica { color: var(--b-rosso); font-style: normal; }
+
+/* C · Lanterna */
+.t-c .nome h2 { font-family: "Marcellus SC", Georgia, serif; letter-spacing: .04em; }
+.t-c .specimen { background: var(--c-notte); color: var(--c-luna); border: 1px solid var(--c-schermo); }
+.t-c .specimen .grande { font-family: "Marcellus SC", Georgia, serif; letter-spacing: .04em; color: var(--c-schermo); }
+.t-c .specimen .testo { font-family: "Spectral", Georgia, serif; }
+.t-c .specimen .num { font-family: "Barlow Semi Condensed", Arial, sans-serif; font-weight: 700; color: var(--c-rosso); }
+.t-c .specimen .nota { font-family: "Barlow Semi Condensed", Arial, sans-serif; text-transform: uppercase; letter-spacing: .08em; color: var(--c-tenue); }
+.t-c .bottone { font-family: "Marcellus SC", Georgia, serif; font-size: 17px; letter-spacing: .06em; color: var(--c-luna); background: var(--c-notte2); border: 1px solid var(--c-schermo); border-radius: 999px; padding: 10px 20px; min-height: 44px; }
+.t-c .registro { font-family: "Spectral", Georgia, serif; font-style: italic; color: var(--c-luna); background: var(--c-notte); border: 1px solid var(--c-notte2); padding: 8px 12px; text-align: center; }
+
+.bottone { cursor: default; }
+.registro { font-size: 15px; }
+
+/* Confronto */
+.confronto { display: grid; gap: 12px; padding-block: 20px; border-top: 1px solid var(--rule); }
+.confronto h2 { font-size: 24px; font-weight: 600; }
+.tabella { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 340px; }
+th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--f-label); font-weight: 700; font-size: 13px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+td.v { font-family: var(--f-label); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.prossimo { display: grid; gap: 8px; background: var(--panel); border: 1px solid var(--rule); padding: 16px; }
+.prossimo h3 { font-size: 18px; font-weight: 600; }
+.prossimo ol { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+@media (prefers-reduced-motion: no-preference) {
+  .lume { animation: tremola 3.2s ease-in-out infinite; }
+  @keyframes tremola { 0%, 100% { opacity: 1 } 48% { opacity: .93 } 52% { opacity: .97 } }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol fill="currentColor" id="s-vian" viewBox="-100 -158 200 164"><path d="M2 -85.6L12.6 -72.3L8.3 -68.7L-3 -81.4Z"/><path d="M7.9 -71.7L15.4 -85.9L19.5 -83.9L12.9 -69.3Z"/><path d="M20.5 -84.9L18.7 -87.7L15.4 -87.2L14.5 -83.9L17.1 -81.8L20.1 -83.3Z"/><path d="M6 -51.3L10.4 -23.6L1.1 -21.6L-6 -48.7Z"/><path d="M8.8 -18.9L-14.1 -2.6L-17.9 -7.4L2.8 -26.3Z"/><path d="M-21 0L-19 -6L-13 -6L-2 0L-8 0Z"/><path d="M-5 -88L-9.5 -84L-11 -70L-14.8 -54L-20 -41L-15.5 -35L-23.6 -26L-12.5 -29L-14.1 -18L-3 -28L-2 -46Z"/><path d="M-7.3 -50L6.7 -50L8.7 -62.6L9.9 -75.9L7.2 -86L-9 -86L-9.6 -69.8Z"/><path d="M3.8 -54.8L24.9 -36.3L18.9 -28.8L-3.8 -45.2Z"/><path d="M26.6 -31.7L20 -4.5L14 -5.5L17.2 -33.4Z"/><path d="M12 0L14 -6L20 -6L31 0L25 0Z"/><path d="M-4 -86L-3.5 -100.5L3.5 -100.5L4 -86Z"/><path d="M4 -92.5L8.5 -97.3L8.8 -102.7L6.5 -108.7L0 -112.1L-8 -110L-17 -101L-10 -95L-6 -91Z"/><path d="M1.7 -86.3L14.8 -75.4L11 -70.7L-2.7 -80.7Z"/><path d="M10.1 -74.3L17.2 -88.7L21.7 -86.6L15.7 -71.8Z"/><path d="M22.8 -87.7L20.8 -90.7L17.2 -90.1L16.2 -86.6L19.1 -84.3L22.3 -86Z"/><path fill-rule="evenodd" d="M22.4 -93.8L26.5 -133.6L24.9 -139.8L22 -134L17.8 -94.3ZM20.7 -96.6L24 -127.8L23.2 -127.9L19.9 -96.6Z"/><path d="M27.7 -90.4L28 -93.2L12.1 -94.9L11.8 -92.1Z"/><path d="M20.3 -84L21.1 -91.1L18.5 -91.4L17.7 -84.3Z"/><path d="M19 -84.2L20.9 -81.9L18.6 -80L16.7 -82.3Z"/></symbol>
+    <symbol fill="currentColor" id="s-bruto" viewBox="-100 -158 200 164"><path d="M14.9 -86.7L20.7 -66.5L13.6 -64.2L6.5 -84Z"/><path d="M19.3 -68.5L35.5 -56.7L32.1 -51.7L15.1 -62.3Z"/><path d="M37.9 -54.2L35.5 -58L31 -57.3L29.8 -52.9L33.3 -50.1L37.4 -52.1Z"/><path d="M6.2 -49.7L6.6 -23.6L-6.1 -22.5L-10.2 -48.3Z"/><path d="M4.9 -18.7L-14 -2.2L-20 -7.8L-4.4 -27.5Z"/><path d="M-22 0L-20 -6L-14 -6L0 0L-9 0Z"/><path d="M3.2 -89.7L-4 -81.6L-11.1 -65.1L-9.1 -55.8L-1.1 -72.1Z"/><path d="M-11.9 -52.6L7.1 -45.7L14.8 -58.2L21.5 -71.9L21.8 -84L-0.2 -92L-7.4 -75Z"/><path d="M4.1 -54.5L20.2 -34L10.8 -25.5L-8.1 -43.5Z"/><path d="M21.8 -30.6L23.1 -5.6L14.9 -4.4L9.2 -28.9Z"/><path d="M14 0L16 -6L22 -6L36 0L27 0Z"/><path d="M8.1 -88.5L10.8 -97.1L17.6 -95.4L15.9 -86.6Z"/><path d="M19.2 -87.3L24.2 -92.3L24.6 -99.3L22.2 -103.8L16.2 -106.3L8.2 -106.3L3.2 -100.3L3.2 -92.3L7.2 -86.8Z"/><path d="M12.7 -105.7L14.7 -111.9L16.7 -105.7Z"/><path d="M5.7 -103.7L4.6 -109.7L8.6 -105.5Z"/><path d="M14.8 -87.9L25.3 -69.7L18.4 -65.4L6.6 -82.8Z"/><path d="M23.9 -71L40.8 -60.4L37.5 -54.7L19.8 -64Z"/><path d="M43.6 -57.5L41 -61.7L36.1 -60.9L34.9 -56.1L38.7 -53.1L43 -55.3Z"/><path d="M30.7 -63.3L71.7 -22.3L74.4 -24.9L33.4 -66Z"/><path fill-rule="evenodd" d="M65.3 -18.6L66.4 -15.5L78.4 -3.4L80.9 -3.1L93.6 -15.8L93.2 -18.3L81.2 -30.3L78 -31.4ZM69.9 -15.5L70.8 -14.6L82.1 -25.9L81.2 -26.8Z"/></symbol>
+    <symbol fill="currentColor" id="i-pesante" viewBox="0 0 24 24"><g transform="translate(1 0) rotate(30 12 12)"><path d="M11 2H13V11.5H11Z"/><path fill-rule="evenodd" d="M6 11.5H18L19.5 13V17L18 18.5H6L4.5 17V13Z M7.1 13V17H7.9V13Z M16.1 13V17H16.9V13Z"/></g></symbol>
+    <symbol fill="currentColor" id="i-distanza" viewBox="0 0 24 24"><g transform="translate(12 12) scale(0.62) translate(-12 -12)"><path d="M2 12L8 6.5V9.8H10.4V14.2H8V17.5Z M22 12L16 6.5V9.8H13.6V14.2H16V17.5Z M11.3 3.5H12.7V8H11.3Z M11.3 16H12.7V20.5H11.3Z"/></g></symbol>
+    <symbol fill="currentColor" id="i-attesa" viewBox="0 0 24 24"><g transform="translate(12 12) scale(0.62) translate(-12 -12)"><path d="M8 20.5C3 16 3.5 7 12.6 4.5" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M17.4 3.2L13.4 7.6L11.8 1.4Z"/><path d="M13.2 13.5A2.3 2.3 0 1 0 17.8 13.5A2.3 2.3 0 1 0 13.2 13.5Z"/></g></symbol>
+    <symbol fill="currentColor" id="i-guardia" viewBox="0 0 24 24"><g transform="translate(12 12) scale(0.62) translate(-12 -12)"><path fill-rule="evenodd" d="M4 3.5H20V11L18.5 16L12 21.5L5.5 16L4 11Z M5.5 5H18.5V10.8L17.2 15.3L12 19.6L6.8 15.3L5.5 10.8Z M6.3 5.8H17.7V10.7L16.5 14.9L12 18.6L7.5 14.9L6.3 10.7Z M11.3 7.5H12.7V16.3L12 17L11.3 16.3Z"/></g></symbol>
+    <symbol fill="currentColor" id="i-assalto" viewBox="0 0 24 24"><g transform="translate(12 12) scale(0.62) translate(-12 -12)"><g transform="rotate(45 12 12)"><path fill-rule="evenodd" d="M12 1.5L14.2 5V15H9.8V5Z M11.6 6.5V13.5H12.4V6.5Z"/><path d="M6 15.5H18L17 17.5H7Z"/><path d="M11 17.5H13V20.3H11Z"/><path d="M12 20.1L13.5 21.6L12 23.1L10.5 21.6Z"/></g></g></symbol>
+    <symbol fill="currentColor" id="i-vigore" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 21L3 12V7.5L5.8 4.5H9.2L12 7.3L14.8 4.5H18.2L21 7.5V12Z M5.2 8.1L6.6 6.3H8.1L6.6 8.1V10.8H5.2Z"/></symbol>
+    <pattern id="p-tratteggio" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><rect width="1.4" height="5" fill="currentColor"/></pattern>
+    <pattern id="p-losanga" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M9 1L17 9L9 17L1 9Z" fill="none" stroke="currentColor" stroke-width="0.8"/><circle cx="9" cy="9" r="1.3" fill="currentColor"/></pattern>
+  </defs>
+</svg>
+
+<main class="pagina">
+  <header class="testa">
+    <span class="etichetta">Limen · studio dello stile visivo</span>
+    <h1>Tre identità per lo stesso duello</h1>
+    <p>La stessa schermata (il Bruto alza il maglio, il viandante sceglie la Guardia) resa in tre stili completi. Sagome e simboli sono quelli veri del gioco; cambiano carta, luce, colori, caratteri e interfaccia. Da valutare a demo finita.</p>
+    <nav class="indice" aria-label="Alternative">
+      <a href="#stampa">A · Stampa</a>
+      <a href="#codice">B · Codice</a>
+      <a href="#lanterna">C · Lanterna</a>
+      <a href="#confronto">Confronto</a>
+    </nav>
+  </header>
+
+  <!-- A · STAMPA -->
+  <section class="tavola t-a" id="stampa" aria-labelledby="tit-a">
+    <div class="nome">
+      <span class="etichetta">Alternativa A</span>
+      <h2 id="tit-a">Stampa</h2>
+      <p class="idea">Un libro a stampa del Quattrocento: il duello è inciso nel legno.</p>
+    </div>
+    <svg class="schermo" viewBox="0 0 360 300" role="img" aria-label="Duello in stile xilografia: viandante in Guardia a sinistra, Bruto con il maglio a destra, ventaglio delle posture">
+      <rect width="360" height="300" fill="var(--a-carta2)"/>
+      <g style="color: var(--a-filo)"><path d="M0 150 Q60 110 120 140 T240 128 T360 136 V205 H0Z" fill="url(#p-tratteggio)"/></g>
+      <path d="M0 150 Q60 110 120 140 T240 128 T360 136" fill="none" stroke="var(--a-seppia)" stroke-width="1"/>
+      <rect y="205" width="360" height="95" fill="var(--a-carta)"/>
+      <line x1="0" y1="205" x2="360" y2="205" stroke="var(--a-ink)" stroke-width="2"/>
+      <g style="color: var(--a-ink)">
+        <use href="#s-vian" x="40" y="64" width="160" height="143"/>
+        <g transform="translate(410 0) scale(-1 1)"><use href="#s-bruto" x="70" y="58" width="168" height="150"/></g>
+      </g>
+      <g font-family="Alegreya Sans, Arial, sans-serif" font-weight="800" font-size="11" fill="var(--a-ink)">
+        <use href="#i-vigore" x="78" y="40" width="12" height="12" style="color: var(--a-rosso)"/>
+        <rect x="93" y="43" width="50" height="6" fill="none" stroke="var(--a-ink)"/><rect x="93" y="43" width="40" height="6" fill="var(--a-ink)"/>
+        <text x="148" y="50">16</text>
+        <g fill="var(--a-ink)"><circle cx="96" cy="58" r="3"/><circle cx="105" cy="58" r="3"/><circle cx="114" cy="58" r="3"/><circle cx="123" cy="58" r="3" fill="none" stroke="var(--a-ink)"/></g>
+        <use href="#i-vigore" x="232" y="40" width="12" height="12" style="color: var(--a-rosso)"/>
+        <rect x="247" y="43" width="50" height="6" fill="none" stroke="var(--a-ink)"/><rect x="247" y="43" width="30" height="6" fill="var(--a-ink)"/>
+        <text x="302" y="50">12</text>
+      </g>
+      <g transform="translate(256 4)"><rect x="0" y="0" width="34" height="28" fill="var(--a-carta)" stroke="var(--a-ink)"/><use href="#i-pesante" x="5" y="2" width="24" height="24" style="color: var(--a-rosso)"/></g>
+      <g font-family="Alegreya Sans SC, Arial, sans-serif" font-weight="700" font-size="10" fill="var(--a-ink)" text-anchor="middle">
+        <g transform="translate(34 242)"><circle r="19" fill="var(--a-carta)" stroke="var(--a-ink)" stroke-width="1.5" stroke-dasharray="2 2"/><use href="#i-distanza" x="-15" y="-15" width="30" height="30" style="color: var(--a-ink)"/><text y="32">Distanza</text></g>
+        <g transform="translate(82 262)"><circle r="19" fill="var(--a-carta)" stroke="var(--a-ink)" stroke-width="1.5" stroke-dasharray="2 2"/><use href="#i-attesa" x="-15" y="-15" width="30" height="30" style="color: var(--a-ink)"/><text y="32">Attesa</text></g>
+        <g transform="translate(132 262)"><circle r="21" fill="var(--a-ink)"/><use href="#i-guardia" x="-15" y="-15" width="30" height="30" style="color: var(--a-carta)"/><text y="34">Guardia</text></g>
+        <g transform="translate(180 242)"><circle r="19" fill="var(--a-carta)" stroke="var(--a-ink)" stroke-width="1.5" stroke-dasharray="2 2"/><use href="#i-assalto" x="-15" y="-15" width="30" height="30" style="color: var(--a-ink)"/><text y="32">Assalto</text></g>
+      </g>
+      <g font-family="Alegreya Sans, Arial, sans-serif" font-weight="800" font-size="13" fill="var(--a-rosso)"><text x="214" y="236">↓ 2–3 · ↑ 1–2</text></g>
+      <text x="214" y="254" font-family="Alegreya, Georgia, serif" font-style="italic" font-size="12" fill="var(--a-seppia)">tocca di nuovo</text>
+    </svg>
+    <div class="palette" aria-label="Palette della Stampa">
+      <div class="campione"><i style="background: var(--a-carta)"></i><b>Carta</b><span>#e9e2d3 · #141210</span></div>
+      <div class="campione"><i style="background: var(--a-carta2)"></i><b>Carta 2</b><span>#ddd4c1 · #1f1b17</span></div>
+      <div class="campione"><i style="background: var(--a-ink)"></i><b>Inchiostro</b><span>13,6 : 1</span></div>
+      <div class="campione"><i style="background: var(--a-seppia)"></i><b>Seppia</b><span>5,1 : 1</span></div>
+      <div class="campione"><i style="background: var(--a-filo)"></i><b>Filo</b><span>decorativo</span></div>
+      <div class="campione"><i style="background: var(--a-rosso)"></i><b>Pericolo</b><span>5,5 : 1</span></div>
+    </div>
+    <div class="specimen">
+      <span class="nota">IM Fell English SC · Alegreya · Alegreya Sans</span>
+      <p class="grande">Il Bruto alza il maglio</p>
+      <p class="testo">Il viandante tiene la guardia: la parata assorbe il colpo, ma il fiato scende di un pallino.</p>
+      <p class="num">Vigore 16 · −5 · 4–6</p>
+    </div>
+    <div class="componenti">
+      <div class="riga-comp"><span class="bottone" role="presentation">Conferma</span><span class="etichetta">Timbro: affonda di 1 px</span></div>
+      <p class="registro">Pari il Maglio: 7 danni diventano 3.</p>
+    </div>
+    <div class="giudizio">
+      <p><b>Forza</b>È ciò che il gioco ha già: costo minimo, coerenza totale con simboli e sagome.</p>
+      <p><b>Rischio</b>La meno sorprendente; ricorda Pentiment; una copertina chiara si spegne nel negozio.</p>
+    </div>
+  </section>
+
+  <!-- B · CODICE -->
+  <section class="tavola t-b" id="codice" aria-labelledby="tit-b">
+    <div class="nome">
+      <span class="etichetta">Alternativa B</span>
+      <h2 id="tit-b">Codice</h2>
+      <p class="idea">Le pagine di un codice miniato: rubriche rosse, lapislazzuli e oro.</p>
+    </div>
+    <svg class="schermo" viewBox="0 0 360 300" role="img" aria-label="Duello in stile manoscritto miniato: cielo a losanghe, cornice d'oro, ventaglio con la Guardia in lapislazzuli">
+      <rect width="360" height="300" fill="var(--b-carta)"/>
+      <rect x="10" y="10" width="340" height="190" fill="var(--b-carta2)"/>
+      <g style="color: var(--b-oro)" opacity=".55"><rect x="10" y="10" width="340" height="120" fill="url(#p-losanga)"/></g>
+      <rect x="10" y="10" width="340" height="190" fill="none" stroke="var(--b-oro)" stroke-width="3"/>
+      <rect x="15" y="15" width="330" height="180" fill="none" stroke="var(--b-rosso)" stroke-width="1"/>
+      <path d="M15 160 Q90 128 170 150 T345 140 V195 H15Z" fill="var(--b-carta)" stroke="var(--b-seppia)" stroke-width="1"/>
+      <g style="color: var(--b-ink)">
+        <use href="#s-vian" x="40" y="58" width="160" height="143"/>
+        <g transform="translate(410 0) scale(-1 1)"><use href="#s-bruto" x="70" y="52" width="168" height="150"/></g>
+      </g>
+      <g font-family="EB Garamond, Georgia, serif" font-weight="600" font-size="12" fill="var(--b-ink)">
+        <rect x="88" y="32" width="50" height="6" fill="var(--b-carta)" stroke="var(--b-rosso)"/><rect x="88" y="32" width="40" height="6" fill="var(--b-rosso)"/>
+        <text x="143" y="39">xvi</text>
+        <g fill="var(--b-lapis)"><circle cx="91" cy="47" r="3"/><circle cx="100" cy="47" r="3"/><circle cx="109" cy="47" r="3"/><circle cx="118" cy="47" r="3" fill="none" stroke="var(--b-lapis)"/></g>
+        <rect x="242" y="32" width="50" height="6" fill="var(--b-carta)" stroke="var(--b-rosso)"/><rect x="242" y="32" width="30" height="6" fill="var(--b-rosso)"/>
+        <text x="297" y="39">xii</text>
+      </g>
+      <g transform="translate(286 34)"><circle r="16" fill="var(--b-carta)" stroke="var(--b-oro)" stroke-width="2"/><use href="#i-pesante" x="-12" y="-12" width="24" height="24" style="color: var(--b-rosso)"/></g>
+      <g font-family="EB Garamond, Georgia, serif" font-weight="600" font-size="12" fill="var(--b-ink)" text-anchor="middle" style="font-variant-caps: all-small-caps">
+        <g transform="translate(34 236)"><circle r="19" fill="var(--b-carta)" stroke="var(--b-oro)" stroke-width="2.5"/><use href="#i-distanza" x="-15" y="-15" width="30" height="30" style="color: var(--b-ink)"/><text y="33">Distanza</text></g>
+        <g transform="translate(82 258)"><circle r="19" fill="var(--b-carta)" stroke="var(--b-oro)" stroke-width="2.5"/><use href="#i-attesa" x="-15" y="-15" width="30" height="30" style="color: var(--b-ink)"/><text y="33">Attesa</text></g>
+        <g transform="translate(132 258)"><circle r="21" fill="var(--b-lapis)" stroke="var(--b-oro)" stroke-width="3"/><use href="#i-guardia" x="-15" y="-15" width="30" height="30" style="color: var(--b-carta)"/><text y="35">Guardia</text></g>
+        <g transform="translate(180 236)"><circle r="19" fill="var(--b-carta)" stroke="var(--b-oro)" stroke-width="2.5"/><use href="#i-assalto" x="-15" y="-15" width="30" height="30" style="color: var(--b-ink)"/><text y="33">Assalto</text></g>
+      </g>
+      <text x="214" y="232" font-family="EB Garamond, Georgia, serif" font-weight="600" font-size="14" fill="var(--b-rosso)">↓ 2–3 · <tspan fill="var(--b-lapis)">↑ 1–2</tspan></text>
+      <text x="214" y="250" font-family="EB Garamond, Georgia, serif" font-style="italic" font-size="13" fill="var(--b-seppia)">☞ tocca di nuovo</text>
+    </svg>
+    <div class="palette" aria-label="Palette del Codice">
+      <div class="campione"><i style="background: var(--b-carta)"></i><b>Pergamena</b><span>#f2e6c8 · #18120c</span></div>
+      <div class="campione"><i style="background: var(--b-ink)"></i><b>Ferrogallico</b><span>13,3 : 1</span></div>
+      <div class="campione"><i style="background: var(--b-seppia)"></i><b>Seppia</b><span>5,8 : 1</span></div>
+      <div class="campione"><i style="background: var(--b-rosso)"></i><b>Vermiglio</b><span>5,7 : 1 · fa male</span></div>
+      <div class="campione"><i style="background: var(--b-lapis)"></i><b>Lapislazzuli</b><span>6,6 : 1 · è tuo</span></div>
+      <div class="campione"><i style="background: var(--b-oro)"></i><b>Oro</b><span>solo cornici</span></div>
+    </div>
+    <div class="specimen">
+      <span class="nota">Grenze Gotisch · EB Garamond</span>
+      <p class="grande">Il Bruto alza il maglio</p>
+      <p class="testo">Il viandante tiene la guardia: la parata assorbe il colpo, ma il fiato scende di una perla.</p>
+      <p class="num">Vigore 16 · −5 · 4–6</p>
+    </div>
+    <div class="componenti">
+      <div class="riga-comp"><span class="bottone" role="presentation">Conferma</span><span class="etichetta">Lapislazzuli e filo d'oro</span></div>
+      <p class="registro"><span class="rubrica">Turno iii.</span> Pari il Maglio: 7 danni diventano 3.</p>
+    </div>
+    <div class="giudizio">
+      <p><b>Forza</b>La più calda e ricca; perfetta per la locanda e per "il mondo ricorda".</p>
+      <p><b>Rischio</b>Linguaggio già di Pentiment e Inkulinati; tre colori da disciplinare; a 360 px la decorazione si impasta.</p>
+    </div>
+  </section>
+
+  <!-- C · LANTERNA -->
+  <section class="tavola t-c" id="lanterna" aria-labelledby="tit-c">
+    <div class="nome">
+      <span class="etichetta">Alternativa C</span>
+      <h2 id="tit-c">Lanterna</h2>
+      <p class="idea">Un teatro di sagome di carta: la scena è uno schermo acceso, il resto è notte.</p>
+    </div>
+    <svg class="schermo" viewBox="0 0 360 300" role="img" aria-label="Duello in stile teatro d'ombre: sagome nere su uno schermo ambrato, cornice di boccascena, ventaglio di dischi controluce">
+      <rect width="360" height="300" fill="var(--c-notte)"/>
+      <g class="lume">
+        <rect x="14" y="10" width="332" height="196" fill="var(--c-schermo)"/>
+        <path d="M14 150 Q70 112 130 138 T250 124 T346 132 V206 H14Z" fill="var(--c-schermo2)"/>
+      </g>
+      <path d="M14 206 V176 Q24 170 30 178 Q38 166 46 180 L52 206Z M300 206 L306 182 Q314 170 322 180 Q330 168 338 178 L346 206Z" fill="var(--c-sagoma)"/>
+      <rect x="14" y="200" width="332" height="6" fill="var(--c-sagoma)"/>
+      <g style="color: var(--c-sagoma)">
+        <use href="#s-vian" x="40" y="60" width="160" height="143"/>
+        <g transform="translate(410 0) scale(-1 1)"><use href="#s-bruto" x="70" y="54" width="168" height="150"/></g>
+      </g>
+      <use href="#i-pesante" x="266" y="14" width="34" height="34" style="color: var(--c-brace)"/>
+      <path d="M0 0 H360 V10 H14 V206 H0Z M346 10 H360 V206 H346Z" fill="var(--c-notte2)"/>
+      <rect x="14" y="10" width="332" height="196" fill="none" stroke="var(--c-schermo)" stroke-width="1" opacity=".5"/>
+      <g font-family="Barlow Semi Condensed, Arial, sans-serif" font-weight="700" font-size="12" fill="var(--c-luna)">
+        <rect x="70" y="226" width="56" height="6" fill="var(--c-notte2)" stroke="var(--c-tenue)" stroke-width=".8"/><rect x="70" y="226" width="45" height="6" fill="var(--c-schermo)"/>
+        <text x="131" y="233">16</text>
+        <g fill="var(--c-schermo)"><circle cx="73" cy="242" r="3"/><circle cx="82" cy="242" r="3"/><circle cx="91" cy="242" r="3"/><circle cx="100" cy="242" r="3" fill="none" stroke="var(--c-tenue)"/></g>
+        <rect x="232" y="226" width="56" height="6" fill="var(--c-notte2)" stroke="var(--c-tenue)" stroke-width=".8"/><rect x="232" y="226" width="34" height="6" fill="var(--c-rosso)"/>
+        <text x="293" y="233">12</text>
+      </g>
+      <g font-family="Marcellus SC, Georgia, serif" font-size="10" fill="var(--c-luna)" text-anchor="middle">
+        <g transform="translate(36 268)"><circle r="17" fill="var(--c-notte2)" stroke="var(--c-tenue)" stroke-width="1"/><use href="#i-distanza" x="-14" y="-14" width="28" height="28" style="color: var(--c-schermo)"/></g>
+        <g transform="translate(82 276)"><circle r="17" fill="var(--c-notte2)" stroke="var(--c-tenue)" stroke-width="1"/><use href="#i-attesa" x="-14" y="-14" width="28" height="28" style="color: var(--c-schermo)"/></g>
+        <g transform="translate(130 276)"><circle r="20" fill="var(--c-schermo)" stroke="var(--c-luna)" stroke-width="1.5"/><use href="#i-guardia" x="-15" y="-15" width="30" height="30" style="color: var(--c-sagoma)"/></g>
+        <g transform="translate(176 268)"><circle r="17" fill="var(--c-notte2)" stroke="var(--c-tenue)" stroke-width="1"/><use href="#i-assalto" x="-14" y="-14" width="28" height="28" style="color: var(--c-schermo)"/></g>
+      </g>
+      <text x="214" y="262" font-family="Barlow Semi Condensed, Arial, sans-serif" font-weight="700" font-size="14" fill="var(--c-rosso)">↓ 2–3 · <tspan fill="var(--c-schermo)">↑ 1–2</tspan></text>
+      <text x="214" y="280" font-family="Spectral, Georgia, serif" font-style="italic" font-size="12" fill="var(--c-tenue)">Guardia · tocca di nuovo</text>
+    </svg>
+    <div class="palette" aria-label="Palette della Lanterna">
+      <div class="campione"><i style="background: var(--c-notte)"></i><b>Notte</b><span>#101219</span></div>
+      <div class="campione"><i style="background: var(--c-luna)"></i><b>Luna</b><span>14,4 : 1</span></div>
+      <div class="campione"><i style="background: var(--c-schermo)"></i><b>Schermo</b><span>#e9b25f · 9,8 : 1</span></div>
+      <div class="campione"><i style="background: var(--c-schermo2)"></i><b>Quinta</b><span>#cf8f3e</span></div>
+      <div class="campione"><i style="background: var(--c-sagoma)"></i><b>Sagoma</b><span>10,4 : 1 su schermo</span></div>
+      <div class="campione"><i style="background: var(--c-brace)"></i><b>Brace</b><span>5,7 : 1 su schermo</span></div>
+    </div>
+    <div class="specimen">
+      <span class="nota">Marcellus SC · Spectral · Barlow Semi Condensed</span>
+      <p class="grande">Il Bruto alza il maglio</p>
+      <p class="testo">Il viandante tiene la guardia: la parata assorbe il colpo, ma la lanterna del fiato si abbassa.</p>
+      <p class="num">Vigore 16 · −5 · 4–6</p>
+    </div>
+    <div class="componenti">
+      <div class="riga-comp"><span class="bottone" role="presentation">Conferma</span><span class="etichetta">Disco di carta che si accende</span></div>
+      <p class="registro">— Pari il Maglio: 7 danni diventano 3. —</p>
+    </div>
+    <div class="giudizio">
+      <p><b>Forza</b>Sagome leggibilissime, coerente con le marionette, quasi unica su Steam; il buio caldo diventa letterale.</p>
+      <p><b>Rischio</b>Le figure vivono solo di sagoma; due zone di colore da comporre; il tema chiaro è una variante.</p>
+    </div>
+  </section>
+
+  <section class="confronto" id="confronto" aria-labelledby="tit-conf">
+    <span class="etichetta">Giudizio di partenza, da sostituire con i dati della demo</span>
+    <h2 id="tit-conf">Confronto</h2>
+    <div class="tabella">
+      <table>
+        <thead><tr><th>Criterio</th><th>Peso</th><th>A</th><th>B</th><th>C</th></tr></thead>
+        <tbody>
+          <tr><td>Leggibilità su S23</td><td class="v">25</td><td class="v">4</td><td class="v">3</td><td class="v">4</td></tr>
+          <tr><td>Genere e tono</td><td class="v">15</td><td class="v">4</td><td class="v">3</td><td class="v">4</td></tr>
+          <tr><td>Distintività su Steam</td><td class="v">15</td><td class="v">2</td><td class="v">2</td><td class="v">4</td></tr>
+          <tr><td>Costo di produzione</td><td class="v">15</td><td class="v">4</td><td class="v">2</td><td class="v">3</td></tr>
+          <tr><td>Coerenza con simboli e pose</td><td class="v">10</td><td class="v">4</td><td class="v">3</td><td class="v">4</td></tr>
+          <tr><td>Accessibilità</td><td class="v">10</td><td class="v">4</td><td class="v">3</td><td class="v">4</td></tr>
+          <tr><td>Peso tecnico</td><td class="v">5</td><td class="v">4</td><td class="v">3</td><td class="v">3</td></tr>
+          <tr><td>Copertina Steam</td><td class="v">5</td><td class="v">2</td><td class="v">3</td><td class="v">4</td></tr>
+          <tr><th>Totale su 400</th><td></td><td class="v">360</td><td class="v">270</td><td class="v">380</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prossimo">
+      <h3>Come le valutiamo a demo finita</h3>
+      <ol>
+        <li>Ogni alternativa diventa un tema dell'arena: stessi duelli, stesse sagome, interruttore nel pannello.</li>
+        <li>Quiz delle sagome ripetuto in ogni tema: risposte giuste e tempo.</li>
+        <li>Un duello per tema, stesso nemico e stesso seed; due voti da 1 a 5: leggibilità e "è il mio gioco".</li>
+        <li>Copertina a 120×45 accanto a otto copertine reali del genere.</li>
+        <li>Punteggio pesato con i voti reali, poi la scelta va in DESIGN §8.</li>
+      </ol>
+    </div>
+  </section>
+</main>
