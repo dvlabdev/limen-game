@@ -84,6 +84,8 @@ interface Sessione {
   storico: VoceRegistro[];
   selezione: PosturaId | null; // null: nessuna scelta (mai una postura non disponibile, AUD-002)
   messaggio?: string;
+  anima: boolean; // subito dopo la conferma: dissolvenza e testo del colpo per circa 1,2 s
+  cassetto: boolean;
   cambi: number;
   salvata: boolean;
 }
@@ -95,8 +97,14 @@ function sceltaPredefinita(v: DuelView): PosturaId | null {
   return attiva && attiva.disponibile ? attiva.id : null;
 }
 
+const DURATA_COLPO_MS = 1200;
+
 export function avvia(radice: HTMLElement): void {
   let config = caricaConfig();
+  let timerColpo: ReturnType<typeof setTimeout> | undefined;
+  // Nella scena la scelta è a due tocchi (seleziona, poi conferma): si parte senza selezione.
+  // Nella griglia si parte dalla postura attuale, se disponibile.
+  const selezioneIniziale = (v: DuelView): PosturaId | null => (config.layout === 'scena' ? null : sceltaPredefinita(v));
   let sessione: Sessione | null = null;
   let jsonTelemetria: string | undefined;
 
@@ -118,7 +126,7 @@ export function avvia(radice: HTMLElement): void {
 
   const nuovoDuello = (nemicoId: string): void => {
     const stato = creaDuello(nemicoId, config.seed, opzioni(), { parata: config.parata, schivata: config.schivata, distanza: config.distanza });
-    sessione = { nemicoId, stato, eventi: [], storico: [], selezione: sceltaPredefinita(toDuelView(stato)), cambi: 0, salvata: false };
+    sessione = { nemicoId, stato, eventi: [], storico: [], selezione: selezioneIniziale(toDuelView(stato)), anima: false, cassetto: false, cambi: 0, salvata: false };
     disegna();
   };
 
@@ -167,12 +175,23 @@ export function avvia(radice: HTMLElement): void {
     const modello: ModelloDuello = {
       vista: toDuelView(s.stato, s.eventi),
       layout: config.layout,
+      nemicoId: s.nemicoId,
+      anima: s.anima,
+      cassetto: s.cassetto,
       selezione: s.selezione,
       storico: s.storico,
       ...(s.messaggio ? { messaggio: s.messaggio } : {}),
       ...(s.stato.esito !== 'in corso' ? { fine: statistiche(s) } : {}),
     };
     disegnaDuello(radice, modello);
+    clearTimeout(timerColpo);
+    if (s.anima) {
+      // Il testo del colpo dura circa 1,2 s: poi si toglie dal DOM senza ridisegnare la scena.
+      timerColpo = setTimeout(() => {
+        s.anima = false;
+        radice.querySelector('.colpi')?.remove();
+      }, DURATA_COLPO_MS);
+    }
   };
 
   const conferma = (): void => {
@@ -183,7 +202,7 @@ export function avvia(radice: HTMLElement): void {
     const vista = toDuelView(s.stato, s.eventi);
     const scelta = s.selezione ? vista.posture.find((p) => p.id === s.selezione) : undefined;
     if (!s.selezione || !scelta || !scelta.disponibile) {
-      s.selezione = sceltaPredefinita(vista);
+      s.selezione = selezioneIniziale(vista);
       s.messaggio = 'Scegli una postura disponibile.';
       disegna();
       return;
@@ -192,7 +211,7 @@ export function avvia(radice: HTMLElement): void {
     try {
       r = resolveTurn(s.stato, s.selezione);
     } catch {
-      s.selezione = sceltaPredefinita(vista);
+      s.selezione = selezioneIniziale(vista);
       s.messaggio = 'Quella postura non è disponibile: scegline un’altra.';
       disegna();
       return;
@@ -203,7 +222,8 @@ export function avvia(radice: HTMLElement): void {
     s.cambi += r.eventi.filter((e) => e.tipo === 'cambio' && e.chi === 'giocatore').length;
     s.stato = r.stato;
     s.eventi = r.eventi;
-    s.selezione = s.stato.esito === 'in corso' ? sceltaPredefinita(toDuelView(s.stato)) : null;
+    s.selezione = s.stato.esito === 'in corso' ? selezioneIniziale(toDuelView(s.stato)) : null;
+    s.anima = true;
     if (s.stato.esito !== 'in corso') registraTelemetria(s);
     disegna();
   };
@@ -235,14 +255,36 @@ export function avvia(radice: HTMLElement): void {
         if (sessione) {
           const p = toDuelView(sessione.stato).posture.find((x) => x.id === id);
           if (p && p.disponibile) {
-            sessione.selezione = p.id;
-            delete sessione.messaggio;
-            disegna();
+            // Scena: il secondo tocco sullo stesso medaglione conferma; un altro medaglione sposta la selezione.
+            if (config.layout === 'scena' && sessione.selezione === p.id) {
+              conferma();
+            } else {
+              sessione.selezione = p.id;
+              sessione.anima = false;
+              delete sessione.messaggio;
+              disegna();
+            }
           }
         }
         break;
       case 'conferma':
         conferma();
+        break;
+      case 'sfondo':
+        // Un tocco fuori dai medaglioni annulla la selezione e salta il testo del colpo.
+        if (sessione && sessione.stato.esito === 'in corso' && (sessione.selezione || sessione.anima || sessione.messaggio)) {
+          sessione.selezione = null;
+          sessione.anima = false;
+          delete sessione.messaggio;
+          disegna();
+        }
+        break;
+      case 'cassetto':
+        if (sessione) {
+          sessione.cassetto = !sessione.cassetto;
+          sessione.anima = false;
+          disegna();
+        }
         break;
       case 'rigioca-stesso':
         if (sessione) nuovoDuello(sessione.nemicoId);

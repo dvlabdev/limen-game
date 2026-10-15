@@ -3,6 +3,7 @@ import type { PosturaId } from '../core/types.ts';
 import type { DuelView } from '../core/view.ts';
 import type { VoceRegistro } from './comuni.ts';
 import { attacco, barraVigore, costoEtichetta, dettaglioHint, esc, intervallo, pallini, stati, voce } from './comuni.ts';
+import { disegnaScena } from './scena.ts';
 import { icona, simbolo } from './symbols.ts';
 
 export type { VoceRegistro } from './comuni.ts';
@@ -29,6 +30,9 @@ export interface ModelloMenu {
 export interface ModelloDuello {
   vista: DuelView;
   layout: Layout;
+  nemicoId: string; // per la sagoma del nemico
+  anima: boolean; // subito dopo la conferma: dissolvenza delle sagome e testo del colpo
+  cassetto: boolean; // cassetto del registro aperto (scena)
   selezione: PosturaId | null; // mai una postura non disponibile (AUD-002)
   storico: VoceRegistro[]; // turni precedenti all'ultimo
   fine?: { esito: string; righe: string[] };
@@ -185,5 +189,6 @@ export function disegnaGriglia(radice: HTMLElement, m: ModelloDuello): void {
 }
 
 export function disegnaDuello(radice: HTMLElement, m: ModelloDuello): void {
-  disegnaGriglia(radice, m);
+  if (m.layout === 'scena') disegnaScena(radice, m);
+  else disegnaGriglia(radice, m);
 }

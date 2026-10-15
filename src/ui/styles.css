@@ -138,3 +138,75 @@ input, select, textarea {
 .fine .esito.sconfitta { color: var(--pericolo); }
 .fine ul { list-style: none; padding: 0; margin: 6px 0 10px; color: var(--seppia); font-size: 0.9rem; }
 .fine .azioni { justify-content: center; }
+
+/* --- Layout "scena" (UI_SPEC §5): 360 × 700 px, coordinate assolute come nel mockup --- */
+.scena { position: relative; margin: 0 auto; overflow: hidden; background: var(--carta-2); font-size: 14px; -webkit-tap-highlight-color: transparent; }
+.scena > * { position: absolute; }
+.scena .fondale { left: 0; top: 0; pointer-events: none; }
+.scena .turno { left: 12px; top: 14px; color: var(--seppia); font-size: 14px; }
+.scena .menu-btn { right: 8px; top: 4px; min-width: 44px; padding: 6px 10px; background: var(--carta); }
+
+.hud { width: 128px; height: 48px; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
+.hud-nome { display: flex; justify-content: space-between; align-items: center; height: 18px; gap: 2px; }
+.hud-nome .nm { font: 700 14px/18px var(--serif); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hud .bollini { display: flex; gap: 2px; flex: none; }
+.hud-vigore { display: flex; align-items: center; gap: 4px; height: 16px; font-size: 12px; }
+.hud-vigore .barra { flex: 1; height: 8px; border: 1px solid var(--seppia); background: var(--carta); border-radius: 4px; overflow: hidden; }
+.hud-vigore .barra i { display: block; height: 100%; background: var(--inchiostro); }
+.hud-vigore .num { flex: none; }
+.hud-fiato { height: 14px; display: flex; align-items: center; font-size: 12px; }
+.hud-fiato .zero { color: var(--pericolo); display: flex; align-items: center; gap: 4px; }
+
+.figura { color: var(--inchiostro); line-height: 0; pointer-events: none; }
+.figura.specchiata { transform: scaleX(-1); }
+.figura.dissolve { animation: dissolvi 200ms ease-out; }
+@keyframes dissolvi { from { opacity: 0; } to { opacity: 1; } }
+.targhetta { width: 100px; display: flex; justify-content: center; align-items: center; gap: 4px; font-size: 12px; color: var(--seppia); pointer-events: none; }
+
+.hint-scena { left: 226px; width: 124px; bottom: 289px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; pointer-events: none; }
+.hint-scena .h-nome { font: 700 14px/1.2 var(--serif); }
+.hint-scena .h-dettaglio { font-size: 12px; line-height: 1.3; color: var(--seppia); display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.hint-scena.pericolo svg, .hint-scena.pericolo .mods { color: var(--pericolo); }
+
+.cartiglio { left: 8px; top: 288px; width: 184px; padding: 3px 6px; background: var(--carta); border: 1px solid var(--seppia); border-radius: 6px; font-size: 12px; line-height: 1.3; pointer-events: none; }
+.cartiglio.tenue { border-style: dashed; color: var(--seppia); }
+.cartiglio.avviso { color: var(--pericolo); border-color: var(--pericolo); }
+.cartiglio .c-nome { display: flex; align-items: center; gap: 4px; font: 700 14px/1.2 var(--serif); }
+.cartiglio .tenue { font-size: 12px; }
+
+/* Ventaglio: medaglioni da 52 px, bersaglio 64 × 84 con l'etichetta sotto */
+.med { width: 64px; height: 84px; padding: 0; border: 0; border-radius: 0; background: transparent; min-height: 0; display: flex; flex-direction: column; align-items: center; }
+.med:disabled { opacity: 1; }
+.med .disco { position: relative; display: block; width: 52px; height: 52px; border-radius: 50%; background: var(--carta); line-height: 0; transition: transform 0.12s; }
+.med.scelta .disco { transform: scale(1.08); }
+.med .et { display: flex; flex-direction: column; align-items: center; font-size: 12px; line-height: 1.25; margin-top: 3px; }
+.med .et b { font-weight: 700; }
+.med .costo { display: inline-flex; align-items: center; gap: 3px; color: var(--seppia); }
+.med .motivo { color: var(--seppia); }
+.med.spenta .disco svg.medaglione { opacity: 0.3; }
+.med.spenta .et { opacity: 0.65; }
+.med .badge { position: absolute; top: -4px; right: -6px; width: 22px; height: 22px; border-radius: 50%; background: var(--carta); display: flex; align-items: center; justify-content: center; }
+
+.colpi { left: 0; top: 0; width: 360px; height: 700px; pointer-events: none; }
+.etichetta-colpo { position: absolute; width: 124px; display: flex; justify-content: center; align-items: center; gap: 4px; font: 700 14px/1.2 var(--serif); animation: colpo 1.2s ease-out both; text-shadow: 0 0 3px var(--carta), 0 0 3px var(--carta); }
+.etichetta-colpo .icona { filter: drop-shadow(0 0 2px var(--carta)); }
+@keyframes colpo { 0% { opacity: 0; transform: translateY(6px); } 12% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Cassetto del registro: chiuso mostra l'ultima riga, aperto lo storico */
+.cassetto { left: 0; bottom: 0; width: 360px; display: flex; flex-direction: column; background: var(--carta); border-top: 1px solid var(--seppia); z-index: 5; }
+.cassetto .maniglia { position: relative; width: 100%; height: 44px; min-height: 44px; border: 0; border-radius: 0; background: transparent; display: flex; align-items: center; gap: 8px; padding: 6px 12px 0; text-align: left; }
+.cassetto .presa { position: absolute; left: 50%; top: 4px; width: 32px; height: 3px; border-radius: 2px; background: var(--filo); transform: translateX(-50%); }
+.cassetto .ult { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; }
+.cassetto .ult .testo { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cassetto .et-reg { flex: none; font-size: 12px; color: var(--seppia); }
+.cassetto .storico { height: 270px; overflow-y: auto; padding: 8px 12px 4px; font-size: 14px; }
+.cassetto .voce { display: flex; gap: 8px; align-items: center; padding: 2px 0; line-height: 1.3; }
+.cassetto .voce .g { width: 16px; display: inline-flex; justify-content: center; flex: none; }
+.cassetto .turno-sep { color: var(--seppia); font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; padding-top: 4px; }
+
+.fine-scena { left: 12px; right: 12px; top: 290px; z-index: 6; }
+
+@media (prefers-reduced-motion: reduce) {
+  .figura.dissolve, .etichetta-colpo { animation: none; }
+  .med .disco { transition: none; }
+}
