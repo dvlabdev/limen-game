@@ -91,6 +91,7 @@ export interface FaseProfilo {
 export interface Profilo {
   id: string;
   nome: string;
+  articolo?: 'il' | 'la'; // per le frasi del registro (default: il)
   vigore: number;
   fiato: number;
   velocita: number;

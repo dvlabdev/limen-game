@@ -78,6 +78,17 @@ export function creaDuello(
   return stato;
 }
 
+// Copia profonda scritta a mano: lo stato è piatto e questa è la parte più calda del simulatore.
+export function clonaStato(s: StatoDuello): StatoDuello {
+  return {
+    ...s,
+    giocatore: { ...s.giocatore, gradi: { ...s.giocatore.gradi } },
+    nemico: { ...s.nemico, gradi: { ...s.nemico.gradi } },
+    storicoPosture: s.storicoPosture.slice(),
+    opzioni: { ...s.opzioni },
+  };
+}
+
 export function cambioConsentito(stato: StatoDuello, scelta: PosturaId): boolean {
   return POSTURE[scelta].archetipo === stato.giocatore.postura || stato.giocatore.fiato >= BALANCE.costoCambio;
 }
@@ -121,7 +132,7 @@ export function resolveTurn(
   if (stato.esito !== 'in corso') throw new Error('Il duello è già concluso');
   if (!cambioConsentito(stato, scelta)) throw new Error('Cambio di postura non consentito: fiato insufficiente');
 
-  const s: StatoDuello = structuredClone(stato);
+  const s = clonaStato(stato);
   const turno = s.turno;
   const eventi: EventoConTurno[] = [];
   const ev = (e: EventoDuello): void => {

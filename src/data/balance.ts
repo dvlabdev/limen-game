@@ -13,7 +13,7 @@ export const BALANCE = {
   turnoMax: 25,
 
   giocatore: {
-    vigore: 30,
+    vigore: 20,
     fiato: 4,
     fiatoMax: 6,
     velocita: 2,
