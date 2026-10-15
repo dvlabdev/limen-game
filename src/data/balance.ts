@@ -1,4 +1,6 @@
-// Tutti i numeri delle regole dell'arena. I valori sono quelli iniziali di ARENA_SPEC §4.
+// Tutti i numeri delle regole dell'arena (ARENA_SPEC §4 e §12). Sono i valori in vigore, non quelli
+// iniziali della specifica: il vigore del giocatore, per esempio, è 20 (la specifica indicava 30,
+// scala accettata in ARENA_SPEC §12.1). Ogni scostamento è annotato in docs/ARENA_REPORT.md.
 import type { Archetipo, Forza, Portata, PosturaId, Velocita } from '../core/types.ts';
 
 export interface Battuta {

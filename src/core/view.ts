@@ -16,7 +16,8 @@ import { BALANCE } from '../data/balance.ts';
 import { trovaMossa, trovaProfilo } from '../data/enemies.ts';
 import { NOMI_ARCHETIPO, ORDINE_POSTURE, POSTURE } from '../data/postures.ts';
 import { categoriaDi, faseProfilo, mossaAccessibile } from './ai.ts';
-import { costoCambioDi, motivoNonDisponibile, resolveTurn } from './resolve.ts';
+import { motivoNonDisponibile, resolveTurn } from './resolve.ts';
+import { costoCambioDi, senzaSpazio } from './spazio.ts';
 import { dadoMassimo, dadoMinimo } from './rng.ts';
 
 export interface CombattenteView {
@@ -29,6 +30,7 @@ export interface CombattenteView {
   vantaggio: boolean;
   preparato: boolean;
   spazio: number; // turni consecutivi in Distanza, al massimo 2: la scena mostra il bordo
+  spalle: boolean; // spalle al muro: la Distanza non è disponibile (la UI non ripete la soglia, AUD-021)
 }
 
 export interface DuelView {
@@ -73,6 +75,7 @@ function combattenteView(c: StatoDuello['giocatore']): CombattenteView {
     vantaggio: c.vantaggio,
     preparato: c.preparato,
     spazio: Math.min(c.distanzaConsecutive, BALANCE.distanzaConsecutiveMax),
+    spalle: senzaSpazio(c),
   };
 }
 
@@ -100,6 +103,17 @@ function mosseCandidate(stato: StatoDuello): string[] {
   return [...ids];
 }
 
+// Danni veri di un turno, ricavati dagli eventi: non la differenza di vigore, che si ferma a 0 (AUD-003).
+function dannoDaEventi(eventi: EventoConTurno[], chi: Chi): number {
+  let somma = 0;
+  for (const e of eventi) {
+    if (e.tipo === 'colpo' && e.chi !== chi) somma += e.danno;
+    else if (e.tipo === 'parata' && e.chi === chi) somma += e.danno;
+    else if ((e.tipo === 'contrattacco' || e.tipo === 'punta' || e.tipo === 'arresto') && e.chi !== chi) somma += e.danno;
+  }
+  return somma;
+}
+
 // Anteprima: riusa resolveTurn con dado minimo e massimo, senza duplicare le regole.
 function anteprima(stato: StatoDuello, postura: PosturaId): { subito: [number, number]; inflitto: [number, number] } {
   let sMin = Infinity;
@@ -109,8 +123,8 @@ function anteprima(stato: StatoDuello, postura: PosturaId): { subito: [number, n
   for (const id of mosseCandidate(stato)) {
     for (const dado of [dadoMinimo, dadoMassimo]) {
       const r = resolveTurn({ ...stato, mossaNemico: id }, postura, { dado, saltaIA: true });
-      const subito = stato.giocatore.vigore - r.stato.giocatore.vigore;
-      const inflitto = stato.nemico.vigore - r.stato.nemico.vigore;
+      const subito = dannoDaEventi(r.eventi, 'giocatore');
+      const inflitto = dannoDaEventi(r.eventi, 'nemico');
       sMin = Math.min(sMin, subito);
       sMax = Math.max(sMax, subito);
       iMin = Math.min(iMin, inflitto);

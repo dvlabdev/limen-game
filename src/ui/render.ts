@@ -104,7 +104,7 @@ function barra(c: CombattenteView): string {
 function stati(c: CombattenteView): string {
   const chip = (id: string, attivo: boolean) =>
     attivo ? `<span class="chip attivo">${esc(simbolo(id).glifo)} ${esc(simbolo(id).etichetta)}</span>` : '';
-  return chip('stato.vantaggio', c.vantaggio) + chip('stato.preparato', c.preparato) + chip('stato.spalle', c.spazio >= 2);
+  return chip('stato.vantaggio', c.vantaggio) + chip('stato.preparato', c.preparato) + chip('stato.spalle', c.spalle);
 }
 
 function voce(v: VoceRegistro): string {

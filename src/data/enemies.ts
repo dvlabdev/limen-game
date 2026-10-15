@@ -35,7 +35,7 @@ const RECLUTA: Profilo = {
   velocita: 1,
   gradi: { parata: 1, schivata: 1, distanza: 1 },
   mosse: [
-    assalto('fendente', 'Fendente', { forza: 'pesante', portata: 'corta', velocita: 'normale', danno: [10, 12] }),
+    assalto('fendente', 'Fendente', { forza: 'pesante', portata: 'corta', velocita: 'normale', danno: [3, 5] }),
     { id: 'copertura', nome: 'Copertura', archetipo: 'guardia' },
   ],
   fase1: {

@@ -2,6 +2,7 @@ import type { Categoria, Condizione, FaseProfilo, Mossa, PosturaId, Profilo, Sta
 import { BALANCE } from '../data/balance.ts';
 import { trovaProfilo } from '../data/enemies.ts';
 import { estrai } from './rng.ts';
+import { costoCambioDi, senzaSpazio } from './spazio.ts';
 
 export function categoriaDi(m: Mossa): Categoria {
   if (m.archetipo === 'preparazione') return 'preparazione';
@@ -55,13 +56,12 @@ function posturaRipetuta(s: StatoDuello): PosturaId | null {
 }
 
 // Il nemico può giocare la mossa? Stessa postura attuale, oppure fiato per il cambio.
-// R2: senza spazio alle spalle le mosse di Distanza sono escluse e il cambio è gratuito.
+// R2: senza spazio alle spalle le mosse di Distanza sono escluse e il cambio è gratuito
+// (regola condivisa con il risolutore: spazio.ts).
 export function mossaAccessibile(s: StatoDuello, mossa: Mossa): boolean {
   const n = s.nemico;
-  const senzaSpazio = n.distanzaConsecutive >= BALANCE.distanzaConsecutiveMax;
-  if (mossa.archetipo === 'distanza' && senzaSpazio) return false;
-  if (n.postura === 'distanza' && senzaSpazio) return true;
-  return mossa.archetipo === n.postura || n.fiato >= BALANCE.costoCambio;
+  if (mossa.archetipo === 'distanza' && senzaSpazio(n)) return false;
+  return mossa.archetipo === n.postura || n.fiato >= costoCambioDi(n);
 }
 
 // Pesi correnti di ogni mossa candidata (utile anche ai test e al simulatore).
@@ -88,9 +88,11 @@ export function sceglieMossaNemico(s: StatoDuello): string {
   const fase = faseProfilo(profilo, s.nemico.fase);
   const candidate = pesiCandidate(s);
   if (candidate.length === 0) {
-    const prima = fase.mosse[0];
-    if (!prima) throw new Error('Profilo senza mosse');
-    return prima.mossa;
+    // ARENA_SPEC §12.7 (AUD-018): senza candidate si sceglie una mossa con lo stesso archetipo della
+    // postura attuale (nessun cambio, quindi sempre giocabile). I dati lo garantiscono: test/dati.test.ts.
+    const stessa = fase.mosse.find((pm) => profilo.mosse.find((m) => m.id === pm.mossa)?.archetipo === s.nemico.postura);
+    if (!stessa) throw new Error(`Profilo ${profilo.id}: nessuna mossa con archetipo ${s.nemico.postura} nella fase ${s.nemico.fase}`);
+    return stessa.mossa;
   }
   if (fase.sequenza && fase.sequenza.length > 0) {
     const id = fase.sequenza[s.nemico.sequenzaIdx % fase.sequenza.length] as string;

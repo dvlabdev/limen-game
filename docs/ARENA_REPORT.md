@@ -313,3 +313,34 @@ Build finale `dist/index.html` nel browser integrato con viewport emulato 360×7
 - **Gradi della Distanza e spazio alle spalle, provati nell'interfaccia** (Bruto, grado 3): il primo turno il registro dice "Resti a Distanza: Spallata è un colpo corto e non ti raggiunge" e "Fermi il colpo con l'arresto: 2 danni al Bruto e prendi il vantaggio"; il secondo compare "Hai le spalle al muro: non puoi più arretrare, cambia postura" con il chip "Spalle al muro"; il terzo il pulsante Distanza è disabilitato con la dicitura "niente spazio", le altre posture risultano "gratis", e il cambio a Guardia costa 0 fiato.
 - Il selettore "Grado di Distanza" e le diciture "fiato insufficiente" / "niente spazio" funzionano; gli altri controlli (misure, bersagli, fonti) sono quelli già riportati nel §1.
 - Limiti: come in §1 (screenshot a 360px del browser integrato deformati, nessuna prova su un S23 vero; gioco pilotato da script, un solo giudizio "umano" su turni singoli). Non ho verificato visivamente i nuovi simboli segnaposto (sono glifi Unicode provvisori).
+
+---
+
+## 8. C2: arena giocabile su S23 (ARENA_S23_SPEC)
+
+> **Stato:** in corso. Questa sezione cresce con i commit della fase C2b. Fonte: [ARENA_S23_SPEC.md](ARENA_S23_SPEC.md) e ARENA_SPEC §12.6–§12.7.
+
+### 8.1 Core e dati (punto 1)
+
+| Rilievo / decisione | Cosa è stato fatto | Dove |
+|---|---|---|
+| **AUD-001** | Nello scambio simultaneo la perdita del vantaggio attuale è rimandata a dopo i due colpi: entrambi si calcolano sullo stato di inizio scambio. Test: entrambi col vantaggio → 6 e 7 (massimi di 4–6 e 5–7) | `resolve.ts`, `test/audit.test.ts` |
+| **AUD-003** | L'anteprima somma i danni veri degli eventi (colpo, parata, contrattacco, Punta, Arresto) invece della differenza di vigore limitata a 0. Test sul colpo letale inflitto (4–6 contro un nemico a 2) e subito (6 contro un giocatore a 3) | `view.ts` |
+| **AUD-004, AUD-019** | Il nemico parte in Guardia a fiato pieno e paga il cambio verso la prima mossa; la prima mossa si sceglie dalla postura reale (niente postura provvisoria). Il Lanciere non ha mosse di Guardia: parte in Guardia e cambia come gli altri | `resolve.ts` (`creaDuello`) |
+| **AUD-017** | Punta e Arresto scattano solo se il fiato copre il costo; altrimenti l'attaccante incalza. Test con costo 2 e fiato 1 | `resolve.ts` |
+| **AUD-018** | Senza candidate l'IA sceglie una mossa con lo stesso archetipo della postura attuale. Poiché una tale mossa è sempre candidata (stessa postura = nessun cambio), il ripiego scatta solo con dati invalidi e in quel caso lancia un errore chiaro: la garanzia vera è il test di validazione dei dati (ogni fase di ogni nemico: fiato sufficiente per il primo cambio, archetipi presenti in tutte le fasi, almeno una mossa non di Distanza) | `ai.ts`, `test/audit.test.ts` |
+| **AUD-020** | Una sola implementazione di `senzaSpazio` e `costoCambioDi` in `src/core/spazio.ts`, usata da risolutore, IA e vista. Test di concordanza: ogni mossa che l'IA considera accessibile è accettata dal risolutore (tutti i nemici, posture, spazio e fiato). Commento di `balance.ts` corretto (vigore del giocatore 20) | `spazio.ts`, `ai.ts`, `resolve.ts`, `balance.ts` |
+| **AUD-021** | `CombattenteView.spalle: boolean`; la UI non ripete più la soglia. Aggiunta approvata dal rilievo; `spazio` resta per le tacche | `view.ts`, `render.ts` |
+| **ARENA_SPEC §12.6** | **Recluta mite:** Fendente 3–5 (era 10–12), esclusa dal vincolo su `fissa:distanza` (98% di pareggi, consentito). Vigore 17 e fiato 3 invariati: il `lettore` vince 100% in 7,0 turni. **Lanciere:** obiettivo 4–9 turni (8,7 oggi) | `enemies.ts`, `test/obiettivi.test.ts` |
+
+**Bilanciamento.** Dopo le correzioni (AUD-001, -004, -017) gli obiettivi di §9, §12.4, §12.6 sono rispettati **senza altre modifiche ai numeri** oltre al Fendente della Recluta: l'unico scostamento rispetto alla tabella §7.4a sono piccole variazioni sul primo turno (il nemico paga il cambio iniziale). Verifica con 5 seed (1, 9000, 20001, 31337, 777777), tolleranza +2 punti dai seed diversi da 1 (§12.7): nessuna violazione. Il test `test/obiettivi.test.ts` esegue il controllo con `--duelli 1000 --seed 1`.
+
+Tabella di riferimento (gradi 1, adattamento attivo, 1000 duelli, seed 1; vittorie % (pareggi %) · turni medi):
+
+| Nemico | fissa:assalto | fissa:guardia | fissa:attesa | fissa:distanza | casuale | lettore |
+|---|---|---|---|---|---|---|
+| Recluta | 100.0 (0.0) · 4.0 | 100.0 (0.0) · 11.0 | 100.0 (0.0) · 7.0 | 2.0 (98.0) · 25.0 | 100.0 (0.0) · 8.9 | **100.0** (0.0) · 7.0 |
+| Duellante | 19.9 (0.0) · 3.8 | 11.4 (0.0) · 8.2 | 13.2 (0.0) · 6.9 | 0.5 (15.4) · 19.3 | 13.7 (0.0) · 7.0 | **69.3** (0.0) · 7.4 |
+| Bruto | 17.0 (0.0) · 2.9 | 0.0 (0.0) · 2.5 | 24.1 (0.0) · 7.1 | 0.0 (0.0) · 7.8 | 1.8 (0.0) · 4.6 | **68.6** (0.0) · 7.8 |
+| Lanciere | 23.9 (0.0) · 5.7 | 6.8 (0.0) · 14.1 | 0.0 (68.0) · 22.7 | 0.0 (0.0) · 5.3 | 19.3 (0.0) · 8.8 | **61.7** (0.0) · 8.7 |
+| Mietitore | 13.5 (0.0) · 6.7 | 0.0 (0.3) · 12.6 | 10.0 (14.7) · 18.1 | 0.0 (0.6) · 11.9 | 2.1 (0.9) · 10.2 | **53.6** (0.0) · 11.1 |

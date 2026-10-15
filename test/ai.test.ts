@@ -21,11 +21,11 @@ describe('IA dei nemici', () => {
     assert.deepStrictEqual(viste.slice(0, 4), ['fendente', 'copertura', 'fendente', 'copertura']);
   });
 
-  it('la postura iniziale del nemico coincide con la sua prima mossa, senza costo', () => {
+  it('il nemico parte in Guardia a fiato pieno, con una prima mossa già scelta (AUD-004)', () => {
     for (const id of ORDINE_NEMICI) {
       const s = creaDuello(id, 11);
-      const fiatoMax = s.nemico.fiatoMax;
-      assert.strictEqual(s.nemico.fiato, fiatoMax);
+      assert.strictEqual(s.nemico.postura, 'guardia');
+      assert.strictEqual(s.nemico.fiato, s.nemico.fiatoMax);
       assert.ok(s.mossaNemico.length > 0);
     }
   });

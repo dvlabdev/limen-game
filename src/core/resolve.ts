@@ -19,6 +19,7 @@ import { trovaMossa, trovaProfilo } from '../data/enemies.ts';
 import { POSTURE } from '../data/postures.ts';
 import { sceglieMossaNemico } from './ai.ts';
 import { dadoDaStato } from './rng.ts';
+import { costoCambioDi, senzaSpazio } from './spazio.ts';
 
 export const OPZIONI_PREDEFINITE: OpzioniArena = {
   hintCompleti: false,
@@ -59,7 +60,9 @@ export function creaDuello(
       fiato: p.fiato,
       fiatoMax: p.fiato,
       velocita: p.velocita,
-      postura: 'assalto',
+      // ARENA_SPEC §12.7 (AUD-004): il nemico parte in Guardia come il giocatore e paga il cambio
+      // verso la prima mossa con le regole normali; la postura iniziale non rivela la mossa.
+      postura: 'guardia',
       vantaggio: false,
       preparato: false,
       distanzaConsecutive: 0,
@@ -74,9 +77,8 @@ export function creaDuello(
     seed,
     opzioni: { ...OPZIONI_PREDEFINITE, ...opzioni },
   };
-  // Prima mossa: la postura iniziale coincide con il suo archetipo, senza costo.
+  // Prima mossa: scelta dalla postura reale di partenza (AUD-019).
   stato.mossaNemico = sceglieMossaNemico(stato);
-  stato.nemico.postura = trovaMossa(p.id, stato.mossaNemico).archetipo;
   return stato;
 }
 
@@ -89,16 +91,6 @@ export function clonaStato(s: StatoDuello): StatoDuello {
     storicoPosture: s.storicoPosture.slice(),
     opzioni: { ...s.opzioni },
   };
-}
-
-// R2: in Distanza da troppi turni non si può restarci né tornarci subito.
-export function senzaSpazio(c: Combattente): boolean {
-  return c.distanzaConsecutive >= BALANCE.distanzaConsecutiveMax;
-}
-
-// Con le spalle al muro il cambio di postura è gratuito (R2).
-export function costoCambioDi(c: Combattente): number {
-  return c.postura === 'distanza' && senzaSpazio(c) ? 0 : BALANCE.costoCambio;
 }
 
 export type MotivoNonDisponibile = 'fiato' | 'spazio';
@@ -184,12 +176,18 @@ export function resolveTurn(
   const finito = (): boolean => G.c.vigore <= 0 || N.c.vigore <= 0;
   const altro = (l: Lato): Lato => (l === G ? N : G);
 
+  // AUD-001: in uno scambio simultaneo entrambi i colpi si calcolano sullo stato di inizio scambio,
+  // vantaggio compreso: la perdita del vantaggio attuale è rimandata a dopo i due colpi.
+  let scambioSimultaneo = false;
+
   const infliggi = (bersaglio: Lato, danno: number): void => {
     bersaglio.c.vigore = Math.max(0, bersaglio.c.vigore - danno);
     bersaglio.dannoSubito += danno;
     if (danno > 0) {
-      if (bersaglio.vantAttuale) ev({ tipo: 'vantaggioPerso', chi: bersaglio.chi });
-      bersaglio.vantAttuale = false;
+      if (!scambioSimultaneo) {
+        if (bersaglio.vantAttuale) ev({ tipo: 'vantaggioPerso', chi: bersaglio.chi });
+        bersaglio.vantAttuale = false;
+      }
       bersaglio.vantArrivo = false;
       bersaglio.vantDaColpo = false;
     }
@@ -253,7 +251,10 @@ export function resolveTurn(
       ev({ tipo: 'evitato', chi: D.chi, mossa: A.mossa.nome });
       // R4: Punta (grado 2) contro i colpi pesanti, Arresto (grado 3) contro quelli non rapidi.
       const g = D.c.gradi.distanza;
-      const risposta = g >= 3 && att.velocita !== 'rapido' ? 'arresto' : g >= 2 && att.forza === 'pesante' ? 'punta' : null;
+      const candidata = g >= 3 && att.velocita !== 'rapido' ? 'arresto' : g >= 2 && att.forza === 'pesante' ? 'punta' : null;
+      // AUD-017: come Parata e Schivata, Punta e Arresto sono reazioni che costano fiato e si fanno solo se basta.
+      const costoRisposta = candidata === 'arresto' ? BALANCE.costoArresto : BALANCE.costoPunta;
+      const risposta = candidata && D.c.fiato >= costoRisposta ? candidata : null;
       if (risposta) {
         const arresto = risposta === 'arresto';
         D.c.fiato -= arresto ? BALANCE.costoArresto : BALANCE.costoPunta;
@@ -346,10 +347,20 @@ export function resolveTurn(
   }
 
   if (simultaneo) {
+    scambioSimultaneo = true;
     risolviColpo(G, N, true);
     risolviColpo(N, G, true);
-    // Uno scambio simultaneo non lascia vantaggio a chi ha incassato danno.
-    for (const l of lati) if (l.dannoSubito > 0 && l.vantDaColpo) l.vantArrivo = false;
+    scambioSimultaneo = false;
+    for (const l of lati) {
+      if (l.dannoSubito <= 0) continue;
+      // Il vantaggio attuale non usato (non attacca) si perde dopo i due colpi.
+      if (l.vantAttuale) {
+        ev({ tipo: 'vantaggioPerso', chi: l.chi });
+        l.vantAttuale = false;
+      }
+      // Uno scambio simultaneo non lascia vantaggio a chi ha incassato danno.
+      if (l.vantDaColpo) l.vantArrivo = false;
+    }
   } else {
     for (const a of ordine) {
       if (finito()) break;
