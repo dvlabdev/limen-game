@@ -1,0 +1,22 @@
+{
+  "name": "limen-game",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Limen: arena di prova del duello a posture",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.ts",
+    "build": "node scripts/build.ts",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc",
+    "sim": "node sim/run.ts"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
