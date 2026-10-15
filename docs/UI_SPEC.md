@@ -1,7 +1,7 @@
 # Simboli del duello: specifica UI
 
 > **Versione:** 1.0 (15 ottobre 2026) · **Proprietario:** Grafica/UI · **Destinatari:** Planning (approvazione delle estensioni), Codice (integrazione)
-> **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5 e §8, [ARENA_SPEC.md](ARENA_SPEC.md) §3, §7 e §8, [CLAUDE.md](../CLAUDE.md).
+> **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5, §8 e §8.1, [ARENA_SPEC.md](ARENA_SPEC.md) §3, §7 e §8, [CLAUDE.md](../CLAUDE.md).
 > **Direzione scelta dall'utente:** A, **Xilografia**, con gli **stati nel bollino tondo** (dalla direzione C).
 
 | Risorsa | Dove |
@@ -33,12 +33,12 @@ Il duello si vince **leggendo l'hint e decidendo in pochi secondi**, col tocco, 
 ### 2.1 Famiglie
 | Famiglia | Prefisso | Forma di base | Dove compare | Taglia tipica |
 |---|---|---|---|---|
-| **Posture** | `posture.` | Sagoma libera, una silhouette per postura | Pulsanti 2×2, chip della postura | 32 px (pulsanti), 20 px (chip) |
-| **Intenzioni** | `intent.` | Sagoma libera; gli attacchi puntano in basso | Hint, al centro | 72–96 px |
-| **Stati** | `stato.` | **Bollino**: disco pieno con filetto inciso, segno ritagliato | Accanto al nome del combattente | 20–24 px |
+| **Posture** | `posture.` | Sagoma libera, una silhouette per postura | Pulsanti 2×2, targhe | 28 px (pulsanti), 16 px (targhe) |
+| **Intenzioni** | `intent.` | Sagoma libera; gli attacchi puntano in basso | Hint, sopra la testa del nemico nella scena (ripiego: al centro) | 44 px (ripiego 72 px) |
+| **Stati** | `stato.` | **Bollino**: disco pieno con filetto inciso, segno ritagliato | Nella targa, accanto al nome | 16–20 px |
 | **Risorse** | `risorsa.` | Sagoma libera, sempre accanto a un numero o a pallini | Barra del vigore, pallini del fiato | 12–16 px |
 | **Eventi** | `evento.` | Sagoma semplice, senza tagli | Registro | 16 px |
-| **Modificatori** *(proposta)* | `mod.` | Sagoma piena minima | Fila sotto l'hint, solo con `hintCompleti` | 16–20 px |
+| **Modificatori** *(proposta)* | `mod.` | Sagoma piena minima | Striscia dell'hint sotto la scena, solo con `hintCompleti` | 16–20 px |
 
 ### 2.2 Regole che valgono per tutto il set
 - **Direzione.** Il nemico è in alto, il giocatore in basso. Ciò che il nemico scaglia contro il giocatore punta **in basso** (`intent.pesante`, `intent.leggero`, gli eventi con freccia); ciò che il giocatore scaglia contro il nemico punta **in alto** (`posture.assalto`, `evento.contrattacco`).
@@ -50,7 +50,7 @@ Il duello si vince **leggendo l'hint e decidendo in pochi secondi**, col tocco, 
 - **Coppie da non confondere,** verificate in grigio: pesante e leggero, parata e sfonda la guardia, interrotto e inarrestabile, preparazione e preparato, difesa e guardia (muro e scudo).
 
 ### 2.3 Modificatori componibili dell'hint completo *(proposta)*
-Con `hintCompleti`, `hint.dettaglio` porta portata, velocità e `flags`. Sotto il simbolo grande dell'hint compare una fila di modificatori a 18 px, ciascuno con la sua etichetta breve, poi l'intervallo di danno.
+Con `hintCompleti`, `hint.dettaglio` porta portata, velocità e `flags`. Nella striscia dell'hint, sotto la scena (§5), compare una fila di modificatori a 18 px, ciascuno con la sua etichetta breve, poi l'intervallo di danno.
 
 | Campo di `dettaglio` | Valore | Id |
 |---|---|---|
@@ -71,7 +71,7 @@ Ordine fisso nella fila: portata, velocità, tratti (`flags`), poi il danno. La 
 - **Tagli di sgorbia.** Linee bianche di 0,7–0,8 unità ricavate con `fill-rule="evenodd"` (il filo dello scudo, la sgusciatura della lama, le fasce del maglio, i giunti del muro). Sotto i 24 px si usa la **variante piccola senza tagli** (`piccolo`), che resta una silhouette pulita.
 - **Bollino:** disco r 10,5, filetto ritagliato tra r 9 e r 8,3, segno ritagliato in scala 0,58. È un solo tracciato `evenodd`: niente `mask` né id, quindi si può ripetere nella pagina senza conflitti.
 - **Solo `currentColor`.** Nessun colore, font o immagine dentro gli SVG. Il colore si decide nel CSS del contenitore.
-- **Taglia minima:** la colonna "Min" della §5 è la taglia sotto cui il simbolo smette di leggersi.
+- **Taglia minima:** la colonna "Min" della §7 è la taglia sotto cui il simbolo smette di leggersi.
 
 ---
 
@@ -96,8 +96,52 @@ Inchiostro, carta e un solo colore di pericolo. Nessun altro accento.
 
 ---
 
-## 5. Elenco dei simboli
-"Contratto" = id già in ARENA_SPEC §7. "Proposta" = estensione da approvare (§6). Varianti: **T** = ha i tagli, quindi esiste la variante `piccolo` sotto i 24 px; **R** = di norma in `--pericolo`.
+## 5. Scena del duello e collocazione dell'hint
+Decisione di Planning (DESIGN §8.1): in scena ci sono il viandante e il nemico come marionette SVG articolate. Finché l'inquadratura non è decisa, i mockup usano **sagome segnaposto di profilo**, il viandante a sinistra che guarda a destra e il nemico a destra che guarda a sinistra.
+
+### 5.1 Ingombri a 375 px
+Altezza utile di riferimento: **560 px** (375 × 667 meno le barre del browser). Misure reali dei mockup del catalogo:
+
+| Fascia, dall'alto | Altezza | Contenuto |
+|---|---|---|
+| **Scena** | 180 px | Le due figure sul terreno; sopra la testa del nemico, il simbolo dell'hint a 44 px |
+| **Targhe** | 56 px | Sotto ogni figura: nome, bollini degli stati, vigore, pallini del fiato (giocatore a sinistra, nemico a destra) |
+| Striscia dell'hint | 34–56 px | Nome della categoria; con `hintCompleti` anche il nome della mossa, i modificatori e il danno |
+| Registro | 50 px | Ultime due righe |
+| Posture 2×2 | 120–150 px | Pulsanti da 52 px minimi; l'anteprima sta su una riga: ↓ subito, ↑ inflitto |
+| Conferma | 54 px | |
+
+Scena più targhe valgono **236 px, cioè il 42%** dell'altezza utile. Le targhe stanno sotto le figure perché ogni dato resti accanto al suo proprietario.
+
+### 5.2 Hint sopra il nemico o al centro
+Il catalogo mette a confronto le due collocazioni con lo stesso stato di gioco.
+
+| | **A. Sopra la testa del nemico** | **B. Al centro, sotto la scena** |
+|---|---|---|
+| Altezza totale | **513 px**, 553 con hint completo e anteprima: entra | **636 px**: Conferma finisce sotto la piega |
+| Lettura | Simbolo e posa telegrafata si leggono insieme: lo sguardo va al nemico e trova entrambi | Il simbolo è lontano dalla posa che lo spiega |
+| Taglia | 44 px: sopra il minimo (20) e grande quanto la testa della figura | 72–88 px |
+| Rischi | Le figure e le animazioni non devono mai coprirlo; con due o più nemici serve un simbolo per testa | Ripete in grande ciò che la scena già mostra |
+
+**Raccomandazione: A.** Il simbolo dell'hint sta in una zona riservata sopra la testa del nemico, larga 52 × 52 px, che nessuna posa e nessuna animazione può invadere. Sotto la scena resta la **striscia dell'hint**, che dà il nome alla categoria (accessibilità, poco testo) e ospita i dettagli dell'hint completo. B resta come ripiego se l'inquadratura scelta non lascia spazio sopra il nemico.
+
+---
+
+## 6. Vincoli comuni tra icone e figure
+Icone e marionette (DESIGN §8.1) sono **lo stesso libro stampato con lo stesso legno**. Valgono per entrambe, e la futura `docs/SCENA_SPEC.md` li deve riprendere:
+
+1. **Palette.** Solo i token della §4. Le figure sono in `--inchiostro` su `--carta-2`; `--pericolo` marca soltanto la minaccia e l'impatto (il simbolo dell'hint, il lampo del colpo, i numeri del danno), mai un costume o un'arma a riposo. Niente sfumature, ombre morbide, trasparenze decorative o altri colori.
+2. **Tecnica.** Masse piene, spigoli sfaccettati, nessun raccordo morbido. I dettagli interni sono **tagli bianchi** (sgorbia) e i volumi sono tratteggi di tagli paralleli, non gradienti.
+3. **Pesi in pixel.** A schermo, un taglio misura quanto quello di un'icona a 32 px, cioè circa **1 px**; le linee sottili delle figure (aste, lame, contorni dei tratteggi) misurano quanto i tratti delle icone, **2–4 px**. Sotto queste soglie i tagli si omettono, come nella variante `piccolo`.
+4. **Stesse armi, stesse sagome.** Le armi delle figure ripetono le sagome dei simboli: il maglio di `intent.pesante`, il pugnale di `intent.leggero`, la spada di `posture.assalto`, lo scudo di `posture.guardia`. Così la posa e il simbolo dell'hint fanno rima.
+5. **Direzione.** Vale la §2.2: ciò che il nemico scaglia contro il giocatore va verso il giocatore. Finché l'inquadratura non è decisa, il viandante sta a sinistra e guarda a destra.
+6. **`currentColor` e temi.** Le parti delle marionette, come le icone, usano `currentColor` (o i token), così il tema scuro funziona senza ridisegnare: la carta diventa inchiostro bruciato e l'inchiostro diventa osso.
+7. **Spazi riservati.** La zona dell'hint sopra il nemico (§5.2) e le targhe sotto le figure non vengono mai coperte da pose o animazioni.
+
+---
+
+## 7. Elenco dei simboli
+"Contratto" = id già in ARENA_SPEC §7. "Proposta" = estensione da approvare (§8). Varianti: **T** = ha i tagli, quindi esiste la variante `piccolo` sotto i 24 px; **R** = di norma in `--pericolo`.
 
 | Id | Etichetta | Significato e disegno | Varianti | Min | Stato |
 |---|---|---|---|---|---|
@@ -136,7 +180,7 @@ L'etichetta di `stato.preparato` passa da "Raccolto" (segnaposto) a **"Preparato
 
 ---
 
-## 6. Estensioni proposte del contratto *(da approvare da Planning)*
+## 8. Estensioni proposte del contratto *(da approvare da Planning)*
 Sono **solo id di simboli**, cioè righe in più nella tabella di ARENA_SPEC §7. `DuelView` non cambia: l'interfaccia ricava tutto dai campi che esistono già.
 
 | Id | Ricavato da | Perché |
@@ -148,7 +192,7 @@ Sono **solo id di simboli**, cioè righe in più nella tabella di ARENA_SPEC §7
 
 ---
 
-## 7. Integrazione (sessione Codice, coordinata da Planning)
+## 9. Integrazione (sessione Codice, coordinata da Planning)
 L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allora `src/` non si tocca da qui.
 
 1. **Sostituire `src/ui/symbols.ts`** con `design/symbols.proposed.ts`. Il modulo è compatibile: esporta ancora `SIMBOLI`, `simbolo(id)` e il campo `glifo`, quindi il render attuale continua a compilare. In più esporta `icona(id, { px, classe, parlante })`, che restituisce l'SVG inline. Il file è stato verificato con `tsc --strict --erasableSyntaxOnly`.
@@ -156,9 +200,11 @@ L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allo
 
    | Punto di `render.ts` | Chiamata |
    |---|---|
-   | Hint | `icona(v.hint.simbolo, { px: 88, parlante: true })`; colore `--pericolo` solo per `pesante` e `leggero` |
+   | Hint, nella scena (collocazione A, §5.2) | `icona(v.hint.simbolo, { px: 44, parlante: true })` nella zona riservata sopra il nemico; colore `--pericolo` solo per `pesante` e `leggero` |
+   | Striscia dell'hint, sotto la scena | Nome della categoria (o della mossa con `dettaglio`) come testo in `--pericolo` per gli attacchi |
+   | Hint al centro (ripiego B) | `icona(v.hint.simbolo, { px: 72, parlante: true })` |
    | Modificatori dell'hint (con `dettaglio`) | `icona('mod.…', { px: 18 })` più l'etichetta breve, ordine della §2.3 |
-   | Pulsanti di postura | `icona(p.simbolo, { px: 32 })`; il nome resta testo visibile |
+   | Pulsanti di postura | `icona(p.simbolo, { px: 28 })`; il nome resta testo visibile; anteprima su una riga, ↓ subito e ↑ inflitto |
    | Chip della postura e degli stati | `icona(id, { px: 20 })` |
    | Fase del boss | `icona('stato.fase2', { px: 20 })` |
    | Registro | `icona(v.simbolo, { px: 16 })`; `evento.colpo` in `--pericolo` |
@@ -171,7 +217,8 @@ L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allo
 
 ---
 
-## 8. Domande per Planning
-1. Approvare le estensioni della §6 e aggiungerle alla tabella di ARENA_SPEC §7?
+## 10. Domande per Planning
+1. Approvare le estensioni della §8 e aggiungerle alla tabella di ARENA_SPEC §7?
 2. `posture.preparazione` e `intent.preparazione` hanno lo stesso disegno, perché sono la stessa azione vista come postura o come intenzione. Va bene, o si preferisce distinguerle?
 3. Palette dell'integrazione: si possono togliere `--accento`, `--ok` e `--fiato` da `styles.css` a favore della palette a un solo colore (§4)?
+4. Collocazione dell'hint: confermate la A (sopra la testa del nemico, con la striscia del nome sotto la scena)? La scelta dipende anche dall'inquadratura ancora da decidere (§5).

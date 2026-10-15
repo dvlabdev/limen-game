@@ -99,6 +99,37 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .pbtn.att { border-style: dashed; }
 .pbtn.off { opacity: .45; }
 .conferma { display: block; width: calc(100% - 28px); margin: 0 14px 14px; min-height: 48px; font: 400 21px/1 var(--f-display); background: var(--pericolo); color: var(--carta); border: 0; }
+.telefono { position: relative; }
+.telefono .conferma { margin-bottom: 8px; min-height: 46px; }
+.telefono .registro { padding-block: 6px; }
+.telefono .pbtn { min-height: 52px; padding: 8px 10px; grid-template-columns: auto 1fr auto; row-gap: 4px; }
+.telefono .pbtn .icona { grid-row: span 2; }
+.telefono .pbtn .pa { grid-column: 2 / 4; font-size: 12px; }
+.telefono .pbtn .pa b { font-weight: 500; margin-right: 1px; }
+.piega { position: absolute; left: -1px; right: -1px; top: 560px; border-top: 2px dashed var(--pericolo); pointer-events: none; }
+.piega span { position: absolute; right: 6px; top: 3px; font: 500 10.5px/1 var(--f-dato); color: var(--pericolo); background: var(--carta); padding: 2px 4px; }
+.scena { position: relative; background: var(--carta-2); }
+.scena .fig { display: block; width: 100%; height: auto; }
+.scena .segnaposto { position: absolute; left: 8px; top: 6px; font: 500 10px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.scena .sopra { position: absolute; top: 2px; transform: translateX(-50%); color: var(--pericolo); }
+.targhe { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 6px 12px; background: var(--carta-2); border-bottom: 1px solid var(--filo); }
+.targa { display: grid; gap: 3px; min-width: 0; font-size: 12px; }
+.targa .r { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.targa.dx .r { justify-content: flex-end; }
+.targa .n { font: 400 15px/1 var(--f-display); margin-right: 2px; }
+.targa .vig { gap: 5px; }
+.targa .vig .tacca { height: 6px; }
+.targa .vig .num { font-size: 11px; min-width: 3.4em; }
+.striscia-hint { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 12px; padding: 7px 12px; border-bottom: 1px solid var(--filo); color: var(--pericolo); }
+.striscia-hint .cat { font: 400 19px/1 var(--f-display); }
+.striscia-hint span { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; }
+.striscia-hint .danno { font: 500 13px/1 var(--f-dato); }
+.valuta { display: grid; gap: 10px; }
+.valuta table { border-collapse: collapse; width: 100%; font-size: 15px; }
+.valuta th, .valuta td { padding: 7px 8px; border-bottom: 1px solid var(--filo); text-align: left; vertical-align: top; }
+.valuta thead th { font: 500 11px/1.2 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.valuta-wrap { overflow-x: auto; }
+.valuta-wrap table { min-width: 520px; }
 
 /* Grammatica */
 .regole { display: grid; gap: 10px; padding: 0; margin: 0; list-style: none; }
@@ -148,6 +179,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 
   <section aria-labelledby="h-duello">
     <h2 id="h-duello">Il duello a 375 px</h2>
+    <p>Fascia scena in alto con le due figure (sagome segnaposto di profilo, DESIGN §8.1) e le targhe sotto ciascuna; poi hint, registro, posture e Conferma. La linea rossa tratteggiata è la fine di uno schermo da 375 × 560 px utili. Confronto delle due collocazioni dell'hint: in scena (A) tutto entra; al centro (B) Conferma finisce sotto la piega.</p>
     <div class="duelli" id="duelli"></div>
   </section>
 
@@ -194,50 +226,80 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     DATI.length + " simboli · " + DATI.filter(function (s) { return s.estensione; }).length + " estensioni proposte · griglia 24 · currentColor";
 
   // --- Mockup -------------------------------------------------------------------------------
-  function telefono(o) {
+  // Sagome segnaposto di profilo, una di fronte all'altra (DESIGN §8.1). Coordinate in una scena 375 × 180.
+  var X_NEMICO = 262;
+  function figure() {
+    return '<svg class="fig" viewBox="0 -12 375 180" fill="currentColor" aria-hidden="true">' +
+      '<path d="M0 166H375V168.5H0Z"/>' +
+      '<path d="M14 173L20 170M44 174L51 171M80 173L86 170M150 174L157 171M196 173L202 170M232 174L239 171M300 173L306 170M346 174L353 171" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
+      '<path d="M92 166L100 126H114L122 166H113L107 138L101 166Z M98 84L84 140L100 128Z M97 128L100 84H116L120 128Z M114 90L134 102L131 107L112 98Z"/>' +
+      '<circle cx="108" cy="72" r="11"/>' +
+      '<path d="M133 104L166 80M129 98L137 110" fill="none" stroke="currentColor" stroke-width="3.2"/>' +
+      '<path d="M248 166L256 116H282L292 166H280L270 132L260 166Z M248 118L244 70H290L294 118Z M284 78L300 60L306 64L290 84Z"/>' +
+      '<circle cx="' + X_NEMICO + '" cy="56" r="14"/>' +
+      '<path d="M294 74L334 34" fill="none" stroke="currentColor" stroke-width="4"/>' +
+      '<path d="M350.9 35.5L339.5 46.9L321.2 28.5L332.5 17.1Z"/>' +
+      "</svg>";
+  }
+  function targa(c, dx) {
+    return '<div class="targa' + (dx ? " dx" : "") + '"><div class="r"><span class="n">' + c.nome + "</span>" + (c.stati || "") + "</div>" +
+      '<div class="r vig">' + ic("risorsa.vigore", 12) + '<span class="tacca"><i style="width:' + c.pct + '%"></i></span><span class="num">' + c.vig + "</span></div>" +
+      '<div class="r">' + pipsN(c.fiato[0], c.fiato[1], 10) + "</div></div>";
+  }
+  function pipsN(n, max, px) {
+    var s = "";
+    for (var i = 0; i < max; i++) s += ic(i < n ? "risorsa.fiato.pieno" : "risorsa.fiato.vuoto", px);
+    return s;
+  }
+  function scena(o) {
+    var sopra = o.dove === "scena" ? '<div class="sopra" style="left:' + (100 * X_NEMICO / 375).toFixed(2) + '%">' + ic(o.hint, 44, "", true) + "</div>" : "";
+    var dettaglio = o.mods ? o.mods.map(function (m) { return "<span>" + ic(m, 18) + P[m].etichetta + "</span>"; }).join("") +
+      '<span class="danno">' + ic("evento.colpo", 14) + o.danno + "</span>" : "";
+    var centro = o.dove === "scena"
+      ? '<div class="striscia-hint"><span class="cat">' + o.cat + "</span>" + dettaglio + "</div>"
+      : '<div class="hint">' + ic(o.hint, 72, "pericolo", true) + '<span class="cat">' + o.cat + '</span><span class="sub">' + o.sub + "</span></div>";
+    var reg = o.registro.map(function (r) { return "<div>" + ic(r[0], 16, r[2] ? "pericolo" : "") + "<span>" + r[1] + "</span></div>"; }).join("");
     var post = o.posture.map(function (p) {
-      return '<div class="pbtn ' + (p.stato || "") + '">' + ic(p.id, 32) + '<span class="pn">' + P[p.id].etichetta + "</span>" +
+      return '<div class="pbtn ' + (p.stato || "") + '">' + ic(p.id, 28) + '<span class="pn">' + P[p.id].etichetta + "</span>" +
         '<span class="pc">' + (p.costo ? ic("risorsa.fiato.pieno", 10) + " " + p.costo : "gratis") + (p.nota ? " · " + p.nota : "") + "</span>" +
         (p.anteprima ? '<span class="pa">' + p.anteprima + "</span>" : "") + "</div>";
     }).join("");
-    var mods = o.mods ? '<div class="mods">' + o.mods.map(function (m) { return "<span>" + ic(m, 18) + P[m].etichetta + "</span>"; }).join("") +
-      '<span class="danno">' + ic("evento.colpo", 16) + o.danno + "</span></div>" : "";
-    var reg = o.registro.map(function (r) { return "<div>" + ic(r[0], 16, r[2] ? "pericolo" : "") + "<span>" + r[1] + "</span></div>"; }).join("");
     return '<div class="telefono">' +
-      '<div class="riga-c"><div class="alto"><span class="n">' + o.nemico.nome + "</span>" + o.nemico.chip + "</div>" +
-      '<div class="vig">' + ic("risorsa.vigore", 16) + '<span class="tacca"><i style="width:' + o.nemico.pct + '%"></i></span><span class="num">' + o.nemico.vig + "</span></div>" +
-      '<div class="pips">' + ic("risorsa.fiato", 16) + '<span class="sep"></span>' + pips(o.nemico.fiato[0], o.nemico.fiato[1]) + "</div></div>" +
-      '<div class="hint">' + ic(o.hint, 88, "pericolo", true) + '<span class="cat">' + o.cat + '</span><span class="sub">' + o.sub + "</span>" + mods + "</div>" +
-      '<div class="registro">' + reg + "</div>" +
-      '<div class="riga-c"><div class="alto"><span class="n">Viandante</span>' + o.gioc.chip + "</div>" +
-      '<div class="vig">' + ic("risorsa.vigore", 16) + '<span class="tacca"><i style="width:' + o.gioc.pct + '%"></i></span><span class="num">' + o.gioc.vig + "</span></div>" +
-      '<div class="pips">' + ic("risorsa.fiato", 16) + '<span class="sep"></span>' + pips(o.gioc.fiato[0], o.gioc.fiato[1]) + "</div></div>" +
-      '<div class="posture">' + post + "</div>" +
-      '<button type="button" class="conferma" tabindex="-1">Conferma</button></div>';
+      '<div class="scena"><span class="segnaposto">Sagome segnaposto</span>' + figure() + sopra + "</div>" +
+      '<div class="targhe">' + targa(o.gioc) + targa(o.nemico, true) + "</div>" +
+      centro + '<div class="registro">' + reg + "</div>" +
+      '<div class="posture" style="padding-top:10px">' + post + "</div>" +
+      '<button type="button" class="conferma" tabindex="-1">Conferma</button>' +
+      '<div class="piega"><span>fine schermo · 560 px</span></div></div>';
   }
-  var chip = function (id, testo) { return '<span class="chip">' + ic(id, 20) + testo + "</span>"; };
-  var m1 = telefono({
-    nemico: { nome: "Bruto", chip: chip("posture.assalto", "Assalto"), pct: 73, vig: "22/30", fiato: [3, 5] },
+
+  var bollini = function (ids) { return ids.map(function (i) { return '<span title="' + P[i].etichetta + '">' + ic(i, 16, "", true) + "</span>"; }).join(""); };
+  var BRUTO = {
+    nemico: { nome: "Bruto", stati: "", pct: 73, vig: "22/30", fiato: [3, 5] },
     hint: "intent.pesante", cat: "Colpo pesante", sub: "Il Bruto prepara un colpo pesante",
     registro: [["evento.parata", "Hai parato: 6 → 2."], ["evento.colpo", "Il Maglio ti prende: 2.", true]],
-    gioc: { chip: chip("stato.vantaggio", "Vantaggio"), pct: 80, vig: "24/30", fiato: [4, 6] },
+    gioc: { nome: "Viandante", stati: bollini(["stato.vantaggio"]), pct: 80, vig: "24/30", fiato: [4, 6] },
     posture: [{ id: "posture.assalto", costo: 1 }, { id: "posture.guardia", costo: 0, nota: "attuale", stato: "att" },
               { id: "posture.attesa", costo: 1, stato: "sel" }, { id: "posture.distanza", costo: 1 }]
-  });
-  var m2 = telefono({
-    nemico: { nome: "Mietitore", chip: chip("stato.fase2", "Fase 2") + chip("posture.assalto", "Assalto"), pct: 42, vig: "19/45", fiato: [2, 6] },
-    hint: "intent.pesante", cat: "Carica", sub: "Hint completo: la mossa esatta e i suoi tratti",
-    mods: ["mod.portata.corta", "mod.velocita.normale", "mod.inarrestabile"], danno: "7–9",
+  };
+  var con = function (base, extra) { var o = {}, k; for (k in base) o[k] = base[k]; for (k in extra) o[k] = extra[k]; return o; };
+  var m1 = scena(con(BRUTO, { dove: "scena" }));
+  var m2 = scena(con(BRUTO, { dove: "centro" }));
+  var m3 = scena({
+    dove: "scena",
+    nemico: { nome: "Mietitore", stati: bollini(["stato.fase2"]), pct: 42, vig: "19/45", fiato: [2, 6] },
+    hint: "intent.pesante", cat: "Carica", mods: ["mod.portata.corta", "mod.velocita.normale", "mod.inarrestabile"], danno: "7–9",
     registro: [["evento.contrattacco", "Schivi la Falciata e contrattacchi: 4."], ["stato.preparato", "Il Mietitore è preparato: ×1,5."]],
-    gioc: { chip: "", pct: 63, vig: "19/30", fiato: [1, 6] },
-    posture: [{ id: "posture.assalto", costo: 1, anteprima: "subisci 7–9 · infliggi 4–6" },
-              { id: "posture.guardia", costo: 1, anteprima: "subisci 3–4 · infliggi 1–2" },
-              { id: "posture.attesa", costo: 1, anteprima: "subisci 7–9 · infliggi 0" },
-              { id: "posture.distanza", costo: 0, nota: "attuale", stato: "att sel", anteprima: "subisci 0 · infliggi 0" }]
+    gioc: { nome: "Viandante", stati: "", pct: 63, vig: "19/30", fiato: [1, 6] },
+    posture: [{ id: "posture.assalto", costo: 1, anteprima: '<b>↓</b>7–9 <b>↑</b>4–6' },
+              { id: "posture.guardia", costo: 1, anteprima: '<b>↓</b>3–4 <b>↑</b>1–2' },
+              { id: "posture.attesa", costo: 1, anteprima: '<b>↓</b>7–9 <b>↑</b>0' },
+              { id: "posture.distanza", costo: 0, nota: "attuale", stato: "att sel", anteprima: '<b>↓</b>0 <b>↑</b>0' }]
   });
   document.getElementById("duelli").innerHTML =
-    '<figure>' + m1 + '<figcaption>Hint per categoria. Il giocatore ha il vantaggio e sta per passare da Guardia ad Attesa.</figcaption></figure>' +
-    '<figure>' + m2 + '<figcaption>Hint completo e anteprima dei danni (interruttori A/B), boss in seconda fase. Con un solo fiato l\'Attesa è consentita ma la schivata non scatta, e l\'anteprima lo mostra.</figcaption></figure>';
+    '<figure>' + m1 + '<figcaption><b>A · Hint in scena</b> (consigliato). Il simbolo sta sopra la testa del nemico, accanto alla posa che telegrafa il colpo; sotto la scena resta solo una striscia con il nome. Tutto entra nello schermo.</figcaption></figure>' +
+    '<figure>' + m2 + '<figcaption><b>B · Hint al centro.</b> Stesso stato, simbolo grande sotto la scena. Il simbolo è lontano dalla posa che lo spiega e Conferma finisce sotto la piega.</figcaption></figure>' +
+    '<figure>' + m3 + '<figcaption><b>A con hint completo</b> e anteprima dei danni (interruttori A/B), boss in seconda fase. I modificatori stanno nella striscia sotto la scena; nei pulsanti ↓ è il danno subito, ↑ quello inflitto (la direzione della grammatica).</figcaption></figure>';
 
   // --- Grammatica --------------------------------------------------------------------------
   var es = function (ids, px) { return '<span class="es">' + ids.map(function (i) { return '<span class="' + (P[i].pericolo ? "pericolo" : "") + '">' + ic(i, px || 28) + "</span>"; }).join("") + "</span>"; };
