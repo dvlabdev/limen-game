@@ -24,7 +24,8 @@ export interface ConfigArena {
 export interface ModelloMenu {
   nemici: Array<{ id: string; nome: string; etichetta: string }>;
   config: ConfigArena;
-  telemetria: { conteggio: number; json?: string };
+  telemetria: { conteggio: number; destinazione: 'claude-db' | 'locale'; avviso?: string; json?: string };
+  versione: string;
 }
 
 export interface ModelloDuello {
@@ -86,12 +87,15 @@ export function disegnaMenu(radice: HTMLElement, m: ModelloMenu): void {
     <h2>Telemetria</h2>
     <div class="pannello telemetria">
       <p>Duelli registrati: <strong>${esc(m.telemetria.conteggio)}</strong></p>
+      <p class="tenue">Destinazione: ${m.telemetria.destinazione === 'claude-db' ? 'database della pagina (Claude)' : 'questo dispositivo (browser)'}</p>
+      ${m.telemetria.avviso ? `<p class="avviso" role="status">${esc(m.telemetria.avviso)}</p>` : ''}
       <div class="azioni">
         <button data-azione="copia"${m.telemetria.conteggio ? '' : ' disabled'}>Copia JSON</button>
-        <button data-azione="azzera"${m.telemetria.conteggio ? '' : ' disabled'}>Azzera</button>
+        ${m.telemetria.destinazione === 'locale' ? `<button data-azione="azzera"${m.telemetria.conteggio ? '' : ' disabled'}>Azzera</button>` : ''}
       </div>
       ${m.telemetria.json !== undefined ? `<textarea id="telemetria-json" readonly>${esc(m.telemetria.json)}</textarea>` : ''}
-    </div></div>`;
+    </div>
+    <p class="versione">Versione ${esc(m.versione)}</p></div>`;
   const area = radice.querySelector<HTMLTextAreaElement>('#telemetria-json');
   if (area) {
     area.focus();

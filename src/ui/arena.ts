@@ -7,9 +7,11 @@ import type { DuelView } from '../core/view.ts';
 import { toDuelView } from '../core/view.ts';
 import type { ConfigArena, ModelloDuello, ModelloMenu, VoceRegistro } from './render.ts';
 import { disegnaDuello, disegnaMenu } from './render.ts';
+import type { TurnoDettaglio } from './telemetria.ts';
+import { MAX_TURNI_DETTAGLIO, creaTelemetria } from './telemetria.ts';
+import { VERSIONE, testoVersione } from './versione.ts';
 
 const CHIAVE_CONFIG = 'limen.arena.config';
-const CHIAVE_TELEMETRIA = 'limen.arena.telemetria';
 
 const ETICHETTE: Record<string, string> = {
   recluta: 'sequenza semplice',
@@ -70,11 +72,6 @@ function caricaConfig(): ConfigArena {
   };
 }
 
-function leggiTelemetria(): unknown[] {
-  const r = leggi(CHIAVE_TELEMETRIA);
-  return Array.isArray(r) ? r : [];
-}
-
 // --- Stato dell'interfaccia ----------------------------------------------------
 
 interface Sessione {
@@ -86,6 +83,7 @@ interface Sessione {
   messaggio?: string;
   anima: boolean; // subito dopo la conferma: dissolvenza e testo del colpo per circa 1,2 s
   cassetto: boolean;
+  dettaglio: TurnoDettaglio[]; // per turno: postura scelta e categoria dell'hint visto
   cambi: number;
   salvata: boolean;
 }
@@ -107,6 +105,8 @@ export function avvia(radice: HTMLElement): void {
   const selezioneIniziale = (v: DuelView): PosturaId | null => (config.layout === 'scena' ? null : sceltaPredefinita(v));
   let sessione: Sessione | null = null;
   let jsonTelemetria: string | undefined;
+  let inMenu = false;
+  let conteggio = 0;
 
   const opzioni = (): OpzioniArena => ({
     hintCompleti: config.hintCompleti,
@@ -114,19 +114,44 @@ export function avvia(radice: HTMLElement): void {
     adattamento: config.adattamento,
   });
 
-  const menu = (): void => {
-    sessione = null;
+  // Telemetria: parte in locale e passa al database di Claude quando c'è (ARENA_S23_SPEC §5).
+  const tel = creaTelemetria({ sulCambio: () => void aggiornaMenu() });
+
+  const disegnaMenuCorrente = (): void => {
+    const avviso = tel.avviso();
     const modello: ModelloMenu = {
       nemici: ORDINE_NEMICI.map((id) => ({ id, nome: trovaProfilo(id).nome, etichetta: ETICHETTE[id] ?? '' })),
       config,
-      telemetria: { conteggio: leggiTelemetria().length, ...(jsonTelemetria !== undefined ? { json: jsonTelemetria } : {}) },
+      telemetria: {
+        conteggio,
+        destinazione: tel.nome(),
+        ...(avviso ? { avviso } : {}),
+        ...(jsonTelemetria !== undefined ? { json: jsonTelemetria } : {}),
+      },
+      versione: testoVersione(VERSIONE),
     };
     disegnaMenu(radice, modello);
   };
 
+  // Il conteggio arriva dalla destinazione attiva (può essere asincrona): il menu si ridisegna solo se cambia.
+  const aggiornaMenu = async (): Promise<void> => {
+    if (!inMenu) return;
+    const n = (await tel.elenca()).length;
+    if (inMenu && n !== conteggio) conteggio = n;
+    if (inMenu) disegnaMenuCorrente();
+  };
+
+  const menu = (): void => {
+    sessione = null;
+    inMenu = true;
+    disegnaMenuCorrente();
+    void aggiornaMenu();
+  };
+
   const nuovoDuello = (nemicoId: string): void => {
     const stato = creaDuello(nemicoId, config.seed, opzioni(), { parata: config.parata, schivata: config.schivata, distanza: config.distanza });
-    sessione = { nemicoId, stato, eventi: [], storico: [], selezione: selezioneIniziale(toDuelView(stato)), anima: false, cassetto: false, cambi: 0, salvata: false };
+    inMenu = false;
+    sessione = { nemicoId, stato, eventi: [], storico: [], selezione: selezioneIniziale(toDuelView(stato)), anima: false, cassetto: false, dettaglio: [], cambi: 0, salvata: false };
     disegna();
   };
 
@@ -152,21 +177,26 @@ export function avvia(radice: HTMLElement): void {
     const st = s.stato;
     const usoPosture: Record<PosturaId, number> = { assalto: 0, guardia: 0, attesa: 0, distanza: 0 };
     for (const p of st.storicoPosture) usoPosture[p] += 1;
-    const tutti = leggiTelemetria();
-    tutti.push({
-      nemico: s.nemicoId,
-      seed: st.seed,
-      opzioni: st.opzioni,
-      gradi: st.giocatore.gradi,
-      esito: st.esito,
-      turni: st.turno,
-      usoPosture,
-      cambi: s.cambi,
-      danniInflitti: st.nemico.vigoreMax - st.nemico.vigore,
-      danniSubiti: st.giocatore.vigoreMax - st.giocatore.vigore,
-      data: new Date().toISOString(),
-    });
-    scrivi(CHIAVE_TELEMETRIA, tutti);
+    const data = new Date().toISOString();
+    void tel
+      .salva({
+        id: `${st.seed}_${data}`,
+        nemico: s.nemicoId,
+        seed: st.seed,
+        opzioni: st.opzioni,
+        gradi: st.giocatore.gradi,
+        esito: st.esito,
+        turni: st.turno,
+        usoPosture,
+        cambi: s.cambi,
+        danniInflitti: st.nemico.vigoreMax - st.nemico.vigore,
+        danniSubiti: st.giocatore.vigoreMax - st.giocatore.vigore,
+        data,
+        layout: config.layout,
+        versione: testoVersione(VERSIONE),
+        turniDettaglio: s.dettaglio.slice(0, MAX_TURNI_DETTAGLIO),
+      })
+      .catch(() => undefined);
   };
 
   const disegna = (): void => {
@@ -207,6 +237,7 @@ export function avvia(radice: HTMLElement): void {
       disegna();
       return;
     }
+    const voceTurno: TurnoDettaglio = { turno: s.stato.turno, postura: s.selezione, hint: vista.hint.categoria };
     let r: ReturnType<typeof resolveTurn>;
     try {
       r = resolveTurn(s.stato, s.selezione);
@@ -219,6 +250,7 @@ export function avvia(radice: HTMLElement): void {
     // Il turno appena concluso passa nello storico.
     for (const e of vista.registro) s.storico.push({ turno: e.turno, testo: e.testo, ...(e.simbolo ? { simbolo: e.simbolo } : {}) });
     delete s.messaggio;
+    s.dettaglio.push(voceTurno);
     s.cambi += r.eventi.filter((e) => e.tipo === 'cambio' && e.chi === 'giocatore').length;
     s.stato = r.stato;
     s.eventi = r.eventi;
@@ -229,7 +261,7 @@ export function avvia(radice: HTMLElement): void {
   };
 
   const copia = async (): Promise<void> => {
-    const testo = JSON.stringify(leggiTelemetria(), null, 2);
+    const testo = JSON.stringify(await tel.elenca(), null, 2);
     try {
       await navigator.clipboard.writeText(testo);
       jsonTelemetria = undefined;
@@ -305,9 +337,11 @@ export function avvia(radice: HTMLElement): void {
         void copia();
         break;
       case 'azzera':
-        scrivi(CHIAVE_TELEMETRIA, []);
-        jsonTelemetria = undefined;
-        menu();
+        void tel.azzera().then(() => {
+          jsonTelemetria = undefined;
+          conteggio = 0;
+          menu();
+        });
         break;
     }
   });
@@ -326,4 +360,5 @@ export function avvia(radice: HTMLElement): void {
   });
 
   menu();
+  void tel.pronta.then(() => aggiornaMenu());
 }
