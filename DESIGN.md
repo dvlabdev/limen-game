@@ -221,6 +221,15 @@ Principi già fissati:
 - Poco testo a schermo durante il combattimento.
 - 🟡 Estetica da libro illustrato o xilografia (palette limitata, inchiostro, carta, icone forti), realizzabile via codice.
 
+### 8.1 Scena del duello ✅ principio, ⬜ specifica
+- In scena ci sono il **viandante e il nemico**, non solo pulsanti e indicatori.
+- **Marionette articolate in SVG:** sagome con parti snodate (testa, busto, braccia, arma). Ogni posa è un insieme di trasformazioni delle parti, cioè **dati**, e i passaggi tra una posa e l'altra si animano via codice.
+- **Qualità professionale come requisito:** direzione artistica scritta, revisioni con la scelta tra più direzioni e parti grafiche sostituibili. Il rig è separato dal disegno, quindi le parti si possono ridisegnare o affidare a un illustratore senza toccare il codice.
+- **La postura è una posa.** Il nemico **telegrafa** l'intenzione con il corpo: la posa affianca il simbolo dell'hint e non lo sostituisce.
+- **La risoluzione del turno si vede:** colpi, parate, schivate e interruzioni, nell'ordine dell'iniziativa e sempre saltabili con un tocco. Le animazioni derivano dagli eventi del risolutore, così non possono contraddire l'esito.
+- **Riuso:** la stessa marionetta del viandante si muove anche nell'esplorazione (mappa delle milestone, nucleo §9.2).
+- **Tempi:** fase successiva all'arena (vedi 9.2a), con una specifica dedicata `docs/SCENA_SPEC.md`.
+
 ---
 
 ## 9. Produzione
