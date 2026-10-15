@@ -4,16 +4,9 @@ import { ORDINE_NEMICI, trovaMossa } from '../src/data/enemies.ts';
 import { creaDuello, resolveTurn } from '../src/core/resolve.ts';
 import { toDuelView } from '../src/core/view.ts';
 import { dadoMassimo, dadoMinimo } from '../src/core/rng.ts';
+import { SIMBOLI } from '../src/ui/symbols.ts';
 import { gioca, statoProva } from './util.ts';
 
-const SIMBOLI = new Set([
-  'posture.assalto', 'posture.guardia', 'posture.attesa', 'posture.distanza', 'posture.preparazione',
-  'intent.pesante', 'intent.leggero', 'intent.difesa', 'intent.preparazione',
-  'stato.vantaggio', 'stato.preparato', 'stato.fase2', 'stato.spalle',
-  'risorsa.vigore', 'risorsa.fiato',
-  'evento.colpo', 'evento.parata', 'evento.schivata', 'evento.contrattacco', 'evento.evitato', 'evento.interrotto', 'evento.rotta',
-  'evento.incalza', 'evento.punta', 'evento.arresto',
-]);
 
 describe('DuelView', () => {
   it('la categoria dell\'hint deriva dall\'archetipo e dall\'attacco', () => {
@@ -55,13 +48,54 @@ describe('DuelView', () => {
           v.hint.simbolo, v.giocatore.postura.simbolo, v.nemico.postura.simbolo,
           ...v.posture.map((p) => p.simbolo), ...v.registro.flatMap((r) => (r.simbolo ? [r.simbolo] : [])),
         ];
-        for (const sim of simboli) assert.ok(SIMBOLI.has(sim), `simbolo fuori catalogo: ${sim}`);
+        for (const sim of simboli) assert.ok(sim in SIMBOLI, `simbolo fuori catalogo: ${sim}`);
         const scelta = v.posture.find((p) => p.disponibile && !p.attiva) ?? v.posture.find((p) => p.disponibile);
         const r = resolveTurn(s, (scelta as { id: 'assalto' }).id);
         s = r.stato;
         eventi = r.eventi;
       }
     }
+  });
+
+  it('ogni simbolo emesso da toDuelView esiste in SIMBOLI (UI_SPEC §9.6): tutti i nemici, molti duelli, hint completi', () => {
+    for (const id of ORDINE_NEMICI) {
+      for (let seed = 1; seed <= 25; seed++) {
+        let s = creaDuello(id, seed, { hintCompleti: true, anteprimaDanni: true }, { parata: 3, schivata: 3, distanza: (seed % 3 + 1) as 1 | 2 | 3 });
+        let eventi: ReturnType<typeof resolveTurn>['eventi'] = [];
+        for (let t = 0; t < 30 && s.esito === 'in corso'; t++) {
+          const v = toDuelView(s, eventi);
+          const d = v.hint.dettaglio;
+          const mod = d ? [d.portata ? `mod.portata.${d.portata}` : '', d.velocita ? `mod.velocita.${d.velocita}` : '', ...d.flags.map((f) => `mod.${f}`)].filter(Boolean) : [];
+          const simboli = [
+            v.hint.simbolo, v.giocatore.postura.simbolo, v.nemico.postura.simbolo, 'risorsa.vigore', 'risorsa.fiato.pieno', 'risorsa.fiato.vuoto',
+            ...mod, ...v.posture.flatMap((p) => [p.simbolo, `${p.simbolo}.medaglione`]), ...v.registro.flatMap((r) => (r.simbolo ? [r.simbolo] : [])),
+          ];
+          for (const sim of simboli) assert.ok(sim in SIMBOLI, `simbolo fuori catalogo: ${sim}`);
+          const disp = v.posture.filter((p) => p.disponibile);
+          const scelta = disp[(seed + t) % disp.length] as { id: 'assalto' };
+          const r = resolveTurn(s, scelta.id);
+          s = r.stato;
+          eventi = r.eventi;
+        }
+      }
+    }
+  });
+
+  it('il registro porta dove e breve per le etichette del colpo', () => {
+    const s = statoProva('P2', 'assalto');
+    const r = gioca(s, 'assalto');
+    const v = toDuelView(r.stato, r.eventi);
+    const colpo = v.registro.find((x) => x.tipo === 'colpo');
+    assert.ok(colpo && colpo.dove === 'nemico' && /^−[0-9]+$/.test(colpo.breve ?? ''));
+    assert.strictEqual(v.registro.find((x) => x.tipo === 'interrotto')?.dove, 'nemico');
+  });
+
+  it("l'etichetta dello stato preparato è \"Preparato\" in tutto il set (AUD-009)", () => {
+    assert.strictEqual(SIMBOLI['stato.preparato']?.etichetta, 'Preparato');
+    const s = statoProva('PR', 'assalto');
+    const r = gioca(s, 'guardia');
+    const testo = toDuelView(r.stato, r.eventi).registro.map((x) => x.testo).join(' ');
+    assert.ok(/preparato/i.test(testo) && !/raccol/i.test(testo), testo);
   });
 
   it('le posture non raggiungibili sono disabilitate senza fiato', () => {

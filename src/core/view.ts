@@ -61,7 +61,9 @@ export interface DuelView {
     motivo?: 'fiato' | 'spazio'; // perché non è disponibile
     anteprima?: { subito: [number, number]; inflitto: [number, number] }; // solo con anteprimaDanni
   }>;
-  registro: Array<{ turno: number; testo: string; simbolo?: string; tipo: string }>;
+  // dove e breve (aggiunta di C2, da confermare con Planning): su quale figura cade l'evento e la sua
+  // etichetta breve ("−5", "Parata"), per il testo del colpo della scena (UI_SPEC §5.4).
+  registro: Array<{ turno: number; testo: string; simbolo?: string; tipo: string; dove?: Chi; breve?: string }>;
 }
 
 function combattenteView(c: StatoDuello['giocatore']): CombattenteView {
@@ -147,6 +149,35 @@ function articoli(stato: StatoDuello) {
   };
 }
 
+// Dove cade un evento e come si legge in breve nel punto del colpo (nessuna regola: solo presentazione).
+function etichettaColpo(e: EventoConTurno): { dove: Chi; breve: string } | null {
+  const altro = (c: Chi): Chi => (c === 'giocatore' ? 'nemico' : 'giocatore');
+  switch (e.tipo) {
+    case 'colpo':
+      return { dove: altro(e.chi), breve: `−${e.danno}` };
+    case 'parata':
+      return { dove: e.chi, breve: e.annullato ? 'Parata' : `Parata −${e.danno}` };
+    case 'schivata':
+      return { dove: e.chi, breve: 'Schivata' };
+    case 'evitato':
+      return { dove: e.chi, breve: 'Evitato' };
+    case 'contrattacco':
+      return { dove: altro(e.chi), breve: `Contrattacco −${e.danno}` };
+    case 'punta':
+      return { dove: altro(e.chi), breve: `Punta −${e.danno}` };
+    case 'arresto':
+      return { dove: altro(e.chi), breve: `Arresto −${e.danno}` };
+    case 'incalza':
+      return { dove: e.chi, breve: 'Incalza' };
+    case 'interrotto':
+      return { dove: e.chi, breve: 'Interrotto' };
+    case 'rotta':
+      return { dove: e.chi, breve: 'Rotta' };
+    default:
+      return null;
+  }
+}
+
 function frase(stato: StatoDuello, e: EventoConTurno): { testo: string; simbolo?: string } | null {
   const n = articoli(stato);
   const tu = (chi: Chi) => chi === 'giocatore';
@@ -161,7 +192,7 @@ function frase(stato: StatoDuello, e: EventoConTurno): { testo: string; simbolo?
     case 'colpo': {
       const extra: string[] = [];
       if (e.vantaggioMassimo) extra.push('il vantaggio dà il colpo pieno');
-      if (e.preparato) extra.push('era raccolto: ×1,5');
+      if (e.preparato) extra.push('era preparato: ×1,5');
       if (e.lungaControDistanza) extra.push('la Distanza non protegge dai colpi lunghi');
       if (e.reazioneNegata === 'senzaFiato') extra.push('senza fiato non si reagisce: +25%');
       if (e.reazioneNegata === 'sfondaGuardia') extra.push('sfonda la guardia');
@@ -217,8 +248,8 @@ function frase(stato: StatoDuello, e: EventoConTurno): { testo: string; simbolo?
     case 'preparato':
       return {
         testo: tu(e.chi)
-          ? 'Ti raccogli: il prossimo colpo farà più male.'
-          : `${n.Il} si raccoglie: il prossimo colpo farà più male.`,
+          ? 'Sei preparato: il prossimo colpo farà più male.'
+          : `${n.Il} è preparato: il prossimo colpo farà più male.`,
         simbolo: 'stato.preparato',
       };
     case 'vantaggio':
@@ -288,7 +319,8 @@ export function toDuelView(stato: StatoDuello, eventiUltimoTurno: EventoConTurno
   for (const e of eventiUltimoTurno) {
     const f = frase(stato, e);
     if (!f) continue;
-    registro.push({ turno: e.turno, testo: f.testo, ...(f.simbolo ? { simbolo: f.simbolo } : {}), tipo: e.tipo });
+    const c = etichettaColpo(e);
+    registro.push({ turno: e.turno, testo: f.testo, ...(f.simbolo ? { simbolo: f.simbolo } : {}), tipo: e.tipo, ...(c ?? {}) });
   }
 
   return {

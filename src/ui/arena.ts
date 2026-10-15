@@ -3,6 +3,7 @@
 import type { EventoConTurno, OpzioniArena, PosturaId, StatoDuello } from '../core/types.ts';
 import { ORDINE_NEMICI, trovaProfilo } from '../data/enemies.ts';
 import { creaDuello, resolveTurn } from '../core/resolve.ts';
+import type { DuelView } from '../core/view.ts';
 import { toDuelView } from '../core/view.ts';
 import type { ConfigArena, ModelloDuello, ModelloMenu, VoceRegistro } from './render.ts';
 import { disegnaDuello, disegnaMenu } from './render.ts';
@@ -26,6 +27,7 @@ const CONFIG_PREDEFINITA: ConfigArena = {
   hintCompleti: false,
   anteprimaDanni: false,
   adattamento: true,
+  layout: 'scena',
 };
 
 // --- Archiviazione (sempre in try/catch) ---------------------------------------
@@ -64,6 +66,7 @@ function caricaConfig(): ConfigArena {
     hintCompleti: typeof o['hintCompleti'] === 'boolean' ? o['hintCompleti'] : d.hintCompleti,
     anteprimaDanni: typeof o['anteprimaDanni'] === 'boolean' ? o['anteprimaDanni'] : d.anteprimaDanni,
     adattamento: typeof o['adattamento'] === 'boolean' ? o['adattamento'] : d.adattamento,
+    layout: o['layout'] === 'griglia' || o['layout'] === 'scena' ? o['layout'] : d.layout,
   };
 }
 
@@ -79,9 +82,17 @@ interface Sessione {
   stato: StatoDuello;
   eventi: EventoConTurno[]; // ultimo turno
   storico: VoceRegistro[];
-  selezione: PosturaId;
+  selezione: PosturaId | null; // null: nessuna scelta (mai una postura non disponibile, AUD-002)
+  messaggio?: string;
   cambi: number;
   salvata: boolean;
+}
+
+// Selezione di partenza: la postura attuale (tenerla è gratis), ma solo se è davvero disponibile.
+// Con la Distanza esaurita (spalle al muro) non si seleziona nulla: tocca al giocatore (AUD-002).
+function sceltaPredefinita(v: DuelView): PosturaId | null {
+  const attiva = v.posture.find((p) => p.attiva);
+  return attiva && attiva.disponibile ? attiva.id : null;
 }
 
 export function avvia(radice: HTMLElement): void {
@@ -107,8 +118,7 @@ export function avvia(radice: HTMLElement): void {
 
   const nuovoDuello = (nemicoId: string): void => {
     const stato = creaDuello(nemicoId, config.seed, opzioni(), { parata: config.parata, schivata: config.schivata, distanza: config.distanza });
-    const attiva = stato.giocatore.postura as PosturaId;
-    sessione = { nemicoId, stato, eventi: [], storico: [], selezione: attiva, cambi: 0, salvata: false };
+    sessione = { nemicoId, stato, eventi: [], storico: [], selezione: sceltaPredefinita(toDuelView(stato)), cambi: 0, salvata: false };
     disegna();
   };
 
@@ -156,8 +166,10 @@ export function avvia(radice: HTMLElement): void {
     const s = sessione;
     const modello: ModelloDuello = {
       vista: toDuelView(s.stato, s.eventi),
+      layout: config.layout,
       selezione: s.selezione,
       storico: s.storico,
+      ...(s.messaggio ? { messaggio: s.messaggio } : {}),
       ...(s.stato.esito !== 'in corso' ? { fine: statistiche(s) } : {}),
     };
     disegnaDuello(radice, modello);
@@ -166,13 +178,32 @@ export function avvia(radice: HTMLElement): void {
   const conferma = (): void => {
     const s = sessione;
     if (!s || s.stato.esito !== 'in corso') return;
+    // AUD-002: la conferma non lancia mai eccezioni non gestite. Si verifica con la vista che la scelta
+    // sia disponibile; in caso contrario si avvisa e il turno non avanza.
+    const vista = toDuelView(s.stato, s.eventi);
+    const scelta = s.selezione ? vista.posture.find((p) => p.id === s.selezione) : undefined;
+    if (!s.selezione || !scelta || !scelta.disponibile) {
+      s.selezione = sceltaPredefinita(vista);
+      s.messaggio = 'Scegli una postura disponibile.';
+      disegna();
+      return;
+    }
+    let r: ReturnType<typeof resolveTurn>;
+    try {
+      r = resolveTurn(s.stato, s.selezione);
+    } catch {
+      s.selezione = sceltaPredefinita(vista);
+      s.messaggio = 'Quella postura non è disponibile: scegline un’altra.';
+      disegna();
+      return;
+    }
     // Il turno appena concluso passa nello storico.
-    for (const e of toDuelView(s.stato, s.eventi).registro) s.storico.push({ turno: e.turno, testo: e.testo, ...(e.simbolo ? { simbolo: e.simbolo } : {}) });
-    const r = resolveTurn(s.stato, s.selezione);
+    for (const e of vista.registro) s.storico.push({ turno: e.turno, testo: e.testo, ...(e.simbolo ? { simbolo: e.simbolo } : {}) });
+    delete s.messaggio;
     s.cambi += r.eventi.filter((e) => e.tipo === 'cambio' && e.chi === 'giocatore').length;
     s.stato = r.stato;
     s.eventi = r.eventi;
-    s.selezione = s.stato.giocatore.postura as PosturaId;
+    s.selezione = s.stato.esito === 'in corso' ? sceltaPredefinita(toDuelView(s.stato)) : null;
     if (s.stato.esito !== 'in corso') registraTelemetria(s);
     disegna();
   };
@@ -202,8 +233,12 @@ export function avvia(radice: HTMLElement): void {
         break;
       case 'scegli':
         if (sessione) {
-          sessione.selezione = id as PosturaId;
-          disegna();
+          const p = toDuelView(sessione.stato).posture.find((x) => x.id === id);
+          if (p && p.disponibile) {
+            sessione.selezione = p.id;
+            delete sessione.messaggio;
+            disegna();
+          }
         }
         break;
       case 'conferma':
@@ -242,6 +277,7 @@ export function avvia(radice: HTMLElement): void {
     const c: Record<string, unknown> = { ...config };
     if (chiave === 'parata' || chiave === 'schivata' || chiave === 'distanza') c[chiave] = grado(Number(el.value), 1);
     else if (chiave === 'seed') c[chiave] = Number.isFinite(Number(el.value)) && el.value !== '' ? Math.trunc(Number(el.value)) : config.seed;
+    else if (chiave === 'layout') c[chiave] = el.value === 'griglia' ? 'griglia' : 'scena';
     else c[chiave] = el.checked;
     config = c as unknown as ConfigArena;
     scrivi(CHIAVE_CONFIG, config);
