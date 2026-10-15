@@ -526,3 +526,13 @@ Si applicano nella fase C2. Il dettaglio dell'assegnazione è in ARENA_S23_SPEC 
 | **AUD-015** | Chiarimento del §7: le candidate dell'anteprima sono le mosse della categoria che il nemico **può effettivamente giocare** (fiato, spazio alle spalle). Usa solo informazioni visibili. |
 | **AUD-018** | Regola nuova per l'IA: se non ci sono candidate, il nemico sceglie una mossa con **lo stesso archetipo della postura attuale**. Un test di validazione dei dati garantisce che esista sempre, per ogni fase di ogni nemico. |
 | **AUD-016** | Accettato: nell'arena gli intervalli di danno sono un interruttore A/B, e sarà il playtest a decidere per il gioco (PLAYTEST §5). |
+
+### 12.8 Risposte al report C2 (ARENA_REPORT §8.8)
+| Domanda | Decisione |
+|---|---|
+| **1. Campi `dove` e `breve` nel registro** | **Approvati.** Fanno parte del contratto `DuelView` (§7): ogni voce di `registro` può avere `dove?: 'giocatore' \| 'nemico'` (la figura su cui cade l'evento) e `breve?: string` (etichetta breve: "−5", "Parata", "Evitato"). Sono calcolati in `view.ts` dagli eventi. |
+| **2. AUD-018** | Confermata la lettura: con dati validi la regola non scatta mai, quindi resta come errore esplicito sui dati non validi, coperto dal test di validazione. |
+| **3. Sagome** | Dopo il commit di C2a, `src/ui/sagome.ts` va riallineato se `design/sagome.proposed.ts` è cambiato. |
+| **4. Altezza della griglia** (circa 850 px con hint completi e anteprima) | **Accettato lo scorrimento:** la griglia è la variante di riferimento, la scena quella principale. |
+| **5. Telemetria con `doc(record.id).set`** | **Approvato:** è idempotente ed evita doppioni nella copia dei record locali. |
+| **6. Visualizzatori** | Confermato: chi non può scrivere nel database ricade sulla memoria del browser, con l'avviso. |
