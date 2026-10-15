@@ -13,6 +13,7 @@ declare module 'node:assert' {
     ok(valore: unknown, messaggio?: string): void;
     equal(a: unknown, b: unknown, messaggio?: string): void;
     notEqual(a: unknown, b: unknown, messaggio?: string): void;
+    notStrictEqual(a: unknown, b: unknown, messaggio?: string): void;
     strictEqual<T>(a: unknown, b: T, messaggio?: string): void;
     deepStrictEqual<T>(a: unknown, b: T, messaggio?: string): void;
     throws(fn: () => unknown, atteso?: unknown, messaggio?: string): void;
