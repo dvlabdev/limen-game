@@ -16,10 +16,18 @@ Il progetto è un gioco a turni in TypeScript compilato in un singolo file HTML.
 | **Audit** | `audit/` | Tutto il resto, in sola lettura. Non corregge e non decide: vedi [docs/AUDIT_PROTOCOL.md](docs/AUDIT_PROTOCOL.md) |
 
 - Le sessioni comunicano **tramite i file del repository**.
-- **Mentre l'arena è in implementazione**, Grafica lavora solo in `design/` e `docs/UI_SPEC.md`. L'integrazione in `src/ui/` avviene dopo, coordinata da Planning.
+- **Integrazioni in `src/ui/`** (simboli, stili, scena) avvengono solo quando lo prevede una specifica, coordinate da Planning. Fino ad allora Grafica lavora in `design/` e `docs/UI_SPEC.md`.
 - **Git in una cartella condivisa:** si aggiungono solo i propri file con `git add <percorsi>`, mai `git add -A` o `git add .`. Se c'è un `index.lock`, aspetta e riprova.
 - Il contratto tra logica e interfaccia è `src/core/view.ts` (`DuelView`). Si modifica solo d'accordo con Planning.
-- Tutte le sessioni lavorano nella stessa cartella, che è su Google Drive: un solo scrittore per file, niente worktree.
+- La sequenza dei lavori è in [docs/ROADMAP.md](docs/ROADMAP.md).
+
+## Cartella di lavoro
+- La copia di lavoro è **`C:\Users\irond\Dropbox\Buffer\claude-yard\limen-game`** (disco locale sincronizzato da Dropbox). La vecchia cartella su Google Drive è un **archivio**: non ci lavora più nessuno.
+- `node_modules/`, `dist/` e `sim-out/` sono **esclusi dalla sincronizzazione di Dropbox** con l'attributo `com.dropbox.ignored`. Se li ricrei da zero, rimetti l'attributo prima di `npm install`:
+  ```powershell
+  New-Item -ItemType Directory -Force node_modules; Set-Content -Path node_modules -Stream com.dropbox.ignored -Value 1
+  ```
+- Tutte le sessioni lavorano in questa cartella: un solo scrittore per file, niente worktree.
 
 ## Domande
 Se una regola è ambigua o un obiettivo non si può raggiungere senza cambiare le regole:
