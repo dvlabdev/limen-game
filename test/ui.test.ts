@@ -88,11 +88,12 @@ describe('layout griglia', () => {
   });
 });
 
-describe('sagome (segnaposto C2a)', () => {
-  it('restituisce un SVG per ogni id e rispetta px', () => {
+describe('sagome (C2a)', () => {
+  it('restituisce un SVG per ogni id (altezza di riferimento 120: riquadro 200 × 164) e specchia il nemico', () => {
     for (const id of ['viandante.assalto', 'viandante.guardia', 'viandante.attesa', 'viandante.distanza', 'recluta', 'duellante', 'bruto', 'lanciere', 'mietitore']) {
       const s = sagoma(id, { px: 120 });
-      assert.ok(s.startsWith('<svg') && s.includes('height="120"') && s.includes('currentColor'), id);
+      assert.ok(sagoma(id, { px: 120, specchia: true }).includes('scale(-1 1)'), id);
+      assert.ok(s.startsWith('<svg') && s.includes('height="164"') && s.includes('currentColor'), id);
     }
   });
 });

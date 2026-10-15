@@ -158,7 +158,6 @@ input, select, textarea {
 .hud-fiato .zero { color: var(--pericolo); display: flex; align-items: center; gap: 4px; }
 
 .figura { color: var(--inchiostro); line-height: 0; pointer-events: none; }
-.figura.specchiata { transform: scaleX(-1); }
 .figura.dissolve { animation: dissolvi 200ms ease-out; }
 @keyframes dissolvi { from { opacity: 0; } to { opacity: 1; } }
 .targhetta { width: 100px; display: flex; justify-content: center; align-items: center; gap: 4px; font-size: 12px; color: var(--seppia); pointer-events: none; }

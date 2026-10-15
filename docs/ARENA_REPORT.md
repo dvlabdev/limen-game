@@ -318,7 +318,7 @@ Build finale `dist/index.html` nel browser integrato con viewport emulato 360×7
 
 ## 8. C2: arena giocabile su S23 (ARENA_S23_SPEC)
 
-> **Stato:** C2b completata (6 commit, da `6b2a16b`). Fonti: [ARENA_S23_SPEC.md](ARENA_S23_SPEC.md) e ARENA_SPEC §12.6–§12.7. La sessione C2a (sagome) non ha consegnato `design/sagome.proposed.ts`: la scena usa un **segnaposto** con la stessa firma (§8.7, domanda 3).
+> **Stato:** C2b completata (6 commit, da `6b2a16b`). Fonti: [ARENA_S23_SPEC.md](ARENA_S23_SPEC.md) e ARENA_SPEC §12.6–§12.7. Le sagome vengono da `design/sagome.proposed.ts` (C2a), copiato in `src/ui/sagome.ts` (§8.7, punto 1).
 
 ### 8.1 Core e dati (punto 1)
 
@@ -408,7 +408,7 @@ Limiti: come in §1, gli screenshot del browser integrato a 360 px sono deformat
 
 ### 8.7 Scostamenti dalla specifica
 
-1. **Sagome segnaposto.** La sessione C2a è fallita e `design/sagome.proposed.ts` non esiste: `src/ui/sagome.ts` contiene sagome geometriche semplici con la firma richiesta `sagoma(id, { px })` (id: `viandante.<postura>`, `recluta`, …, `mietitore`; viewBox -90 -150 180 156 come in `design/sagome-dati.mjs`; il nemico si specchia in CSS). **Da sostituire** con la copia del modulo di C2a appena disponibile (`git pull` e `cp`). Un test controlla che ogni id produca un SVG.
+1. **Sagome di C2a.** La sessione C2a risulta "fallita" ma ha lasciato nella cartella `design/sagome.proposed.ts`, `design/sagome/` e `design/sagome-dati.mjs`, **non ancora committati** (sono file di Grafica: non li ho aggiunti al mio commit). Fino alla consegna ho usato un segnaposto con la stessa firma; a fine lavoro, dopo un nuovo controllo, l'ho sostituito con la **copia** di `design/sagome.proposed.ts` in `src/ui/sagome.ts` (riquadro 200 × 164 unità, `px: 120` = un'unità per pixel, nemico con `specchia: true`). Un test controlla che ogni id produca un SVG e che lo specchio funzioni. Non ho verificato i criteri di distinzione di SCENA_SPEC §1.7 (spettano a Grafica) e non uso `PASSO_POSTURA` (il viandante resta a x 160 come in UI_SPEC §5.1).
 2. **Cartiglio fisso al posto dell'anteprima "vicino al medaglione":** ARENA_S23_SPEC §4 dice "vicino al medaglione", UI_SPEC §5.1 dice cartiglio fisso a (8, 288); ho seguito UI_SPEC.
 3. **Medaglione spento:** si attenua l'intero SVG (anello e segno) al 30% e non solo il segno, perché `medaglione()` li disegna insieme; il fondo carta resta pieno.
 4. **Stato "confermato" del medaglione:** non si vede, perché la conferma risolve subito il turno e ridisegna la scena (nessuna animazione).
@@ -420,7 +420,7 @@ Limiti: come in §1, gli screenshot del browser integrato a 360 px sono deformat
 
 1. **Contratto `DuelView`:** per il testo del colpo della scena ho aggiunto a ogni voce di `registro` due campi opzionali, `dove` (`'giocatore' | 'nemico'`: su quale figura cade l'evento) e `breve` (etichetta breve: "−5", "Parata", "Evitato"), calcolati dagli eventi in `view.ts`. Senza, la UI dovrebbe leggere il testo del registro per sapere su quale figura e con quale numero mostrare il colpo. Non cambiano né le regole né i campi esistenti. **Approvare l'aggiunta** (e riportarla in ARENA_SPEC §7), oppure indicare come ricavare quei dati.
 2. **AUD-018:** la regola "se non ci sono candidate, una mossa con lo stesso archetipo della postura attuale" non può mai scattare con dati validi (quella mossa è già candidata); resta come errore esplicito sui dati invalidi, con il test di validazione. È la lettura voluta?
-3. **Sagome:** rilanciare C2a o accettare le sagome segnaposto per il primo playtest?
+3. **Sagome:** i file di C2a sono nella cartella ma non committati e la sessione risulta fallita: vanno verificati e committati da Grafica (criteri di SCENA_SPEC §1.7 e tabella degli assi in UI_SPEC). La copia in `src/ui/sagome.ts` va aggiornata se cambiano.
 4. **Altezza della griglia** con hint completi e anteprima (circa 850 px contro i 700 utili): va bene lo scorrimento, o si compatta la griglia?
 5. **Telemetria su database:** confermare `doc(record.id).set` (§8.7, punto 5) al posto di `add`.
 6. **Punto di attenzione per C2c:** il test di `claude-db` con il database vero spetta alla pubblicazione come pagina privata (`capabilities: { db: {}, user: {} }`). Con i permessi predefiniti scrivono il proprietario e i Contributori; chi gioca da Visualizzatore ricade in locale con l'avviso.

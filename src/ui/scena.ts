@@ -11,7 +11,9 @@ import type { StatoMedaglione } from './symbols.ts';
 export const LARGHEZZA = 360;
 export const ALTEZZA = 700;
 const TERRENO = 560; // y del terreno
-const FIGURA_PX = 130; // altezza del riquadro: la figura è alta circa 120 px
+const FIGURA_PX = 120; // altezza di riferimento (SCENA_SPEC): con px 120 un'unità del disegno vale un pixel
+// Riquadro delle sagome (design/sagome.proposed.ts): 200 × 164 unità, terreno a y = 0, 6 unità sotto il terreno.
+const RIQUADRO = { larg: 200, alt: 164, sottoTerreno: 6 };
 const CX = { giocatore: 160, nemico: 284 } as const;
 
 // Ventaglio (UI_SPEC §5.2): centro dei medaglioni, dalla schiena verso il nemico.
@@ -26,9 +28,9 @@ const SAGOME_VIANDANTE = { assalto: 'viandante.assalto', guardia: 'viandante.gua
 
 function figura(chi: Chi, idSagoma: string, anima: boolean): string {
   const cx = CX[chi];
-  const larg = Math.round((FIGURA_PX * 180) / 156);
-  const top = TERRENO + Math.round((6 / 156) * FIGURA_PX) - FIGURA_PX;
-  return `<div class="figura ${chi}${chi === 'nemico' ? ' specchiata' : ''}${anima ? ' dissolve' : ''}" style="left:${cx - larg / 2}px;top:${top}px">${sagoma(idSagoma, { px: FIGURA_PX })}</div>`;
+  const k = FIGURA_PX / 120;
+  const top = TERRENO + RIQUADRO.sottoTerreno * k - RIQUADRO.alt * k;
+  return `<div class="figura ${chi}${anima ? ' dissolve' : ''}" style="left:${cx - (RIQUADRO.larg * k) / 2}px;top:${top}px">${sagoma(idSagoma, { px: FIGURA_PX, specchia: chi === 'nemico' })}</div>`;
 }
 
 // Targhetta con la postura attuale, sotto la figura.
