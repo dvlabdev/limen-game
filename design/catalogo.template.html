@@ -29,6 +29,7 @@
 .scuro { --carta: #141210; --carta-2: #1f1b17; --inchiostro: #e4d9c4; --seppia: #a39682; --filo: #3b342b; --pericolo: #e2654b; }
 * { box-sizing: border-box; }
 body {
+  margin: 0;
   background: var(--carta); color: var(--inchiostro);
   font: 400 17px/1.55 var(--f-testo);
   padding-inline: 16px; padding-block: 0 64px;
@@ -194,6 +195,21 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .taglie .t { display: grid; justify-items: center; gap: 4px; }
 .taglie .t .dato { font-size: 12px; }
 
+/* Sagome (C2a) */
+.sag-prova { display: grid; grid-template-columns: 160px 160px; gap: 8px; justify-content: center; }
+.sag-cella { display: grid; justify-items: center; gap: 4px; padding-bottom: 6px; background: #ddd4c1; color: #000; border: 1px solid var(--filo); font-size: 14px; }
+.sag-cella svg { display: block; }
+.sag-cella .t { color: #1c1915; font: 400 16px/1 var(--f-display); }
+.compatta { border-collapse: collapse; width: 100%; font-size: 13px; }
+.compatta th, .compatta td { padding: 5px 3px; border-bottom: 1px solid var(--filo); text-align: right; vertical-align: top; }
+.compatta th:first-child, .compatta td:first-child { text-align: left; }
+.compatta thead th { font: 500 12px/1.2 var(--f-dato); letter-spacing: .02em; color: var(--seppia); }
+.compatta .si { font-weight: 700; }
+.sag-figura { display: flex; justify-content: center; padding: 8px 4px 4px; color: var(--inchiostro); }
+.sag-figura svg { display: block; }
+.coppie16 { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: center; padding: 12px; border: 1px solid var(--filo); background: var(--carta); color: var(--inchiostro); }
+.coppie16 .c { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; }
+.coppie16 .c .dato { font-size: 12px; }
 .grigio-prova { display: grid; gap: 14px; }
 .grigio-prova .riga { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--filo); filter: grayscale(1); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
@@ -219,8 +235,20 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 
   <section aria-labelledby="h-duello">
     <h2 id="h-duello">Il duello su S23</h2>
-    <p>La scena occupa tutto lo schermo (Samsung S23: 360 × 700 px utili nell'app, in verticale) e l'interfaccia vive dentro di essa: vigore e fiato sopra ogni personaggio, hint sopra la testa del nemico, ventaglio di medaglioni dietro il viandante, registro in un cassetto. Le figure sono sagome segnaposto di profilo.</p>
+    <p>La scena occupa tutto lo schermo (Samsung S23: 360 × 700 px utili nell'app, in verticale) e l'interfaccia vive dentro di essa: vigore e fiato sopra ogni personaggio, hint sopra la testa del nemico, ventaglio di medaglioni dietro il viandante, registro in un cassetto. Le figure sono le sagome statiche di profilo (sezione seguente).</p>
     <div class="duelli" id="duelli"></div>
+  </section>
+
+  <section aria-labelledby="h-sag">
+    <h2 id="h-sag">Sagome statiche</h2>
+    <p>Per il playtest le figure sono sagome ferme, non marionette (ARENA_S23_SPEC §3): masse piene in currentColor, di profilo, altezza di riferimento 120 px su S23, niente volti. Il nemico usa la stessa sagoma specchiata. Restano utili come riferimento per le marionette e per il quiz delle sagome.</p>
+    <h3>Prova della sagoma: le quattro posture</h3>
+    <p>Nero pieno a 120 px, senza etichette, in ordine mescolato (SCENA_SPEC §1.7). Il nome è in fondo a ogni cella solo per la verifica.</p>
+    <div class="sag-prova" id="sag-prova"></div>
+    <h3>Assi A–C misurati sul disegno</h3>
+    <div id="sag-assi" style="display:grid;gap:12px"></div>
+    <h3>Il viandante e i cinque nemici</h3>
+    <div class="schede" id="sag-schede"></div>
   </section>
 
   <section aria-labelledby="h-gram">
@@ -247,11 +275,15 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 (function () {
   "use strict";
   var DATI = /*DATI*/[];
+  var SAG = /*SAGOME*/{};
+  var S = {};
+  SAG.sagome.forEach(function (s) { S[s.id] = s; });
   var P = {};
   DATI.forEach(function (s) { P[s.id] = s; });
 
   function ic(id, px, cls, parlante) {
     var s = P[id];
+    px = Math.max(px, s.min || 0); // mai sotto il minimo del simbolo (UI_SPEC §7, AUD-008)
     var corpo = (px < 24 && s.piccolo) || s.svg;
     var a = parlante ? 'role="img" aria-label="' + s.etichetta + '"' : 'aria-hidden="true"';
     return '<svg class="icona ' + (cls || "") + '" viewBox="0 0 24 24" width="' + px + '" height="' + px + '" fill="currentColor" focusable="false" ' + a + ">" + corpo + "</svg>";
@@ -268,17 +300,12 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
   // --- Mockup -------------------------------------------------------------------------------
   // Sagome segnaposto di profilo, una di fronte all'altra (DESIGN §8.1). Coordinate in una scena 375 × 180.
   var X_NEMICO = 262;
-  function figure() {
+  function figure(sv, sn) {
     return '<svg class="fig" viewBox="0 -12 375 180" fill="currentColor" aria-hidden="true">' +
       '<path d="M0 166H375V168.5H0Z"/>' +
       '<path d="M14 173L20 170M44 174L51 171M80 173L86 170M150 174L157 171M196 173L202 170M232 174L239 171M300 173L306 170M346 174L353 171" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
-      '<path d="M92 166L100 126H114L122 166H113L107 138L101 166Z M98 84L84 140L100 128Z M97 128L100 84H116L120 128Z M114 90L134 102L131 107L112 98Z"/>' +
-      '<circle cx="108" cy="72" r="11"/>' +
-      '<path d="M133 104L166 80M129 98L137 110" fill="none" stroke="currentColor" stroke-width="3.2"/>' +
-      '<path d="M248 166L256 116H282L292 166H280L270 132L260 166Z M248 118L244 70H290L294 118Z M284 78L300 60L306 64L290 84Z"/>' +
-      '<circle cx="' + X_NEMICO + '" cy="56" r="14"/>' +
-      '<path d="M294 74L334 34" fill="none" stroke="currentColor" stroke-width="4"/>' +
-      '<path d="M350.9 35.5L339.5 46.9L321.2 28.5L332.5 17.1Z"/>' +
+      '<g transform="translate(108 166)">' + S[sv].svg + '</g>' +
+      '<g transform="translate(' + X_NEMICO + ' 166) scale(-1 1)">' + S[sn].svg + "</g>" +
       "</svg>";
   }
   function targa(c, dx) {
@@ -292,7 +319,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     return s;
   }
   function scena(o) {
-    var sopra = o.dove === "scena" ? '<div class="sopra" style="left:' + (100 * X_NEMICO / 375).toFixed(2) + '%">' + ic(o.hint, 44, "", true) + "</div>" : "";
+    var sopra = o.dove === "scena" ? '<div class="sopra" style="left:' + (100 * (X_NEMICO - S[o.sn].centroTesta[0]) / 375).toFixed(2) + '%">' + ic(o.hint, 44, "", true) + "</div>" : "";
     var dettaglio = o.mods ? o.mods.map(function (m) { return "<span>" + ic(m, 18) + P[m].etichetta + "</span>"; }).join("") +
       '<span class="danno">' + ic("evento.colpo", 14) + o.danno + "</span>" : "";
     var centro = o.dove === "scena"
@@ -305,7 +332,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
         (p.anteprima ? '<span class="pa">' + p.anteprima + "</span>" : "") + "</div>";
     }).join("");
     return '<div class="telefono">' +
-      '<div class="scena"><span class="segnaposto">Sagome segnaposto</span>' + figure() + sopra + "</div>" +
+      '<div class="scena"><span class="segnaposto">Sagome statiche</span>' + figure(o.sv, o.sn) + sopra + "</div>" +
       '<div class="targhe">' + targa(o.gioc) + targa(o.nemico, true) + "</div>" +
       centro + '<div class="registro">' + reg + "</div>" +
       '<div class="posture" style="padding-top:10px">' + post + "</div>" +
@@ -315,6 +342,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 
   var bollini = function (ids) { return ids.map(function (i) { return '<span title="' + P[i].etichetta + '">' + ic(i, 16, "", true) + "</span>"; }).join(""); };
   var BRUTO = {
+    sv: "viandante.guardia", sn: "bruto",
     nemico: { nome: "Bruto", stati: "", pct: 73, vig: "22/30", fiato: [3, 5] },
     hint: "intent.pesante", cat: "Colpo pesante", sub: "Il Bruto prepara un colpo pesante",
     registro: [["evento.parata", "Hai parato: 6 → 2."], ["evento.colpo", "Il Maglio ti prende: 2.", true]],
@@ -326,7 +354,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
   var m1 = scena(con(BRUTO, { dove: "scena" }));
   var m2 = scena(con(BRUTO, { dove: "centro" }));
   var m3 = scena({
-    dove: "scena",
+    dove: "scena", sv: "viandante.distanza", sn: "mietitore",
     nemico: { nome: "Mietitore", stati: bollini(["stato.fase2"]), pct: 42, vig: "19/45", fiato: [2, 6] },
     hint: "intent.pesante", cat: "Carica", mods: ["mod.portata.corta", "mod.velocita.normale", "mod.inarrestabile"], danno: "7–9",
     registro: [["evento.contrattacco", "Schivi la Falciata e contrattacchi: 4."], ["stato.preparato", "Il Mietitore è preparato: ×1,5."]],
@@ -338,14 +366,14 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
   });
   // --- Scena a tutto schermo con il ventaglio (DESIGN §8.1) -----------------------------------
   // Schermo di riferimento: Samsung S23 (CLAUDE.md), 360 × 700 px utili nell'app. Terreno a y 560.
-  // Figure alte circa 120 px (SCENA_SPEC): viandante a x 160, nemico a x 284, scala 1,15.
+  // Sagome alte circa 120 px (1 unità = 1 px): viandante a x 160, nemico specchiato a x 306.
   // Ventaglio: arco di centro (160, 491), il busto del viandante, raggio 124, da 205° (schiena) a 75° (verso il nemico).
-  var SCR = { W: 360, H: 700, TERRA: 560, K: 1.15, XV: 160, XN: 284, CX: 160, CY: 491, R: 124 };
+  var SCR = { W: 360, H: 700, TERRA: 560, XV: 160, XN: 306, CX: 160, CY: 491, R: 124 };
   var VENTAGLIO = [["distanza", 205], ["attesa", 165], ["guardia", 118], ["assalto", 75]].map(function (v) {
     var a = v[1] * Math.PI / 180;
     return { p: v[0], x: +(SCR.CX + SCR.R * Math.cos(a)).toFixed(1), y: +(SCR.CY - SCR.R * Math.sin(a)).toFixed(1) };
   });
-  var TESTA_NEMICO = { x: +(SCR.XN + (262 - 270) * SCR.K).toFixed(1), y: +(SCR.TERRA - (166 - 42) * SCR.K).toFixed(1) };
+  function testaNemico(sn) { return { x: +(SCR.XN - S[sn].centroTesta[0]).toFixed(1), y: SCR.TERRA - S[sn].altezza }; }
   // Spazio alle spalle (ARENA_SPEC §12 R2): paletto di confine e due tacche sul terreno dietro il viandante.
   // Ogni turno concluso in Distanza svuota una tacca, a partire da quella più vicina al viandante.
   function spazioSvg(spazio) {
@@ -359,7 +387,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     });
     return s;
   }
-  function sagome(spazio) {
+  function sagome(spazio, sv, sn) {
     var c = VENTAGLIO[0], d = VENTAGLIO[3], T = SCR.TERRA;
     var tratteggio = "";
     for (var yy = T + 12; yy < 652; yy += 9) for (var xx = (yy % 2 ? 6 : 16); xx < SCR.W; xx += 22) tratteggio += "M" + xx + " " + (yy + 4) + "L" + (xx + 8) + " " + yy;
@@ -369,13 +397,8 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
       '<path d="' + tratteggio + '" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
       spazioSvg(spazio || 0) +
       '<path class="guida" d="M' + c.x + " " + c.y + "A" + SCR.R + " " + SCR.R + " 0 0 1 " + d.x + " " + d.y + '" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 5"/>' +
-      '<g transform="translate(' + SCR.XV + " " + T + ") scale(" + SCR.K + ') translate(-108 -166)">' +
-        '<path d="M92 166L100 126H114L122 166H113L107 138L101 166Z M98 84L84 140L100 128Z M97 128L100 84H116L120 128Z M114 90L134 102L131 107L112 98Z"/>' +
-        '<circle cx="108" cy="72" r="11"/><path d="M133 104L166 80M129 98L137 110" fill="none" stroke="currentColor" stroke-width="3.2"/></g>' +
-      '<g transform="translate(' + SCR.XN + " " + T + ") scale(" + SCR.K + ') translate(-270 -166)">' +
-        '<path d="M248 166L256 116H282L292 166H280L270 132L260 166Z M248 118L244 70H290L294 118Z M284 78L300 60L306 64L290 84Z"/>' +
-        '<circle cx="262" cy="56" r="14"/><path d="M294 74L334 34" fill="none" stroke="currentColor" stroke-width="4"/>' +
-        '<path d="M350.9 35.5L339.5 46.9L321.2 28.5L332.5 17.1Z"/></g>' +
+      '<g transform="translate(' + SCR.XV + " " + T + ')">' + S[sv].svg + "</g>" +
+      '<g transform="translate(' + SCR.XN + " " + T + ') scale(-1 1)">' + S[sn].svg + "</g>" +
       "</svg>";
   }
   function hud(c, centro) {
@@ -403,15 +426,17 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
       cart = '<div class="cartiglio" style="left:8px;top:288px"><span class="d">' + P["posture." + o.cartiglio.p].etichetta + " " + o.cartiglio.testo + "</span><small>" + o.cartiglio.nota + "</small></div>";
     }
     var mods = o.mods ? '<span class="mods">' + o.mods.map(function (m) { return ic(m, 16, "", true); }).join("") + ic("evento.colpo", 14) + o.danno + "</span>" : "";
-    return '<div class="schermo-wrap"><div class="schermo">' + sagome(o.spazio) +
+    var tn = testaNemico(o.sn);
+    return '<div class="schermo-wrap"><div class="schermo">' + sagome(o.spazio, o.sv, o.sn) +
       '<span class="turno">Turno ' + o.turno + " / 25</span>" +
       hud(o.gioc, 130) + hud(o.nemico, 280) +
-      '<div class="sopra-nemico" style="left:' + TESTA_NEMICO.x + "px;bottom:" + (SCR.H - TESTA_NEMICO.y + 6) + 'px">' + ic(o.hint, 44, "", true) + '<span class="cat">' + o.cat + "</span>" + mods + "</div>" +
+      '<div class="sopra-nemico" style="left:' + tn.x + "px;bottom:" + (SCR.H - tn.y + 6) + 'px">' + ic(o.hint, 44, "", true) + '<span class="cat">' + o.cat + "</span>" + mods + "</div>" +
       meds + cart + (o.colpi || []).map(function (c) { return '<div class="colpo-testo" style="left:' + c.x + "px;top:" + c.y + 'px">' + ic(c.icona, 16) + c.testo + "</div>"; }).join("") +
       '<div class="cassetto"><span class="maniglia"></span>' + ic(o.registro[0], 16) + '<span class="t">' + o.registro[1] + '</span><span class="e">Registro</span></div>' +
       "</div></div>";
   }
   var v1 = ventaglio({
+    sv: "viandante.attesa", sn: "bruto",
     turno: 4, hint: "intent.pesante", cat: "Colpo pesante",
     gioc: { nome: "Viandante", stati: bollini(["stato.preparato"]), pct: 80, vig: "16/20", fiato: [4, 6] },
     nemico: { nome: "Bruto", stati: "", pct: 73, vig: "22/30", fiato: [3, 5] },
@@ -420,14 +445,16 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     registro: ["stato.preparato", "Nessuno ti raggiunge mentre attendi: sei preparato."]
   });
   var v2 = ventaglio({
+    sv: "viandante.distanza", sn: "mietitore",
     turno: 9, hint: "intent.pesante", cat: "Carica", mods: ["mod.portata.corta", "mod.velocita.normale", "mod.inarrestabile"], danno: "7–9",
     gioc: { nome: "Viandante", stati: "", pct: 63, vig: "19/30", fiato: [1, 6] },
     nemico: { nome: "Mietitore", stati: bollini(["stato.fase2"]), pct: 42, vig: "19/45", fiato: [2, 6] },
     posture: { distanza: { stato: "confermato", attuale: true } }, spenti: true, spazio: 1,
-    colpi: [{ x: 176, y: 468, icona: "evento.evitato", testo: "Evitato" }, { x: 236, y: 504, icona: "evento.incalza", testo: "Incalza" }],
+    colpi: [{ x: 176, y: 446, icona: "evento.evitato", testo: "Evitato" }, { x: 236, y: 504, icona: "evento.incalza", testo: "Incalza" }],
     registro: ["evento.contrattacco", "Schivi la Falciata e contrattacchi: 4."]
   });
   var v3 = ventaglio({
+    sv: "viandante.distanza", sn: "bruto",
     turno: 7, hint: "intent.pesante", cat: "Colpo pesante",
     gioc: { nome: "Viandante", stati: bollini(["stato.spalle"]), pct: 55, vig: "11/20", fiato: [2, 6] },
     nemico: { nome: "Bruto", stati: bollini(["stato.vantaggio"]), pct: 80, vig: "24/30", fiato: [4, 5] },
@@ -435,10 +462,42 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     registro: ["evento.incalza", "Arretri ancora: il Bruto incalza e prende l'iniziativa."]
   });
   document.getElementById("duelli").innerHTML =
-    '<figure>' + v1 + '<figcaption><b>Scelta.</b> Il ventaglio è aperto dietro il viandante, dalla schiena verso il nemico. Il viandante non è stato raggiunto mentre attendeva, quindi è preparato (bollino nell\'HUD). Primo tocco su Attesa, la postura attuale: il medaglione si ingrandisce con il doppio anello e il cartiglio, sempre nello stesso punto sopra il ventaglio, mostra l\'anteprima con il contrattacco ×1,5 (↓ subito, ↑ inflitto). Spazio alle spalle intatto: due tacche piene dietro il viandante, chiuse dal paletto.</figcaption></figure>' +
-    '<figure>' + v2 + '<figcaption><b>Conferma e risoluzione.</b> Secondo tocco su Distanza: anello spesso, gli altri medaglioni si spengono e il ventaglio si chiude. Hint completo sopra il Mietitore in seconda fase. Gli esiti compaiono come testo nel punto del colpo: il colpo corto è evitato e il Mietitore incalza. Una tacca dello spazio alle spalle è vuota.</figcaption></figure>' +
+    '<figure>' + v1 + '<figcaption><b>Scelta.</b> Il ventaglio è aperto dietro il viandante, dalla schiena verso il nemico. La sagoma mostra la postura attuale, Attesa. Il viandante non è stato raggiunto mentre attendeva, quindi è preparato (bollino nell\'HUD). Primo tocco su Attesa, la postura attuale: il medaglione si ingrandisce con il doppio anello e il cartiglio, sempre nello stesso punto sopra il ventaglio, mostra l\'anteprima con il contrattacco ×1,5 (↓ subito, ↑ inflitto). Spazio alle spalle intatto: due tacche piene dietro il viandante, chiuse dal paletto.</figcaption></figure>' +
+    '<figure>' + v2 + '<figcaption><b>Conferma e risoluzione.</b> Secondo tocco su Distanza: la sagoma passa alla nuova postura, anello spesso, gli altri medaglioni si spengono e il ventaglio si chiude. Hint completo sopra il Mietitore in seconda fase. Gli esiti compaiono come testo nel punto del colpo: il colpo corto è evitato e il Mietitore incalza. Una tacca dello spazio alle spalle è vuota.</figcaption></figure>' +
     '<figure>' + v3 + '<figcaption><b>Spalle al muro.</b> Due turni in Distanza: le tacche sono vuote, il viandante ha il bollino delle spalle e il medaglione della Distanza è spento, con lo stesso bollino a indicare il motivo. Il cambio di postura è gratuito (costo 0 ovunque). Il Bruto, che ha incalzato, ha il vantaggio.</figcaption></figure>' +
     '<figure>' + m1 + '<figcaption><b>Variante classica</b> (A/B dell\'arena): griglia 2×2 sotto la scena e Conferma. Resta come riferimento.</figcaption></figure>';
+
+  // --- Sagome statiche (C2a) -------------------------------------------------------------------
+  // Viewbox ritagliato (1 unità = 1 px): le sagome stanno tra x -55 e x 105.
+  function sagSvg(id, vb) {
+    return '<svg viewBox="' + vb + '" width="160" height="' + vb.split(" ")[3] + '" fill="currentColor" role="img" aria-label="' + S[id].etichetta + '">' +
+      S[id].svg + '<path d="M-55 0H105V2H-55Z"/></svg>';
+  }
+  var ORDINE_PROVA = ["viandante.guardia", "viandante.distanza", "viandante.assalto", "viandante.attesa"];
+  document.getElementById("sag-prova").innerHTML = ORDINE_PROVA.map(function (id) {
+    return '<div class="sag-cella">' + sagSvg(id, "-55 -140 160 144") + '<span class="t">' + S[id].etichetta.replace("Viandante · ", "") + "</span></div>";
+  }).join("");
+  var NP = { assalto: "Assalto", guardia: "Guardia", attesa: "Attesa", distanza: "Distanza" };
+  var sg = SAG.soglie;
+  var righeAssi = ["assalto", "guardia", "attesa", "distanza"].map(function (p) {
+    var m = S["viandante." + p].misure;
+    return "<tr><td>" + NP[p] + "</td><td>" + m.busto + "°</td><td>" + m.anca + "</td><td>" + Math.round(m.testa) + "</td><td>" + m.arma + "°</td><td>" + Math.round(m.mano) + "</td></tr>";
+  }).join("");
+  var righeCoppie = SAG.matrice.map(function (r, i) {
+    var x = function (v) { return '<td class="' + (v ? "si" : "") + '">' + (v ? "sì" : "–") + "</td>"; };
+    return "<tr><td>" + NP[r.coppia[0]] + " · " + NP[r.coppia[1]] + "</td>" + x(r.A) + x(r.B) + x(r.C) + '<td class="si">' + r.assi + " / 3</td><td>" + SAG.somiglianza[i].iou.toFixed(2) + "</td></tr>";
+  }).join("");
+  document.getElementById("sag-assi").innerHTML =
+    "<p>Misure prese dalla geometria disegnata, in unità (120 = altezza di riferimento): busto in gradi verso il nemico, bacino e testa in altezza, arma in gradi (0° verso il nemico, 90° in alto) e altezza dell'impugnatura.</p>" +
+    '<table class="compatta"><thead><tr><th>Postura</th><th>A busto</th><th>A bacino</th><th>B testa</th><th>C arma</th><th>C mano</th></tr></thead><tbody>' + righeAssi + "</tbody></table>" +
+    "<p>Due posture differiscono su un asse se: A, busto ≥ " + sg.busto + "° o bacino ≥ " + sg.anca + "; B, testa ≥ " + sg.testa + "; C, arma ≥ " + sg.arma + "° o mano ≥ " + sg.mano + ". Ne servono almeno 2 su 3. L'ultima colonna è la somiglianza delle silhouette (intersezione su unione, 1 = identiche).</p>" +
+    '<table class="compatta"><thead><tr><th>Coppia</th><th>A</th><th>B</th><th>C</th><th>Assi</th><th>Sim.</th></tr></thead><tbody>' + righeCoppie + "</tbody></table>";
+  document.getElementById("sag-schede").innerHTML = SAG.sagome.map(function (s) {
+    var m = s.misure;
+    return '<article class="scheda"><div class="capo"><div class="r1"><b>' + s.etichetta + '</b><span class="est">Sagoma</span></div>' +
+      '<span class="dato">' + s.id + " · testa " + Math.round(m.testa) + " · arma " + m.arma + "°</span><span class=\"nota\">" + s.nota + "</span></div>" +
+      '<div class="sag-figura" style="background:var(--carta-2)">' + sagSvg(s.id, "-55 -158 160 162") + "</div></article>";
+  }).join("");
 
   // --- Grammatica --------------------------------------------------------------------------
   var es = function (ids, px) { return '<span class="es">' + ids.map(function (i) { return '<span class="' + (P[i].pericolo ? "pericolo" : "") + '">' + ic(i, px || 28) + "</span>"; }).join("") + "</span>"; };
@@ -498,7 +557,11 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
       return '<span class="' + (s.pericolo ? "pericolo" : "") + '" title="' + s.etichetta + '">' + ic(s.id, 28) + "</span>";
     }).join("") + "</div>";
   };
-  document.getElementById("grigi").innerHTML = riga("chiaro") + riga("scuro") +
+  var COPPIE = [["intent.pesante", "intent.leggero"], ["evento.parata", "mod.sfondaGuardia"], ["evento.interrotto", "mod.inarrestabile"], ["intent.preparazione", "stato.preparato"], ["intent.difesa", "posture.guardia"], ["posture.distanza.medaglione", "stato.spalle"]];
+  var coppie16 = '<div class="coppie16" style="filter:grayscale(1)">' + COPPIE.map(function (c) {
+    return '<span class="c">' + c.map(function (id) { return ic(id, 16) + ic(id, 24); }).join('<span class="dato">/</span>') + "</span>";
+  }).join("") + "</div>";
+  document.getElementById("grigi").innerHTML = '<p class="dato">Coppie da non confondere a 16 e 24 px, in grigio. Sotto il minimo di un simbolo l\'icona si ingrandisce da sola (AUD-008).</p>' + coppie16 + riga("chiaro") + riga("scuro") +
     '<div class="duelli" style="filter:grayscale(1)"><figure>' + v1 + "<figcaption>La scena di scelta senza colore.</figcaption></figure></div>";
 
   // --- Tema e grigi ------------------------------------------------------------------------

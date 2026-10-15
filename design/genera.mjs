@@ -1,6 +1,7 @@
 // Generatore del set di simboli di Limen (direzione A, Xilografia; stati nel bollino tondo).
 // Unica fonte di verità dei disegni. Uso: node design/genera.mjs
-// Scrive: design/icons/<id>.svg, design/symbols.proposed.ts, design/catalogo.html (da catalogo.template.html).
+// Scrive: design/icons/<id>.svg, design/symbols.proposed.ts, design/catalogo.html (da catalogo.template.html),
+// e le sagome statiche (da design/sagome-dati.mjs): design/sagome/<id>.svg e design/sagome.proposed.ts.
 //
 // Ogni parte di un'icona è { d, taglio?, tratto? }:
 // - d: sagoma piena (comandi assoluti);
@@ -10,6 +11,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import * as SAG from './sagome-dati.mjs';
 
 const QUI = dirname(fileURLToPath(import.meta.url));
 
@@ -40,7 +42,7 @@ const SCUDO = 'M4 3.5H20V11L18.5 16L12 21.5L5.5 16L4 11Z';
 const SCUDO_TAGLIO = 'M5.5 5H18.5V10.8L17.2 15.3L12 19.6L6.8 15.3L5.5 10.8Z M6.3 5.8H17.7V10.7L16.5 14.9L12 18.6L7.5 14.9L6.3 10.7Z M11.3 7.5H12.7V16.3L12 17L11.3 16.3Z';
 const ARCO = 'M8 20.5C3 16 3.5 7 12.6 4.5';
 const PUNTA_ARCO = 'M17.4 3.2L13.4 7.6L11.8 1.4Z';
-const RACCOLTA = 'M8.5 2.5H15.5L12 7Z M8.5 21.5H15.5L12 17Z M2.5 8.5V15.5L7 12Z M21.5 8.5V15.5L17 12Z M12 8.8L15.2 12L12 15.2L8.8 12Z';
+const NUCLEO_CONVERGENTE = 'M8.5 2.5H15.5L12 7Z M8.5 21.5H15.5L12 17Z M2.5 8.5V15.5L7 12Z M21.5 8.5V15.5L17 12Z M12 8.8L15.2 12L12 15.2L8.8 12Z';
 const CERCHIO = (cx, cy, r) => `M${cx - r} ${cy}A${r} ${r} 0 1 0 ${cx + r} ${cy}A${r} ${r} 0 1 0 ${cx - r} ${cy}Z`;
 
 // --- Il set -------------------------------------------------------------------------------------
@@ -62,7 +64,7 @@ export const SET = [
     parti: [{ d: 'M2 12L8 6.5V9.8H10.4V14.2H8V17.5Z M22 12L16 6.5V9.8H13.6V14.2H16V17.5Z M11.3 3.5H12.7V8H11.3Z M11.3 16H12.7V20.5H11.3Z' }] },
   { id: 'posture.preparazione', etichetta: 'Preparazione', glifo: '✧', min: 16,
     nota: 'Solo nemici. Stesso disegno di intent.preparazione: la forza converge nel nucleo.',
-    parti: [{ d: RACCOLTA }] },
+    parti: [{ d: NUCLEO_CONVERGENTE }] },
 
   // Intenzioni: gli attacchi puntano in basso, verso il giocatore. Massa = forza.
   { id: 'intent.pesante', etichetta: 'Colpo pesante', glifo: '✸', min: 20, pericolo: true,
@@ -76,8 +78,8 @@ export const SET = [
     nota: 'Muro merlato: il nemico si chiude (guardia, attesa o distanza).',
     parti: [{ d: 'M3 7H7.5V10H9.75V7H14.25V10H16.5V7H21V20H3Z', taglio: 'M4.5 14.6H19.5V15.4H4.5Z M7.6 11H8.4V14.6H7.6Z M15.6 11H16.4V14.6H15.6Z M11.6 15.4H12.4V18.6H11.6Z' }] },
   { id: 'intent.preparazione', etichetta: 'Preparazione', glifo: '✧', min: 16,
-    nota: 'Quattro punte che convergono nel nucleo: il nemico raccoglie le forze.',
-    parti: [{ d: RACCOLTA }] },
+    nota: 'Quattro punte che convergono nel nucleo: il nemico si prepara.',
+    parti: [{ d: NUCLEO_CONVERGENTE }] },
 
   // Stati: sempre nel bollino tondo, così non si confondono con le azioni.
   { id: 'stato.vantaggio', etichetta: 'Vantaggio', glifo: '★', min: 16, bollino: true,
@@ -159,8 +161,8 @@ export const SET = [
     nota: 'Scudo spaccato dalla frattura: ignora la Parata.',
     parti: [{ d: 'M10.8 3.5H2.8V11L4.3 16L10.8 21.5L9.8 16.5L11.8 12L9.3 8Z M13.2 3.5L11.7 8L14.2 12L12.2 16.5L13.2 21.5L19.7 16L21.2 11V3.5Z' }] },
   { id: 'mod.inarrestabile', etichetta: 'Inarrestabile', glifo: '⇓', min: 16, estensione: true,
-    nota: 'La freccia passa attraverso la barra spezzata: non si interrompe.',
-    parti: [{ d: 'M10.8 2H13.2V15H17L12 22L7 15H10.8Z M2 10.5H8.5L7.5 12L8.5 13.5H2Z M22 10.5H15.5L16.5 12L15.5 13.5H22Z' }] },
+    nota: 'Freccia orizzontale che attraversa la barriera spezzata e ne esce: non si interrompe. Asse opposto a evento.interrotto (verticale, spezzata).',
+    parti: [{ d: 'M1.5 10.4H15V7.4L22.5 12L15 16.6V13.6H1.5Z M11.4 2H14.8V8.6L13.1 7.3L11.4 8.9Z M11.4 15.1L13.1 16.7L14.8 15.4V22H11.4Z' }] },
 ];
 
 // --- Rendering --------------------------------------------------------------------------------
@@ -214,7 +216,7 @@ for (const s of SET) {
 // 2. symbols.proposed.ts
 const righe = SET.map((s) => {
   const piccolo = haTagli(s) ? `\n    piccolo: '${interno(s, true)}',` : '';
-  return `  '${s.id}': {\n    etichetta: '${s.etichetta.replace(/'/g, "\\'")}',\n    glifo: '${s.glifo}',\n    svg: '${interno(s, false)}',${piccolo}\n  },`;
+  return `  '${s.id}': {\n    etichetta: '${s.etichetta.replace(/'/g, "\\'")}',\n    glifo: '${s.glifo}',\n    svg: '${interno(s, false)}',${piccolo}\n    min: ${s.min},\n  },`;
 }).join('\n');
 
 const ts = `// Id simbolo → { svg, etichetta } (ARENA_SPEC §7, più le estensioni proposte in docs/UI_SPEC.md).
@@ -230,6 +232,8 @@ export interface Simbolo {
   svg: string;
   /** Variante senza tagli per le taglie sotto i 24 px. Se manca si usa svg. */
   piccolo?: string;
+  /** Taglia minima in px sotto cui il simbolo smette di leggersi (UI_SPEC §7). */
+  min?: number;
 }
 
 export const SIMBOLI: Record<string, Simbolo> = {
@@ -241,7 +245,7 @@ export function simbolo(id: string | undefined): Simbolo {
 }
 
 export interface OpzioniIcona {
-  /** Lato in px (predefinito 24). Sotto i 24 si usa la variante piccola. */
+  /** Lato in px (predefinito 24). Sotto i 24 si usa la variante piccola; mai sotto il campo min del simbolo. */
   px?: number;
   /** Classe CSS aggiuntiva. */
   classe?: string;
@@ -252,7 +256,8 @@ export interface OpzioniIcona {
 /** Restituisce l'SVG inline. La stringa è costante e sicura: non va passata a esc(). */
 export function icona(id: string | undefined, opz: OpzioniIcona = {}): string {
   const s = simbolo(id);
-  const px = opz.px ?? 24;
+  // Mai sotto la taglia minima del simbolo (UI_SPEC §7, AUD-008).
+  const px = Math.max(opz.px ?? 24, s.min ?? 0);
   const corpo = (px < 24 && s.piccolo) || s.svg;
   if (!corpo) return \`<span class="icona-mancante" aria-hidden="true">\${s.glifo}</span>\`;
   const a11y = opz.parlante ? \`role="img" aria-label="\${s.etichetta}"\` : 'aria-hidden="true"';
@@ -285,13 +290,86 @@ export function medaglione(postura: string, stato: StatoMedaglione = 'riposo', o
 `;
 writeFileSync(join(QUI, 'symbols.proposed.ts'), ts);
 
-// 3. Catalogo
+// 3. Sagome statiche (C2a): design/sagome/<id>.svg e design/sagome.proposed.ts
+const VB = SAG.VIEWBOX;
+const VB_STR = `${VB.x} ${VB.y} ${VB.w} ${VB.h}`;
+const DIR_SAGOME = join(QUI, 'sagome');
+mkdirSync(DIR_SAGOME, { recursive: true });
+const SAGOME_DATI = SAG.ID_SAGOME.map((id) => {
+  const m = SAG.misure(id);
+  return { id, etichetta: SAG.ETICHETTE[id], nota: SAG.NOTE[id], svg: SAG.interno(id), altezza: Math.round(m.testa), centroTesta: m.centroTesta, passo: SAG.PASSO[id.split('.')[1]] ?? null, misure: m };
+});
+for (const s of SAGOME_DATI) {
+  writeFileSync(join(DIR_SAGOME, `${s.id}.svg`), `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${VB_STR}" width="${VB.w}" height="${VB.h}" fill="currentColor"><title>${s.etichetta}</title>${s.svg}</svg>\n`);
+}
+const righeSagome = SAGOME_DATI.map((s) => `  '${s.id}': {\n    etichetta: '${s.etichetta}',\n    altezza: ${s.altezza},\n    svg: '${s.svg}',\n  },`).join('\n');
+const tsSagome = `// Id sagoma → SVG inline (ARENA_S23_SPEC §3). Sagome statiche del viandante e dei nemici, in posa neutra.
+// GENERATO da design/genera.mjs (geometria in design/sagome-dati.mjs): non modificare a mano.
+// Masse piene in currentColor, di profilo, rivolte a destra: il nemico si specchia (opzione \`specchia\`).
+// Sistema di coordinate di SCENA_SPEC §2.1: 120 unità = 120 px su S23, origine a terra sotto il bacino, y verso il basso.
+
+export type IdSagoma = ${SAG.ID_SAGOME.map((i) => `'${i}'`).join(' | ')};
+
+export interface Sagoma {
+  /** Nome leggibile, anche per aria-label. */
+  etichetta: string;
+  /** Altezza della cima della testa in unità (120 = altezza di riferimento). Il boss è più alto. */
+  altezza: number;
+  /** Contenuto interno dell'SVG, nel viewBox di VIEWBOX_SAGOMA. */
+  svg: string;
+}
+
+/** Viewbox comune a tutte le sagome: x simmetrico, così la specchiatura non sposta la figura. Origine a terra, sotto il bacino. */
+export const VIEWBOX_SAGOMA = { x: ${VB.x}, y: ${VB.y}, w: ${VB.w}, h: ${VB.h} } as const;
+
+/** Altezza di riferimento in unità: con \`px: 120\` una unità vale un pixel. */
+export const ALTEZZA_RIFERIMENTO = 120;
+
+/** Posizione in scena delle posture del viandante, in passi (SCENA_SPEC §1.1 asse E; un passo = 24 unità). */
+export const PASSO_POSTURA: Record<string, number> = { assalto: ${SAG.PASSO.assalto}, guardia: ${SAG.PASSO.guardia}, attesa: ${SAG.PASSO.attesa}, distanza: ${SAG.PASSO.distanza} };
+
+export const SAGOME: Record<IdSagoma, Sagoma> = {
+${righeSagome}
+};
+
+export interface OpzioniSagoma {
+  /** Altezza di riferimento in px (predefinita 120): l'SVG è largo e alto in proporzione. */
+  px?: number;
+  /** Classe CSS aggiuntiva. */
+  classe?: string;
+  /** true: la sagoma porta significato da sola (role="img" con aria-label). Predefinito: decorativa. */
+  parlante?: boolean;
+  /** true: figura specchiata, rivolta a sinistra. Si usa per i nemici (SCENA_SPEC §2.1). */
+  specchia?: boolean;
+}
+
+/** Restituisce l'SVG inline della sagoma. La stringa è costante e sicura: non va passata a esc(). */
+export function sagoma(id: string, opz: OpzioniSagoma = {}): string {
+  const s = (SAGOME as Record<string, Sagoma | undefined>)[id];
+  if (!s) return '';
+  const k = (opz.px ?? ALTEZZA_RIFERIMENTO) / ALTEZZA_RIFERIMENTO;
+  const { x, y, w, h } = VIEWBOX_SAGOMA;
+  const a11y = opz.parlante ? \`role="img" aria-label="\${s.etichetta}"\` : 'aria-hidden="true"';
+  const classe = opz.classe ? \`sagoma \${opz.classe}\` : 'sagoma';
+  const corpo = opz.specchia ? \`<g transform="scale(-1 1)">\${s.svg}</g>\` : s.svg;
+  return \`<svg class="\${classe}" viewBox="\${x} \${y} \${w} \${h}" width="\${+(w * k).toFixed(1)}" height="\${+(h * k).toFixed(1)}" fill="currentColor" focusable="false" \${a11y}>\${corpo}</svg>\`;
+}
+`;
+writeFileSync(join(QUI, 'sagome.proposed.ts'), tsSagome);
+
+// Verifica degli assi A-C e somiglianza delle silhouette tra le posture del viandante
+const MATRICE = SAG.matriceDistinzione();
+const SOMIGLIANZA = MATRICE.map((r) => ({ coppia: r.coppia, iou: +SAG.somiglianza('viandante.' + r.coppia[0], 'viandante.' + r.coppia[1]).toFixed(2) }));
+for (const r of MATRICE) if (r.assi < 2) console.warn(`  ! ${r.coppia.join('-')}: solo ${r.assi} asse/i di distinzione (servono 2)`);
+
+// 4. Catalogo
 const dati = SET.map((s) => ({
   id: s.id, etichetta: s.etichetta, famiglia: s.famiglia || famiglia(s.id), nota: s.nota, min: s.min,
   pericolo: !!s.pericolo, estensione: !!s.estensione, bollino: !!s.bollino,
   svg: interno(s, false), piccolo: haTagli(s) ? interno(s, true) : null, stati: s.stati || null,
 }));
 const tpl = readFileSync(join(QUI, 'catalogo.template.html'), 'utf8');
-writeFileSync(join(QUI, 'catalogo.html'), tpl.replace('/*DATI*/[]', JSON.stringify(dati)));
+const DATI_SAGOME = { sagome: SAGOME_DATI, viewBox: VB, matrice: MATRICE, somiglianza: SOMIGLIANZA, soglie: SAG.SOGLIE };
+writeFileSync(join(QUI, 'catalogo.html'), tpl.replace('/*DATI*/[]', () => JSON.stringify(dati)).replace('/*SAGOME*/{}', () => JSON.stringify(DATI_SAGOME)));
 
-console.log(`${SET.length} simboli: icons/, symbols.proposed.ts, catalogo.html`);
+console.log(`${SET.length} simboli: icons/, symbols.proposed.ts, catalogo.html; ${SAGOME_DATI.length} sagome: sagome/, sagome.proposed.ts`);

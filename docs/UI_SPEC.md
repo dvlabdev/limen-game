@@ -1,8 +1,9 @@
 # Simboli del duello: specifica UI
 
-> **Versione:** 1.1 (15 ottobre 2026) · **Proprietario:** Grafica/UI · **Destinatari:** Planning (approvazione delle estensioni), Codice (integrazione)
+> **Versione:** 1.2 (15 ottobre 2026) · **Proprietario:** Grafica/UI · **Destinatari:** Planning (approvazione delle estensioni), Codice (integrazione)
 > **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5, §8 e §8.1, [ARENA_SPEC.md](ARENA_SPEC.md) §3, §7 e §8, [CLAUDE.md](../CLAUDE.md).
 > **Direzione scelta dall'utente:** A, **Xilografia**, con gli **stati nel bollino tondo** (dalla direzione C).
+> **Novità della 1.2 (C2a):** sagome statiche del viandante e dei nemici (§11, `design/sagome/`), taglie d'uso allineate ai minimi (AUD-008, §2.1, §2.3, §7.1, §9), `mod.inarrestabile` ridisegnata (AUD-023), vocabolario di "Preparato" (AUD-009, §7).
 > **Novità della 1.1:** scena a tutto schermo con l'interfaccia integrata e ventaglio di medaglioni delle posture (DESIGN §8.1, commit b84c95d); misure sul dispositivo di riferimento S23 (CLAUDE.md).
 
 | Risorsa | Dove |
@@ -11,6 +12,8 @@
 | Un SVG per id | `design/icons/<id>.svg` |
 | Modulo pronto per `src/ui/symbols.ts` | `design/symbols.proposed.ts` |
 | Catalogo di verifica | `design/catalogo.html` · [Artifact](https://claude.ai/artifact/PM9R7nCVicu1zkRpDJu5Js) |
+| Sagome statiche (9) | `design/sagome/<id>.svg` e modulo `design/sagome.proposed.ts` (§11) |
+| Verifica delle sagome | `node design/verifica-sagome.mjs` |
 | Confronto delle tre direzioni | `design/direzioni.html` · [Artifact](https://claude.ai/artifact/8CkkTCYkUpcveiAYn9G5kw) |
 
 ---
@@ -39,9 +42,9 @@ Il duello si vince **leggendo l'hint e decidendo in pochi secondi**, col tocco, 
 ### 2.1 Famiglie
 | Famiglia | Prefisso | Forma di base | Dove compare | Taglia tipica |
 |---|---|---|---|---|
-| **Posture** | `posture.` | Sagoma libera, una silhouette per postura | HUD (postura del nemico), registro, variante classica | 16 px; 28 px nella griglia classica |
+| **Posture** | `posture.` | Sagoma libera, una silhouette per postura | HUD (postura del nemico), registro, variante classica | **20 px** in HUD e registro (`assalto` e `attesa` hanno minimo 20); 28 px nella griglia classica |
 | **Medaglioni** *(proposta)* | `posture.*.medaglione` | **Anello** con il segno della postura in positivo | Ventaglio dietro il viandante | 52 px (min 44, bersaglio del tocco) |
-| **Intenzioni** | `intent.` | Sagoma libera; gli attacchi puntano in basso | Sopra la testa del nemico | 44 px |
+| **Intenzioni** | `intent.` | Sagoma libera; gli attacchi puntano in basso | Sopra la testa del nemico | 44 px; **20 px** come forza nella fila dei modificatori (§2.3) |
 | **Stati** | `stato.` | **Bollino**: disco pieno con filetto inciso, segno ritagliato | HUD, accanto al nome | 16 px |
 | **Risorse** | `risorsa.` | Sagoma libera, sempre accanto a un numero o a pallini | HUD: barra del vigore, pallini del fiato | 10–12 px |
 | **Eventi** | `evento.` | Sagoma semplice, senza tagli | Cassetto del registro; testo nel punto del colpo | 16 px |
@@ -72,9 +75,9 @@ Con `hintCompleti`, `hint.dettaglio` porta portata, velocità e `flags`. Sopra i
 | `velocita` | `rapido` / `normale` / `lento` | `mod.velocita.rapido` / `mod.velocita.normale` / `mod.velocita.lento` |
 | `flags` | `sfondaGuardia` | `mod.sfondaGuardia` |
 | `flags` | `inarrestabile` | `mod.inarrestabile` |
-| `forza` | solo se la categoria è `difesa` e la mossa attacca (es. Parata del Duellante) | `intent.leggero` / `intent.pesante` a 16 px |
+| `forza` | solo se la categoria è `difesa` e la mossa attacca (es. Parata del Duellante) | `intent.leggero` / `intent.pesante` a **20 px** (il loro minimo) |
 
-Ordine fisso nella fila: portata, velocità, tratti (`flags`), poi il danno. La regola di costruzione è `mod.portata.${portata}`, `mod.velocita.${velocita}`, `mod.${flag}`: **non serve cambiare `DuelView`**.
+Ordine fisso nella fila: portata, velocità, tratti (`flags`), poi il danno. I `mod.*` sono a 16 px; la `forza`, se c'è, è a 20 px e sta per prima. La regola di costruzione è `mod.portata.${portata}`, `mod.velocita.${velocita}`, `mod.${flag}`: **non serve cambiare `DuelView`**.
 
 ---
 
@@ -120,7 +123,7 @@ Inchiostro, carta e un solo colore di pericolo. Nessun altro accento.
 ---
 
 ## 5. Scena del duello (DESIGN §8.1)
-Telefono sempre in verticale. La scena occupa tutto lo schermo e l'interfaccia vive dentro di essa. I personaggi sono di profilo, uno di fronte all'altro: il viandante a sinistra, il nemico a destra. Fino alla fase delle marionette, i mockup usano **sagome segnaposto**.
+Telefono sempre in verticale. La scena occupa tutto lo schermo e l'interfaccia vive dentro di essa. I personaggi sono di profilo, uno di fronte all'altro: il viandante a sinistra, il nemico a destra. Fino alla fase delle marionette, i mockup usano le **sagome statiche** della §11.
 
 ### 5.1 Composizione su S23: 360 × 700 px utili
 Il dispositivo di riferimento è il Samsung Galaxy S23 (CLAUDE.md): viewport 360 × 780, circa 700 px utili nell'app Claude. Le coordinate sono quelle del mockup del catalogo, con origine in alto a sinistra. Sono un riferimento per `SCENA_SPEC.md`, non pixel obbligatori. Le figure sono alte circa 120 px, come chiede SCENA_SPEC.
@@ -134,7 +137,7 @@ Il dispositivo di riferimento è il Samsung Galaxy S23 (CLAUDE.md): viewport 360
 | **Cartiglio dell'anteprima** | x 8, y 288: sempre nello stesso punto, sopra il ventaglio | Postura selezionata, ↓ subito e ↑ inflitto, "Tocca di nuovo per confermare" |
 | **Ventaglio** | arco intorno al viandante, §5.2 | Si apre solo nella fase di scelta |
 | Spazio alle spalle | paletto a x 84–89 (y 522–560), tacche a x 98–111 e 116–129 (y 553–560) | §5.4b |
-| Figure | terreno a y 560; viandante a x 160, nemico a x 284, scala 1,15 (circa 120 px) | Quinta del fondale dietro, in `--filo`; sopra l'HUD resta cielo libero per il fondale |
+| Figure | terreno a y 560; viandante (bacino) a x 160, nemico specchiato a x 306; sagome a scala 1, alte circa 120 px (§11) | Quinta del fondale dietro, in `--filo`; sopra l'HUD resta cielo libero per il fondale. Le armi si incrociano a metà scena: è voluto |
 | Testo del colpo | nel punto d'impatto, sulla figura colpita | Danno o esito in `--pericolo` con l'icona dell'evento, §5.4 |
 | **Cassetto del registro** | in basso, y 656–700 | Chiuso mostra l'ultima riga; si apre con un tocco |
 
@@ -243,7 +246,7 @@ Varianti:
 | `evento.schivata` | Schivata | Arco dell'Attesa, il colpo passa a vuoto (tratteggio) | | 12 | Contratto |
 | `evento.contrattacco` | Contrattacco | Inversione: scende, gira, torna su verso il nemico | | 12 | Contratto |
 | `evento.evitato` | Evitato | La freccia si ferma lontano dalla linea | | 12 | Contratto |
-| `evento.interrotto` | Interrotto | Freccia spezzata dalla frattura | | 12 | Contratto |
+| `evento.interrotto` | Interrotto | Freccia **verticale** spezzata dalla frattura | | 12 | Contratto |
 | `evento.rotta` | Preparazione rotta | Nucleo spaccato in due | | 12 | Contratto |
 | `evento.incalza` | Incalza | Freccia piena che spinge una freccia vuota verso le spalle (§12 R1) | | 16 | Contratto 1.1 |
 | `evento.punta` | Punta | Lancia della Distanza che punta in alto, con la scintilla (grado 2) | | 12 | Contratto 1.1 |
@@ -254,9 +257,35 @@ Varianti:
 | `mod.velocita.normale` | Velocità normale | Una punta | R | 16 | Proposta |
 | `mod.velocita.lento` | Lento | Peso da bilancia | R | 16 | Proposta |
 | `mod.sfondaGuardia` | Sfonda la guardia | Scudo spaccato dalla frattura | R | 16 | Proposta |
-| `mod.inarrestabile` | Inarrestabile | Freccia che passa attraverso la barra spezzata | R | 16 | Proposta |
+| `mod.inarrestabile` | Inarrestabile | Freccia **orizzontale** che attraversa una barriera spezzata e ne esce (AUD-023) | R | 16 | Proposta |
 
 L'etichetta di `stato.preparato` passa da "Raccolto" (segnaposto) a **"Preparato"**, il termine di ARENA_SPEC.
+
+**Vocabolario (AUD-009).** Una cosa, un nome, ovunque compaiano il simbolo o il suo stato:
+- **"Preparato"** è lo stato (`stato.preparato`): chip dell'HUD, `aria-label`, registro ("sei preparato", "era preparato: ×1,5", "Il Bruto è preparato").
+- **"Preparazione"** è l'azione o la postura del nemico (`intent.preparazione`, `posture.preparazione`).
+- "Raccolto" e "raccogliersi" non sono etichette di simboli. "Raccogliersi" resta solo il *nome della mossa* del Bruto e del Mietitore (ARENA_SPEC §6).
+- Le etichette di `symbols.proposed.ts` seguono la colonna "Etichetta" della tabella (per esempio "Colpo a segno", non "Colpo"; "Preparazione rotta", non "Rotta"). Chi integra non le riscrive: i testi del registro in `view.ts` (C2b, AUD-009) usano gli stessi termini.
+
+### 7.1 Taglie d'uso e minimi (AUD-008)
+Nessun simbolo si usa sotto la propria colonna "Min". Dove il layout vorrebbe 16 px e il simbolo ha minimo 20, la taglia d'uso è **20 px**. Come rete di sicurezza `icona()` porta ogni richiesta al minimo del simbolo (`Math.max(px, min)`): il difetto non può tornare in silenzio.
+
+| Punto dell'interfaccia | Simboli | Taglia d'uso | Min più alto in gioco | Esito |
+|---|---|---|---|---|
+| HUD, postura del nemico | `posture.assalto`, `posture.attesa` | 20 | 20 | ok |
+| HUD, postura del nemico | `posture.guardia`, `posture.distanza`, `posture.preparazione` | 16 | 16 | ok |
+| Registro (cambio di postura) | `posture.*` | 20 | 20 | ok |
+| Fila dei modificatori | `mod.*` | 16 | 16 | ok |
+| Fila dei modificatori, `forza` | `intent.pesante`, `intent.leggero` | 20 | 20 | ok (era 16) |
+| Registro e testo del colpo | `evento.*` | 16 | 16 (`incalza`, `arresto`) | ok |
+| HUD, stati | `stato.*` | 16 | 16 | ok |
+| HUD, vigore e fiato | `risorsa.vigore`, `risorsa.fiato.*` | 12 e 10 | 12 e 8 | ok |
+| Hint sopra il nemico | `intent.*` | 44 | 20 | ok |
+| Ventaglio | `posture.*.medaglione` | 52 | 44 | ok |
+| Variante classica | `posture.*` | 28 | 20 | ok |
+
+### 7.2 Coppie da non confondere a 16 px (AUD-023)
+`evento.interrotto` e `mod.inarrestabile` erano due frecce verticali con una barra spezzata, e a 16 px si somigliavano. Ora hanno **assi diversi**: l'interrotto resta verticale ed è spezzato in due; l'inarrestabile è una freccia **orizzontale** che passa tra le due metà di una barriera e ne esce intera. È l'opposto di `evento.evitato`, dove la freccia si ferma prima della linea. Il catalogo ha una riga "coppie da non confondere" a 16 e 24 px, in grigio, con le sei coppie della §2.2.
 
 ---
 
@@ -280,7 +309,7 @@ L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allo
    - `icona(id, { px, classe, parlante })`, che restituisce l'SVG inline;
    - `medaglione(postura, stato, { px, classe, parlante })` per il ventaglio, con `stato` tra `'riposo'`, `'selezionato'` e `'confermato'`.
 
-   Il file è stato verificato con `tsc --strict --erasableSyntaxOnly`.
+   Il file è stato verificato con `tsc --strict --erasableSyntaxOnly`. Dalla 1.2 ogni `Simbolo` porta il campo `min` e `icona()` non disegna mai sotto di esso (§7.1).
 2. **Usare `icona()` e `medaglione()` in `render.ts`** al posto di `esc(simbolo(id).glifo)`. Le stringhe restituite sono costanti e sicure: **non vanno passate a `esc()`**, altrimenti l'SVG diventa testo.
 
    | Punto dell'interfaccia | Chiamata |
@@ -289,9 +318,10 @@ L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allo
    | Modificatori dell'hint (con `dettaglio`) | `icona('mod.…', { px: 16, parlante: true })`, ordine della §2.3 |
    | Medaglioni del ventaglio | `medaglione(p.id, stato, { px: 52, parlante: true })` dentro un `<button>` rotondo con fondo `--carta`; etichetta e costo sotto |
    | Pulsanti della variante classica | `icona(p.simbolo, { px: 28 })`; il nome resta testo visibile; anteprima su una riga, ↓ subito e ↑ inflitto |
+   | HUD: postura del nemico | `icona(id, { px: 20 })` (16 solo per guardia, distanza, preparazione) |
    | HUD: stati e fase | `icona(id, { px: 16, parlante: true })` |
    | HUD: vigore e fiato | `icona('risorsa.vigore', { px: 12 })`; pallini `risorsa.fiato.pieno` / `.vuoto` a 10 px (se Planning approva; altrimenti cerchi in CSS) |
-   | Registro e testo del colpo | `icona(v.simbolo, { px: 16 })`; `evento.colpo` in `--pericolo` |
+   | Registro e testo del colpo | `icona(v.simbolo, { px: 16 })` per gli `evento.*`; **`px: 20`** per i `posture.*` del cambio di postura (AUD-008); `evento.colpo` in `--pericolo` |
 3. **CSS minimo:** `.icona { display: inline-block; vertical-align: middle; flex: none; }` e `.medaglione` dentro un contenitore con `border-radius: 50%; background: var(--carta)`. Il colore arriva dal contenitore (`color: var(--pericolo)` sull'hint d'attacco). I token della §4 sostituiscono la palette segnaposto quando Grafica prenderà `styles.css`.
 4. **Accessibilità:**
    - le icone accanto a un testo visibile sono decorative (predefinito, `aria-hidden`);
@@ -310,3 +340,83 @@ L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allo
 5. Il ventaglio entra già nell'arena (come variante A/B accanto alla griglia classica) o solo con la fase della scena?
 6. Spazio alle spalle del nemico: va mostrato con le tacche specchiate dietro di lui (§5.4b)?
 7. `stato.spalle` resta visibile nell'HUD per tutto il turno in cui la Distanza è indisponibile, oppure basta il badge sul medaglione?
+
+## 11. Sagome statiche del viandante e dei nemici (C2a)
+Per il playtest le figure sono sagome ferme, non le marionette (ARENA_S23_SPEC §3). Restano utili come riferimento per il prototipo delle marionette (SCENA_SPEC §5) e per il quiz delle sagome.
+
+| Risorsa | Dove |
+|---|---|
+| Geometria e misure (sorgente unica) | `design/sagome-dati.mjs`, richiamato da `design/genera.mjs` |
+| Un SVG per id | `design/sagome/<id>.svg` |
+| Modulo pronto per `src/ui/` | `design/sagome.proposed.ts`: `sagoma(id, { px, classe, parlante, specchia })` |
+| Verifica ripetibile | `node design/verifica-sagome.mjs` |
+| Catalogo | `design/catalogo.html`, sezione "Sagome statiche" |
+
+### 11.1 Costruzione
+- **Sistema di coordinate** di SCENA_SPEC §2.1: 120 unità = 120 px su S23, origine a terra sotto il bacino, figura rivolta a destra. Il nemico si specchia con `specchia: true`, che gira la figura attorno al bacino (viewBox simmetrico: `x −100…100`).
+- **Stile:** masse piene in `currentColor`, spigoli sfaccettati (solo segmenti rettilinei, anche le lame curve della falce), nessun volto (cappuccio, elmo, cappello, scudo), tagli bianchi di circa 1 px solo dove ripetono un simbolo (sgusciatura della spada, fasce del maglio, filo dello scudo). Nessun colore dentro gli SVG.
+- **Scheletro comune:** le sagome sono generate dallo scheletro umanoide di SCENA_SPEC §2.2 (bacino, busto, testa, braccia, gambe a due ossa con piedi ancorati a terra). Cambiano proporzioni e pezzi, non lo scheletro: i dati di ogni posa sono già gli angoli che serviranno al prototipo.
+- **Uso:** `sagoma('viandante.guardia', { px: 120 })` per il viandante; `sagoma('bruto', { px: 120, specchia: true })` per un nemico. `px` è l'altezza di riferimento: con 120, una unità vale un pixel. L'SVG è largo 200/120 e alto 164/120 di `px`, con il terreno a 6/164 dal bordo inferiore; il contenitore deve sovrapporre il bacino alla x di scena (160 per il viandante, 306 per il nemico).
+- **`PASSO_POSTURA`** esporta l'asse E: Assalto +1, Guardia 0, Attesa 0, Distanza −1. Nella scena statica la figura non si sposta; il dato serve alle marionette.
+
+### 11.2 Il viandante: assi e forme (SCENA_SPEC §1.2)
+Cappuccio, mantello e spada (la spada di `posture.assalto`). Quattro sagome, una per postura:
+
+| Postura | Forma | A. Busto e baricentro | B. Testa | C. Arma | D. Piedi |
+|---|---|---|---|---|---|
+| **Assalto** | Freccia | Avanti 19°, bacino basso | Media | Caricata alta sopra la spalla, 133° | Larga, avanzata |
+| **Guardia** | Muro | Eretto 0°, ginocchia flesse | Alta | Spada verticale davanti al corpo, 84° | Media |
+| **Attesa** | Molla | Basso e raccolto, 28°, bacino a 37 | Bassa | Bassa, di traverso davanti alle gambe, −17° | Stretta, sulle punte |
+| **Distanza** | Ritirata con minaccia | Indietro −15° | Media | Protesa verso il nemico all'altezza del petto, 4° | Arretrata, peso dietro |
+
+### 11.3 Verifica: assi A–C per ogni coppia
+Misure prese dalla geometria disegnata (`node design/verifica-sagome.mjs`), in unità (120 = altezza di riferimento): busto in gradi verso il nemico, bacino e testa in altezza, arma in gradi (0° verso il nemico, 90° in alto) e altezza dell'impugnatura.
+
+| Postura | A. busto | A. bacino | B. testa | C. arma | C. mano |
+|---|---|---|---|---|---|
+| Assalto | 19° | 47 | 105 | 133° | 109 |
+| Guardia | 0° | 50 | 112 | 84° | 88 |
+| Attesa | 28° | 37 | 89 | −17° | 45 |
+| Distanza | −15° | 53 | 112 | 4° | 90 |
+
+Due posture **differiscono su un asse** se: A, busto ≥ 10° o bacino ≥ 8; B, testa ≥ 8; C, arma ≥ 40° o mano ≥ 25. La regola di distinzione chiede almeno 2 assi su 3.
+
+| Coppia | A | B | C | Assi | Somiglianza delle silhouette |
+|---|---|---|---|---|---|
+| Assalto · Guardia | sì | – | sì | **2/3** | 0,40 |
+| Assalto · Attesa | sì | sì | sì | **3/3** | 0,35 |
+| Assalto · Distanza | sì | – | sì | **2/3** | 0,22 |
+| Guardia · Attesa | sì | sì | sì | **3/3** | 0,32 |
+| Guardia · Distanza | sì | – | sì | **2/3** | 0,26 |
+| Attesa · Distanza | sì | sì | sì | **3/3** | 0,17 |
+
+La somiglianza è l'intersezione sull'unione delle aree in nero pieno a 120 px, con le figure allineate sul bacino (1 = identiche). Il massimo è 0,40: nessuna coppia si sovrappone al punto da confondersi. Il controllo fallisce a 0,60.
+
+Le due coppie a rischio indicate da SCENA_SPEC §1.2 reggono: Guardia e Attesa differiscono su tutti e tre gli assi (testa 23 unità più bassa, arma bassa contro verticale); Assalto e Distanza differiscono per direzione del busto (34°) e per arma (129°), anche se la testa ha la stessa altezza.
+
+**Cosa non è stato fatto:** il quiz di 16 domande di SCENA_SPEC §1.7.1 (4 posture e 4 telegrafi, almeno 14 corrette) richiede un lettore umano e i telegrafi esistono solo con le marionette. Qui c'è la prova a vista a 120 px in nero pieno (catalogo, sezione "Sagome statiche", a 360 × 780) più le misure sopra. Il quiz resta nel laboratorio (SCENA_SPEC §5.2).
+
+### 11.4 I cinque nemici, in posa neutra
+Ognuno ha un tratto permanente che lo rende riconoscibile (SCENA_SPEC §1.4) e un'arma che ripete un simbolo (§6.4). Le armi non dicono nulla delle mosse: i telegrafi arrivano con le marionette.
+
+| Nemico | Altezza testa | Arma e tratto | Simbolo ripetuto |
+|---|---|---|---|
+| **Recluta** | 115 | Elmo con nasale, spada corta, scudo | `posture.guardia` (scudo con filo), `posture.assalto` (spada) |
+| **Duellante** | 121 | Cappello a tesa larga con piuma, stocco sottile, braccio libero alzato | `intent.leggero` (lama sottile, guardia a coppa) |
+| **Bruto** | 112 | Massiccio e curvo, elmo con borchie, maglio con la testa a terra | `intent.pesante` (asta e testa larga con fasce incise) |
+| **Lanciere** | 120 | Elmo con cresta, lunga lancia in diagonale | `evento.punta` (punta a foglia) |
+| **Mietitore** | 131 | Cappuccio acuminato, veste a brandelli fino a terra, falce | nessuno (la falce non ha un simbolo) |
+
+Il Mietitore è il più alto, come si addice al boss. Il Lanciere tiene la lancia sempre protesa: è un tratto permanente, non un telegrafo, e quindi non viola la regola d'informazione (SCENA_SPEC §1.4).
+
+### 11.5 Collocazione in scena
+- Il bacino del viandante sta a x 160, quello del nemico (specchiato) a x 306. Le armi si incrociano a metà scena: è voluto, la lancia e la spada arrivano a toccare il centro.
+- L'hint sopra il nemico si ancora alla **cima della sua testa** (`altezza` di ogni sagoma) e al centro della testa, non a un punto fisso: con il Mietitore il blocco parte più in alto.
+- Gli spazi riservati della §6.7 restano liberi: l'arma più alta (Assalto, 147) arriva a y 413 su 700, sotto l'HUD, e la punta dello Stocco o della Lancia non raggiunge il cartiglio.
+
+### 11.6 Segnalazioni per Planning
+Nessuna è bloccante:
+1. **Il viandante ha solo la spada.** `posture.guardia` è uno scudo, ma la sagoma della Guardia non porta uno scudo: copre con la spada davanti al corpo (*posta frontale*, SCENA_SPEC §1.2). Se si vuole che l'arma ripeta il simbolo della postura, serve una decisione sull'equipaggiamento (DESIGN).
+2. **Il Mietitore non ha un simbolo per la falce.** L'arma c'è in sagoma ma non in `SIMBOLI`. Per l'arena non serve; se si vuole l'hint con la falce, è una estensione da approvare.
+3. **Le pose del viandante in Distanza e Assalto hanno già un passo diverso** (`PASSO_POSTURA`). Nella scena statica non si usa: il viandante resta a x 160.
+
