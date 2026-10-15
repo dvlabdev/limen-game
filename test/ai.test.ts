@@ -60,8 +60,8 @@ describe('IA dei nemici', () => {
       s.opzioni.adattamento = attivo;
       return pesi(s);
     };
-    // Contro la Guardia battono gli attacchi che sfondano: la Finta.
-    assert.strictEqual(adattato(['guardia', 'guardia'])['finta'], (normale['finta'] as number) * 3);
+    // Contro la Guardia battono gli attacchi che sfondano: la Battuta.
+    assert.strictEqual(adattato(['guardia', 'guardia'])['battuta'], (normale['battuta'] as number) * 3);
     assert.strictEqual(adattato(['guardia', 'guardia'])['stoccata'], normale['stoccata']);
     // Una sola ripetizione, scelte diverse o opzione spenta: nessun effetto.
     assert.deepStrictEqual(adattato(['guardia']), normale);

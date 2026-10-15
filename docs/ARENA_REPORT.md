@@ -1,7 +1,7 @@
 # Arena di prova: rapporto della sessione Codice
 
 > **Autore:** sessione Codice · **Riferimento:** [ARENA_SPEC.md](ARENA_SPEC.md) v1.0 (§11)
-> **Stato:** F0, F1 e F2 completate; F3 e F4 vedi §1.
+> **Stato:** F0, F1, F2 e F3 completate; F4 vedi §1.
 
 ## 1. Stato delle fasi e comandi verificati
 
@@ -10,7 +10,7 @@
 | F0 Impalcatura | fatta | `F0 Impalcatura: …` |
 | F1 Core | fatta: matrice §4.6 e test dedicati verdi | `F1 Core: …` |
 | F2 Nemici | fatta; **obiettivi del §9 raggiunti solo in parte**, vedi §2 e §5 | `F2 Nemici: …` |
-| F3 Arena | da aggiornare a fine lavoro | |
+| F3 Arena | fatta: duello completo contro i cinque nemici, pannello, interruttori A/B e telemetria funzionanti | `F3 Arena: …` |
 | F4 Verifica | da aggiornare a fine lavoro | |
 
 Comandi verificati su Node 24.19.0 (Windows):
@@ -93,10 +93,10 @@ Solo numeri, come da regola: `balance.ts` ed `enemies.ts` (pesi, danni, vigore, 
 | | Duellante · vigore | 20 | 11 | Accorcia i duelli (14,6 → 7,4 turni) |
 | | Duellante · fiato | 6 | 5 | Marginale, dalla ricerca |
 | | Stoccata | 2–3 | 5–6 | Colpire la Guardia (×0,4) deve ancora fare male: con 2–3 `fissa:guardia` vinceva |
-| | Finta | 2–3 | 6–7 | Idem: è la mossa che aggira la Guardia |
+| | Battuta (ex Finta, rinominata nella specifica 1.0.2) | 2–3 | 6–7 | Idem: è la mossa che aggira la Guardia |
 | | Parata (mossa) | 1–2 | 4–5 | Con danni bassi il Duellante non puniva `fissa:attesa` |
 | | Affondo | 4–6 | 8–10 | È il colpo che il `lettore` schiva con l'Attesa: serve che faccia male a chi non lo legge |
-| | Pesi (Stoccata, Finta, Parata, Affondo) | 5, 1, 2, 1 | **1, 2, 10, 10** | Rompe il ciclo dell'Assalto (le mosse di guardia lo parano) e premia chi legge l'Affondo. **Cambia il carattere del Duellante**, vedi §6 |
+| | Pesi (Stoccata, Battuta, Parata, Affondo) | 5, 1, 2, 1 | **1, 2, 10, 10** | Rompe il ciclo dell'Assalto (le mosse di guardia lo parano) e premia chi legge l'Affondo. **Cambia il carattere del Duellante**, vedi §6 |
 | | Bruto · vigore | 30 | 20 | Duelli più corti |
 | | Bruto · velocità | 1 | 3 | A parità di velocità di mossa il Bruto colpisce per primo, interrompe l'Assalto e prende il vantaggio. Senza questo `fissa:assalto` vinceva il 100% |
 | | Maglio | 6–8 | 7–9 | Dalla ricerca (il Maglio è lento: l'Assalto lo interrompe sempre) |

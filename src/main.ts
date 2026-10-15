@@ -1,2 +1,4 @@
-const app = document.getElementById('app');
-if (app) app.textContent = 'Limen · Arena';
+import { avvia } from './ui/arena.ts';
+
+const radice = document.getElementById('app');
+if (radice) avvia(radice);

@@ -57,7 +57,7 @@ const DUELLANTE: Profilo = {
   gradi: { parata: 2, schivata: 1 },
   mosse: [
     assalto('stoccata', 'Stoccata', { forza: 'leggero', portata: 'corta', velocita: 'rapido', danno: [5, 6] }),
-    assalto('finta', 'Finta', { forza: 'leggero', portata: 'corta', velocita: 'rapido', danno: [6, 7], sfondaGuardia: true }),
+    assalto('battuta', 'Battuta', { forza: 'leggero', portata: 'corta', velocita: 'rapido', danno: [6, 7], sfondaGuardia: true }),
     {
       id: 'parata',
       nome: 'Parata',
@@ -69,7 +69,7 @@ const DUELLANTE: Profilo = {
   fase1: {
     mosse: [
       { mossa: 'stoccata', peso: 1 },
-      { mossa: 'finta', peso: 2 },
+      { mossa: 'battuta', peso: 2 },
       { mossa: 'parata', peso: 10 },
       { mossa: 'affondo', peso: 10 },
     ],
