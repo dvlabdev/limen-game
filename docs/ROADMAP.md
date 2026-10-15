@@ -21,6 +21,13 @@
 - **Tecniche** (domanda aperta n. 5), compreso il *Colpo maestro*.
 
 ## Regole di esecuzione
-- **Un solo lavoro pesante alla volta**, per non esaurire i limiti di utilizzo. Sonnet per i lavori meccanici; le sessioni di design e di audit restano sul modello principale.
+- **Un solo lavoro pesante alla volta**, per non esaurire i limiti di utilizzo.
+- **Il modello più efficiente che regge il compito:**
+
+  | Modello | Compiti |
+  |---|---|
+  | **Opus** | Sessione master di Planning, design di gioco e visivo, primo audit completo o con molto giudizio |
+  | **Sonnet** | Implementazione da specifica, integrazioni, rilancio dei controlli e verifica della chiusura dei rilievi, cancelli d'audit meccanici |
+  | **Haiku** | Letture e ricerche semplici |
 - Ogni passo si chiude con commit e push su `main`; ogni sessione aggiunge solo i propri percorsi.
 - Gli artefatti di revisione si verificano a 360×780 (Samsung S23).
