@@ -153,6 +153,7 @@ export const SET = [
 
 // --- Rendering --------------------------------------------------------------------------------
 function interno(s, piccolo) {
+  if (s.raw) return s.raw;
   const parti = s.parti.map((p) => {
     if (p.tratto) return `<path d="${p.d}" fill="none" stroke="currentColor" stroke-width="${p.tratto}"/>`;
     if (p.pari) return `<path fill-rule="evenodd" d="${p.d}"/>`;
@@ -161,8 +162,34 @@ function interno(s, piccolo) {
   }).join('');
   return s.trasf ? `<g transform="${s.trasf}">${parti}</g>` : parti;
 }
-const haTagli = (s) => s.parti.some((p) => p.taglio);
+const haTagli = (s) => !!s.parti && s.parti.some((p) => p.taglio);
 const famiglia = (id) => id.split('.')[0];
+
+// --- Medaglioni del ventaglio delle posture (DESIGN §8.1) ---------------------------------------
+// Anello con il segno in positivo: non si confonde con il bollino degli stati, che è un disco pieno.
+// Il fondo carta dentro l'anello lo dà il contenitore (CSS), così il medaglione resta in currentColor.
+const ANELLO = (est, int) => DISCO(est) + ' ' + DISCO(int);
+const MEDAGLIONE = {
+  riposo: { cornice: ANELLO(11.5, 10.4), k: 0.62 },
+  selezionato: { cornice: ANELLO(11.5, 10.4) + ' ' + ANELLO(9.4, 8.8), k: 0.62 },
+  confermato: { cornice: ANELLO(11.5, 9.2) + ' ' + ANELLO(8.4, 7.9), k: 0.56 },
+};
+const POSTURE_GIOCATORE = ['assalto', 'guardia', 'attesa', 'distanza'];
+function medaglione(p, stato) {
+  const base = SET.find((s) => s.id === 'posture.' + p);
+  const m = MEDAGLIONE[stato];
+  return '<path fill-rule="evenodd" d="' + m.cornice + '"/><g transform="translate(12 12) scale(' + m.k + ') translate(-12 -12)">' + interno(base, false) + '</g>';
+}
+for (const p of POSTURE_GIOCATORE) {
+  const base = SET.find((s) => s.id === 'posture.' + p);
+  SET.push({
+    id: 'posture.' + p + '.medaglione', etichetta: base.etichetta, glifo: base.glifo, min: 44, estensione: true, famiglia: 'medaglione',
+    nota: 'Medaglione del ventaglio: anello e segno in positivo. Tre stati: riposo, selezionato (doppio anello), confermato (anello spesso).',
+    raw: medaglione(p, 'riposo'),
+    stati: { riposo: medaglione(p, 'riposo'), selezionato: medaglione(p, 'selezionato'), confermato: medaglione(p, 'confermato') },
+  });
+}
+const CORNICI_TS = Object.entries(MEDAGLIONE).map(([k, v]) => `  ${k}: { cornice: '${v.cornice}', k: ${v.k} },`).join('\n');
 
 // 1. File SVG
 const DIR_ICONE = join(QUI, 'icons');
@@ -220,14 +247,37 @@ export function icona(id: string | undefined, opz: OpzioniIcona = {}): string {
   const classe = opz.classe ? \`icona \${opz.classe}\` : 'icona';
   return \`<svg class="\${classe}" viewBox="0 0 24 24" width="\${px}" height="\${px}" fill="currentColor" focusable="false" \${a11y}>\${corpo}</svg>\`;
 }
+
+/** Stati del medaglione nel ventaglio delle posture (DESIGN §8.1). */
+export type StatoMedaglione = 'riposo' | 'selezionato' | 'confermato';
+
+/** Cornici dei medaglioni (anelli) e scala del segno della postura al loro interno. */
+const MEDAGLIONE: Record<StatoMedaglione, { cornice: string; k: number }> = {
+${CORNICI_TS}
+};
+
+/**
+ * Medaglione del ventaglio per una postura del giocatore: 'assalto', 'guardia', 'attesa', 'distanza'.
+ * Il fondo carta dentro l'anello lo dà il contenitore (border-radius: 50%; background: var(--carta)).
+ * Taglia minima 44 px, predefinita 52. La stringa è sicura: non va passata a esc().
+ */
+export function medaglione(postura: string, stato: StatoMedaglione = 'riposo', opz: OpzioniIcona = {}): string {
+  const s = SIMBOLI[\`posture.\${postura}\`];
+  if (!s) return icona(undefined, opz);
+  const m = MEDAGLIONE[stato];
+  const px = opz.px ?? 52;
+  const a11y = opz.parlante ? \`role="img" aria-label="\${s.etichetta}"\` : 'aria-hidden="true"';
+  const classe = opz.classe ? \`icona medaglione \${opz.classe}\` : 'icona medaglione';
+  return \`<svg class="\${classe}" viewBox="0 0 24 24" width="\${px}" height="\${px}" fill="currentColor" focusable="false" \${a11y}><path fill-rule="evenodd" d="\${m.cornice}"/><g transform="translate(12 12) scale(\${m.k}) translate(-12 -12)">\${s.svg}</g></svg>\`;
+}
 `;
 writeFileSync(join(QUI, 'symbols.proposed.ts'), ts);
 
 // 3. Catalogo
 const dati = SET.map((s) => ({
-  id: s.id, etichetta: s.etichetta, famiglia: famiglia(s.id), nota: s.nota, min: s.min,
+  id: s.id, etichetta: s.etichetta, famiglia: s.famiglia || famiglia(s.id), nota: s.nota, min: s.min,
   pericolo: !!s.pericolo, estensione: !!s.estensione, bollino: !!s.bollino,
-  svg: interno(s, false), piccolo: haTagli(s) ? interno(s, true) : null,
+  svg: interno(s, false), piccolo: haTagli(s) ? interno(s, true) : null, stati: s.stati || null,
 }));
 const tpl = readFileSync(join(QUI, 'catalogo.template.html'), 'utf8');
 writeFileSync(join(QUI, 'catalogo.html'), tpl.replace('/*DATI*/[]', JSON.stringify(dati)));

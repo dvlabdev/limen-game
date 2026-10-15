@@ -124,6 +124,41 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .striscia-hint .cat { font: 400 19px/1 var(--f-display); }
 .striscia-hint span { display: inline-flex; align-items: center; gap: 4px; font-size: 12.5px; }
 .striscia-hint .danno { font: 500 13px/1 var(--f-dato); }
+/* Scena a tutto schermo (DESIGN §8.1): coordinate in px su un telefono 375 × 560 utili */
+.schermo-wrap { max-width: 100%; overflow-x: auto; }
+.schermo { position: relative; width: 375px; height: 560px; overflow: hidden; background: var(--carta-2); color: var(--inchiostro); border: 1px solid var(--filo); font-size: 13px; line-height: 1.25; }
+.schermo .fondo { position: absolute; left: 0; top: 0; width: 375px; height: 560px; }
+.schermo .quinta { color: var(--filo); }
+.schermo .guida { color: var(--seppia); }
+.turno { position: absolute; top: 12px; left: 12px; font: 500 11px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.hud { position: absolute; top: 96px; width: 128px; display: grid; gap: 4px; }
+.hud .r { display: flex; align-items: center; gap: 4px; }
+.hud .n { font: 400 15px/1 var(--f-display); margin-right: 2px; }
+.hud .tacca { flex: 1; height: 7px; border: 1px solid var(--inchiostro); position: relative; background: var(--carta); }
+.hud .tacca i { position: absolute; inset: 0 auto 0 0; background: var(--inchiostro); }
+.hud .num { font: 500 11px/1 var(--f-dato); font-variant-numeric: tabular-nums; }
+.sopra-nemico { position: absolute; transform: translateX(-50%); display: grid; justify-items: center; gap: 3px; color: var(--pericolo); text-align: center; }
+.sopra-nemico .cat { font: 400 15px/1 var(--f-display); }
+.sopra-nemico .mods { display: flex; gap: 6px; align-items: center; justify-content: center; font: 500 12px/1 var(--f-dato); }
+.med { position: absolute; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; background: var(--carta); color: var(--inchiostro); }
+.med svg { display: block; }
+.med.sel { transform: scale(1.15); }
+.med.spento { opacity: .3; }
+.med-et { position: absolute; transform: translateX(-50%); font-size: 11.5px; white-space: nowrap; display: flex; gap: 3px; align-items: center; background: var(--carta-2); padding: 0 3px; }
+.med-et.spento { opacity: .3; }
+.cartiglio { position: absolute; background: var(--carta); border: 1.5px solid var(--inchiostro); padding: 5px 7px; display: grid; gap: 3px; }
+.cartiglio .d { font: 500 13px/1 var(--f-dato); }
+.cartiglio .d b { font-weight: 500; color: var(--pericolo); }
+.cartiglio small { font-size: 11px; color: var(--seppia); }
+.colpo-testo { position: absolute; color: var(--pericolo); font: 500 14px/1 var(--f-dato); display: flex; gap: 4px; align-items: center; background: var(--carta-2); padding: 2px 4px; }
+.cassetto { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; background: var(--carta); border-top: 1.5px solid var(--inchiostro); display: flex; align-items: center; gap: 8px; padding: 6px 12px 0; font-size: 13px; }
+.cassetto .maniglia { position: absolute; top: 5px; left: 50%; width: 36px; height: 3px; margin-left: -18px; background: var(--seppia); }
+.cassetto .t { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cassetto .e { font: 500 10.5px/1 var(--f-dato); letter-spacing: .06em; text-transform: uppercase; color: var(--seppia); }
+.stati-med { display: flex; flex-wrap: wrap; gap: 14px; padding: 12px 10px; justify-content: space-around; }
+.stati-med .t { display: grid; justify-items: center; gap: 5px; }
+.stati-med .disco { border-radius: 50%; background: var(--carta); }
+.stati-med .disco svg { display: block; }
 .valuta { display: grid; gap: 10px; }
 .valuta table { border-collapse: collapse; width: 100%; font-size: 15px; }
 .valuta th, .valuta td { padding: 7px 8px; border-bottom: 1px solid var(--filo); text-align: left; vertical-align: top; }
@@ -179,7 +214,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 
   <section aria-labelledby="h-duello">
     <h2 id="h-duello">Il duello a 375 px</h2>
-    <p>Fascia scena in alto con le due figure (sagome segnaposto di profilo, DESIGN §8.1) e le targhe sotto ciascuna; poi hint, registro, posture e Conferma. La linea rossa tratteggiata è la fine di uno schermo da 375 × 560 px utili. Confronto delle due collocazioni dell'hint: in scena (A) tutto entra; al centro (B) Conferma finisce sotto la piega.</p>
+    <p>La scena occupa tutto lo schermo (375 × 560 px utili, telefono in verticale) e l'interfaccia vive dentro di essa: vigore e fiato sopra ogni personaggio, hint sopra la testa del nemico, ventaglio di medaglioni dietro il viandante, registro in un cassetto. Le figure sono sagome segnaposto di profilo.</p>
     <div class="duelli" id="duelli"></div>
   </section>
 
@@ -296,18 +331,91 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
               { id: "posture.attesa", costo: 1, anteprima: '<b>↓</b>7–9 <b>↑</b>0' },
               { id: "posture.distanza", costo: 0, nota: "attuale", stato: "att sel", anteprima: '<b>↓</b>0 <b>↑</b>0' }]
   });
+  // --- Scena a tutto schermo con il ventaglio (DESIGN §8.1, b84c95d) ------------------------
+  // Geometria su 375 × 560: terreno a y 440, viandante centrato a x 160 (scala 1,5), nemico a x 290 (scala 1,45).
+  // Ventaglio: arco di centro (160, 360) e raggio 128, da 205° (schiena) a 75° (verso il nemico).
+  var VENTAGLIO = [["distanza", 205], ["attesa", 162], ["guardia", 118], ["assalto", 75]].map(function (v) {
+    var a = v[1] * Math.PI / 180;
+    return { p: v[0], x: +(160 + 128 * Math.cos(a)).toFixed(1), y: +(360 - 128 * Math.sin(a)).toFixed(1) };
+  });
+  var TESTA_NEMICO = { x: 278.4, y: 260 };
+  function sagome() {
+    var c = VENTAGLIO[0], d = VENTAGLIO[3];
+    var tratteggio = "";
+    for (var yy = 452; yy < 516; yy += 9) for (var xx = (yy % 2 ? 6 : 16); xx < 375; xx += 22) tratteggio += "M" + xx + " " + (yy + 4) + "L" + (xx + 8) + " " + yy;
+    return '<svg class="fondo" viewBox="0 0 375 560" fill="currentColor" aria-hidden="true">' +
+      '<path class="quinta" d="M0 392L40 372L78 384L130 360L190 380L240 356L300 378L340 364L375 376V440H0Z"/>' +
+      '<path d="M0 440H375V443H0Z"/>' +
+      '<path d="' + tratteggio + '" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
+      '<path class="guida" d="M' + c.x + " " + c.y + "A128 128 0 0 1 " + d.x + " " + d.y + '" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 5"/>' +
+      '<g transform="translate(160 440) scale(1.5) translate(-108 -166)">' +
+        '<path d="M92 166L100 126H114L122 166H113L107 138L101 166Z M98 84L84 140L100 128Z M97 128L100 84H116L120 128Z M114 90L134 102L131 107L112 98Z"/>' +
+        '<circle cx="108" cy="72" r="11"/><path d="M133 104L166 80M129 98L137 110" fill="none" stroke="currentColor" stroke-width="3.2"/></g>' +
+      '<g transform="translate(290 440) scale(1.45) translate(-270 -166)">' +
+        '<path d="M248 166L256 116H282L292 166H280L270 132L260 166Z M248 118L244 70H290L294 118Z M284 78L300 60L306 64L290 84Z"/>' +
+        '<circle cx="262" cy="56" r="14"/><path d="M294 74L334 34" fill="none" stroke="currentColor" stroke-width="4"/>' +
+        '<path d="M350.9 35.5L339.5 46.9L321.2 28.5L332.5 17.1Z"/></g>' +
+      "</svg>";
+  }
+  function hud(c, centro) {
+    return '<div class="hud" style="left:' + (centro - 64) + 'px"><div class="r"><span class="n">' + c.nome + "</span>" + (c.stati || "") + "</div>" +
+      '<div class="r">' + ic("risorsa.vigore", 12) + '<span class="tacca"><i style="width:' + c.pct + '%"></i></span><span class="num">' + c.vig + "</span></div>" +
+      '<div class="r">' + pipsN(c.fiato[0], c.fiato[1], 10) + "</div></div>";
+  }
+  function icMed(p, stato, px) {
+    return '<svg class="icona" viewBox="0 0 24 24" width="' + px + '" height="' + px + '" fill="currentColor" aria-hidden="true">' + P["posture." + p + ".medaglione"].stati[stato] + "</svg>";
+  }
+  function ventaglio(o) {
+    var meds = VENTAGLIO.map(function (v) {
+      var st = o.posture[v.p] || {};
+      var stato = st.stato || "riposo";
+      var cls = stato === "selezionato" ? " sel" : (o.spenti && stato !== "confermato" ? " spento" : "");
+      var costo = ic(st.attuale ? "risorsa.fiato.vuoto" : "risorsa.fiato.pieno", 9) + (st.attuale ? "0" : "1");
+      return '<div class="med' + cls + '" style="left:' + v.x + "px;top:" + v.y + 'px" title="' + P["posture." + v.p].etichetta + '">' + icMed(v.p, stato, 52) + "</div>" +
+        '<div class="med-et' + (cls === " spento" ? " spento" : "") + '" style="left:' + v.x + "px;top:" + (v.y + (stato === "selezionato" ? 33 : 29)) + 'px">' + P["posture." + v.p].etichetta + " · " + costo + "</div>";
+    }).join("");
+    var cart = "";
+    if (o.cartiglio) {
+      cart = '<div class="cartiglio" style="left:8px;top:156px"><span class="d">' + P["posture." + o.cartiglio.p].etichetta + " " + o.cartiglio.testo + "</span><small>" + o.cartiglio.nota + "</small></div>";
+    }
+    var mods = o.mods ? '<span class="mods">' + o.mods.map(function (m) { return ic(m, 16, "", true); }).join("") + ic("evento.colpo", 14) + o.danno + "</span>" : "";
+    return '<div class="schermo-wrap"><div class="schermo">' + sagome() +
+      '<span class="turno">Turno ' + o.turno + " / 25</span>" +
+      hud(o.gioc, 150) + hud(o.nemico, 290) +
+      '<div class="sopra-nemico" style="left:' + TESTA_NEMICO.x + "px;bottom:" + (560 - TESTA_NEMICO.y + 6) + 'px">' + ic(o.hint, 44, "", true) + '<span class="cat">' + o.cat + "</span>" + mods + "</div>" +
+      meds + cart + (o.colpo ? '<div class="colpo-testo" style="left:' + o.colpo.x + "px;top:" + o.colpo.y + 'px">' + ic(o.colpo.icona, 16) + o.colpo.testo + "</div>" : "") +
+      '<div class="cassetto"><span class="maniglia"></span>' + ic(o.registro[0], 16) + '<span class="t">' + o.registro[1] + '</span><span class="e">Registro</span></div>' +
+      "</div></div>";
+  }
+  var v1 = ventaglio({
+    turno: 4, hint: "intent.pesante", cat: "Colpo pesante",
+    gioc: { nome: "Viandante", stati: bollini(["stato.vantaggio"]), pct: 80, vig: "24/30", fiato: [4, 6] },
+    nemico: { nome: "Bruto", stati: "", pct: 73, vig: "22/30", fiato: [3, 5] },
+    posture: { guardia: { attuale: true }, attesa: { stato: "selezionato" } },
+    cartiglio: { p: "attesa", testo: "<b>↓</b>0 <b>↑</b>3–4", nota: "Tocca di nuovo per confermare" },
+    registro: ["evento.parata", "Hai parato il Maglio: 6 → 2."]
+  });
+  var v2 = ventaglio({
+    turno: 9, hint: "intent.pesante", cat: "Carica", mods: ["mod.portata.corta", "mod.velocita.normale", "mod.inarrestabile"], danno: "7–9",
+    gioc: { nome: "Viandante", stati: "", pct: 63, vig: "19/30", fiato: [1, 6] },
+    nemico: { nome: "Mietitore", stati: bollini(["stato.fase2"]), pct: 42, vig: "19/45", fiato: [2, 6] },
+    posture: { distanza: { stato: "confermato", attuale: true } }, spenti: true,
+    colpo: { x: 182, y: 318, icona: "evento.evitato", testo: "Evitato" },
+    registro: ["evento.contrattacco", "Schivi la Falciata e contrattacchi: 4."]
+  });
   document.getElementById("duelli").innerHTML =
-    '<figure>' + m1 + '<figcaption><b>A · Hint in scena</b> (consigliato). Il simbolo sta sopra la testa del nemico, accanto alla posa che telegrafa il colpo; sotto la scena resta solo una striscia con il nome. Tutto entra nello schermo.</figcaption></figure>' +
-    '<figure>' + m2 + '<figcaption><b>B · Hint al centro.</b> Stesso stato, simbolo grande sotto la scena. Il simbolo è lontano dalla posa che lo spiega e Conferma finisce sotto la piega.</figcaption></figure>' +
-    '<figure>' + m3 + '<figcaption><b>A con hint completo</b> e anteprima dei danni (interruttori A/B), boss in seconda fase. I modificatori stanno nella striscia sotto la scena; nei pulsanti ↓ è il danno subito, ↑ quello inflitto (la direzione della grammatica).</figcaption></figure>';
+    '<figure>' + v1 + '<figcaption><b>Scelta.</b> Il ventaglio è aperto dietro il viandante, dalla schiena verso il nemico. Primo tocco su Attesa: il medaglione si ingrandisce con il doppio anello e il cartiglio, sempre nello stesso punto sopra il ventaglio, mostra l\'anteprima (↓ subito, ↑ inflitto). Guardia è la postura attuale: costo 0.</figcaption></figure>' +
+    '<figure>' + v2 + '<figcaption><b>Conferma e risoluzione.</b> Secondo tocco su Distanza: anello spesso, gli altri medaglioni si spengono e il ventaglio si chiude. Hint completo sopra il Mietitore in seconda fase; l\'esito compare come testo nel punto del colpo.</figcaption></figure>' +
+    '<figure>' + m1 + '<figcaption><b>Variante classica</b> (A/B dell\'arena): griglia 2×2 sotto la scena e Conferma. Resta come riferimento.</figcaption></figure>';
 
   // --- Grammatica --------------------------------------------------------------------------
   var es = function (ids, px) { return '<span class="es">' + ids.map(function (i) { return '<span class="' + (P[i].pericolo ? "pericolo" : "") + '">' + ic(i, px || 28) + "</span>"; }).join("") + "</span>"; };
   var regole = [
-    ["Direzione", "Il nemico è in alto, il giocatore in basso. Ciò che il nemico ti scaglia contro punta in basso; ciò che tu scagli contro di lui punta in alto.", ["intent.pesante", "intent.leggero", "posture.assalto", "evento.contrattacco"]],
+    ["Direzione", "Giù è subìto, su è inflitto: ciò che il nemico ti scaglia contro punta in basso, ciò che porti tu punta in alto. L'anteprima usa le stesse frecce (↓ subito, ↑ inflitto). Nella scena di profilo i colpi delle figure viaggiano invece in orizzontale.", ["intent.pesante", "intent.leggero", "posture.assalto", "evento.contrattacco"]],
     ["Massa = forza", "Pesante è una massa larga, leggero una sagoma sottile. Differenza leggibile anche in grigio.", ["intent.pesante", "intent.leggero"]],
     ["Sagoma per postura", "Diagonale, chiusa, curva, orizzontale: quattro silhouette che non si somigliano. Ognuna dice la sua reazione.", ["posture.assalto", "posture.guardia", "posture.attesa", "posture.distanza"]],
     ["Bollino = stato", "Gli stati vivono nel disco con filetto: si leggono come condizioni, non come azioni.", ["stato.vantaggio", "stato.preparato", "stato.fase2"]],
+    ["Anello = scelta", "I medaglioni del ventaglio sono anelli con il segno in positivo: il disco pieno è una condizione, l'anello è una scelta. Doppio anello: selezionato; anello spesso: confermato.", ["posture.distanza.medaglione", "posture.attesa.medaglione", "stato.vantaggio"]],
     ["Nucleo", "Il rombo è la concentrazione: converge (preparazione), irradia (preparato), si spacca (rotta).", ["intent.preparazione", "stato.preparato", "evento.rotta"]],
     ["Frattura", "La linea a zig-zag con le metà sfalsate vuol dire rotto o negato.", ["mod.sfondaGuardia", "evento.interrotto", "evento.rotta"]],
     ["Scintilla e vuoto", "La scintilla è l'impatto; il tratteggio e lo spazio vuoto sono il colpo che non arriva.", ["evento.colpo", "evento.parata", "evento.schivata", "evento.evitato"]],
@@ -331,17 +439,23 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
   }).join("");
 
   // --- Catalogo ----------------------------------------------------------------------------
-  var FAM = [["posture", "Posture"], ["intent", "Intenzioni"], ["stato", "Stati"], ["risorsa", "Risorse"], ["evento", "Eventi del registro"], ["mod", "Modificatori dell'hint completo"]];
+  var FAM = [["posture", "Posture"], ["medaglione", "Medaglioni del ventaglio"], ["intent", "Intenzioni"], ["stato", "Stati"], ["risorsa", "Risorse"], ["evento", "Eventi del registro"], ["mod", "Modificatori dell'hint completo"]];
   var taglie = function (s, tema) {
     return '<div class="taglie ' + tema + '">' + [16, 24, 32, 48].map(function (px) {
       return '<span class="t"><span class="' + (s.pericolo ? "pericolo" : "") + '">' + ic(s.id, px) + '</span><span class="dato">' + px + "</span></span>";
+    }).join("") + "</div>";
+  };
+  var statiMed = function (s, tema) {
+    var p = s.id.split(".")[1];
+    return '<div class="stati-med ' + tema + '" style="background:var(--carta-2);color:var(--inchiostro)">' + ["riposo", "selezionato", "confermato"].map(function (st) {
+      return '<span class="t"><span class="disco">' + icMed(p, st, 52) + '</span><span class="dato">' + st + "</span></span>";
     }).join("") + "</div>";
   };
   document.getElementById("catalogo").innerHTML = FAM.map(function (f) {
     var schede = DATI.filter(function (s) { return s.famiglia === f[0]; }).map(function (s) {
       return '<article class="scheda"><div class="capo"><div class="r1"><b>' + s.etichetta + "</b>" + (s.estensione ? '<span class="est">Proposta</span>' : "") + "</div>" +
         '<span class="dato">' + s.id + " · min " + s.min + " px</span><span class=\"nota\">" + s.nota + "</span></div>" +
-        taglie(s, "chiaro") + taglie(s, "scuro") + "</article>";
+        (s.stati ? statiMed(s, "chiaro") + statiMed(s, "scuro") : taglie(s, "chiaro") + taglie(s, "scuro")) + "</article>";
     }).join("");
     return '<div class="famiglia"><h3>' + f[1] + '</h3><div class="schede">' + schede + "</div></div>";
   }).join("");
@@ -353,7 +467,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     }).join("") + "</div>";
   };
   document.getElementById("grigi").innerHTML = riga("chiaro") + riga("scuro") +
-    '<div class="duelli" style="filter:grayscale(1)"><figure>' + m1 + "<figcaption>Il primo mockup senza colore.</figcaption></figure></div>";
+    '<div class="duelli" style="filter:grayscale(1)"><figure>' + v1 + "<figcaption>La scena di scelta senza colore.</figcaption></figure></div>";
 
   // --- Tema e grigi ------------------------------------------------------------------------
   var root = document.documentElement;

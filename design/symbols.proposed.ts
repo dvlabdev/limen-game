@@ -170,6 +170,26 @@ export const SIMBOLI: Record<string, Simbolo> = {
     glifo: '⇓',
     svg: '<path d="M10.8 2H13.2V15H17L12 22L7 15H10.8Z M2 10.5H8.5L7.5 12L8.5 13.5H2Z M22 10.5H15.5L16.5 12L15.5 13.5H22Z"/>',
   },
+  'posture.assalto.medaglione': {
+    etichetta: 'Assalto',
+    glifo: '⚔',
+    svg: '<path fill-rule="evenodd" d="M0.5 12A11.5 11.5 0 1 0 23.5 12A11.5 11.5 0 1 0 0.5 12Z M1.6 12A10.4 10.4 0 1 0 22.4 12A10.4 10.4 0 1 0 1.6 12Z"/><g transform="translate(12 12) scale(0.62) translate(-12 -12)"><g transform="rotate(45 12 12)"><path fill-rule="evenodd" d="M12 1.5L14.2 5V15H9.8V5Z M11.6 6.5V13.5H12.4V6.5Z"/><path d="M6 15.5H18L17 17.5H7Z"/><path d="M11 17.5H13V20.3H11Z"/><path d="M12 20.1L13.5 21.6L12 23.1L10.5 21.6Z"/></g></g>',
+  },
+  'posture.guardia.medaglione': {
+    etichetta: 'Guardia',
+    glifo: '⛨',
+    svg: '<path fill-rule="evenodd" d="M0.5 12A11.5 11.5 0 1 0 23.5 12A11.5 11.5 0 1 0 0.5 12Z M1.6 12A10.4 10.4 0 1 0 22.4 12A10.4 10.4 0 1 0 1.6 12Z"/><g transform="translate(12 12) scale(0.62) translate(-12 -12)"><path fill-rule="evenodd" d="M4 3.5H20V11L18.5 16L12 21.5L5.5 16L4 11Z M5.5 5H18.5V10.8L17.2 15.3L12 19.6L6.8 15.3L5.5 10.8Z M6.3 5.8H17.7V10.7L16.5 14.9L12 18.6L7.5 14.9L6.3 10.7Z M11.3 7.5H12.7V16.3L12 17L11.3 16.3Z"/></g>',
+  },
+  'posture.attesa.medaglione': {
+    etichetta: 'Attesa',
+    glifo: '◔',
+    svg: '<path fill-rule="evenodd" d="M0.5 12A11.5 11.5 0 1 0 23.5 12A11.5 11.5 0 1 0 0.5 12Z M1.6 12A10.4 10.4 0 1 0 22.4 12A10.4 10.4 0 1 0 1.6 12Z"/><g transform="translate(12 12) scale(0.62) translate(-12 -12)"><path d="M8 20.5C3 16 3.5 7 12.6 4.5" fill="none" stroke="currentColor" stroke-width="3.2"/><path d="M17.4 3.2L13.4 7.6L11.8 1.4Z"/><path d="M13.2 13.5A2.3 2.3 0 1 0 17.8 13.5A2.3 2.3 0 1 0 13.2 13.5Z"/></g>',
+  },
+  'posture.distanza.medaglione': {
+    etichetta: 'Distanza',
+    glifo: '⤢',
+    svg: '<path fill-rule="evenodd" d="M0.5 12A11.5 11.5 0 1 0 23.5 12A11.5 11.5 0 1 0 0.5 12Z M1.6 12A10.4 10.4 0 1 0 22.4 12A10.4 10.4 0 1 0 1.6 12Z"/><g transform="translate(12 12) scale(0.62) translate(-12 -12)"><path d="M2 12L8 6.5V9.8H10.4V14.2H8V17.5Z M22 12L16 6.5V9.8H13.6V14.2H16V17.5Z M11.3 3.5H12.7V8H11.3Z M11.3 16H12.7V20.5H11.3Z"/></g>',
+  },
 };
 
 export function simbolo(id: string | undefined): Simbolo {
@@ -194,4 +214,29 @@ export function icona(id: string | undefined, opz: OpzioniIcona = {}): string {
   const a11y = opz.parlante ? `role="img" aria-label="${s.etichetta}"` : 'aria-hidden="true"';
   const classe = opz.classe ? `icona ${opz.classe}` : 'icona';
   return `<svg class="${classe}" viewBox="0 0 24 24" width="${px}" height="${px}" fill="currentColor" focusable="false" ${a11y}>${corpo}</svg>`;
+}
+
+/** Stati del medaglione nel ventaglio delle posture (DESIGN §8.1). */
+export type StatoMedaglione = 'riposo' | 'selezionato' | 'confermato';
+
+/** Cornici dei medaglioni (anelli) e scala del segno della postura al loro interno. */
+const MEDAGLIONE: Record<StatoMedaglione, { cornice: string; k: number }> = {
+  riposo: { cornice: 'M0.5 12A11.5 11.5 0 1 0 23.5 12A11.5 11.5 0 1 0 0.5 12Z M1.6 12A10.4 10.4 0 1 0 22.4 12A10.4 10.4 0 1 0 1.6 12Z', k: 0.62 },
+  selezionato: { cornice: 'M0.5 12A11.5 11.5 0 1 0 23.5 12A11.5 11.5 0 1 0 0.5 12Z M1.6 12A10.4 10.4 0 1 0 22.4 12A10.4 10.4 0 1 0 1.6 12Z M2.6 12A9.4 9.4 0 1 0 21.4 12A9.4 9.4 0 1 0 2.6 12Z M3.2 12A8.8 8.8 0 1 0 20.8 12A8.8 8.8 0 1 0 3.2 12Z', k: 0.62 },
+  confermato: { cornice: 'M0.5 12A11.5 11.5 0 1 0 23.5 12A11.5 11.5 0 1 0 0.5 12Z M2.8 12A9.2 9.2 0 1 0 21.2 12A9.2 9.2 0 1 0 2.8 12Z M3.6 12A8.4 8.4 0 1 0 20.4 12A8.4 8.4 0 1 0 3.6 12Z M4.1 12A7.9 7.9 0 1 0 19.9 12A7.9 7.9 0 1 0 4.1 12Z', k: 0.56 },
+};
+
+/**
+ * Medaglione del ventaglio per una postura del giocatore: 'assalto', 'guardia', 'attesa', 'distanza'.
+ * Il fondo carta dentro l'anello lo dà il contenitore (border-radius: 50%; background: var(--carta)).
+ * Taglia minima 44 px, predefinita 52. La stringa è sicura: non va passata a esc().
+ */
+export function medaglione(postura: string, stato: StatoMedaglione = 'riposo', opz: OpzioniIcona = {}): string {
+  const s = SIMBOLI[`posture.${postura}`];
+  if (!s) return icona(undefined, opz);
+  const m = MEDAGLIONE[stato];
+  const px = opz.px ?? 52;
+  const a11y = opz.parlante ? `role="img" aria-label="${s.etichetta}"` : 'aria-hidden="true"';
+  const classe = opz.classe ? `icona medaglione ${opz.classe}` : 'icona medaglione';
+  return `<svg class="${classe}" viewBox="0 0 24 24" width="${px}" height="${px}" fill="currentColor" focusable="false" ${a11y}><path fill-rule="evenodd" d="${m.cornice}"/><g transform="translate(12 12) scale(${m.k}) translate(-12 -12)">${s.svg}</g></svg>`;
 }

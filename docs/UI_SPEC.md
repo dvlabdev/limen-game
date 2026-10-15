@@ -1,8 +1,9 @@
 # Simboli del duello: specifica UI
 
-> **Versione:** 1.0 (15 ottobre 2026) · **Proprietario:** Grafica/UI · **Destinatari:** Planning (approvazione delle estensioni), Codice (integrazione)
+> **Versione:** 1.1 (15 ottobre 2026) · **Proprietario:** Grafica/UI · **Destinatari:** Planning (approvazione delle estensioni), Codice (integrazione)
 > **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5, §8 e §8.1, [ARENA_SPEC.md](ARENA_SPEC.md) §3, §7 e §8, [CLAUDE.md](../CLAUDE.md).
 > **Direzione scelta dall'utente:** A, **Xilografia**, con gli **stati nel bollino tondo** (dalla direzione C).
+> **Novità della 1.1:** scena a tutto schermo con l'interfaccia integrata e ventaglio di medaglioni delle posture (DESIGN §8.1, commit b84c95d).
 
 | Risorsa | Dove |
 |---|---|
@@ -24,7 +25,12 @@ Il duello si vince **leggendo l'hint e decidendo in pochi secondi**, col tocco, 
 4. **Leggibile al primo sguardo, approfondibile al secondo.** Come in Into the Breach, il primo sguardo coglie la categoria, il secondo i dettagli (modificatori dell'hint completo, anteprima dei danni).
 5. **Il simbolo insegna la regola.** Ogni postura mostra la sua *reazione* (spada: nessuna; scudo: parata; arco che aggira il colpo: schivata e contrattacco; frecce che si allontanano: evita i colpi corti). Se il giocatore ricorda il disegno, ricorda la regola.
 
-**Riferimenti studiati, senza copiarne i disegni:** gli intent di Slay the Spire (una forma per tipo, numeri solo dove servono); Into the Breach (lettura a colpo d'occhio di tutto ciò che il nemico farà); Darkest Dungeon (estetica da xilografia e manoscritto, palette spenta con il rosso del sangue); Inscryption (icone al posto del testo quando lo stile rende il testo difficile); le partizioni e figure dell'araldica (poche forme geometriche, contrasto forte).
+**Riferimenti studiati, senza copiarne i disegni:**
+- gli intent di Slay the Spire: una forma per tipo, numeri solo dove servono;
+- Into the Breach: lettura a colpo d'occhio di tutto ciò che il nemico farà;
+- Darkest Dungeon: estetica da xilografia e manoscritto, palette spenta con il rosso del sangue;
+- Inscryption: icone al posto del testo quando lo stile rende il testo difficile;
+- le partizioni e le figure dell'araldica: poche forme geometriche, contrasto forte.
 
 ---
 
@@ -33,24 +39,32 @@ Il duello si vince **leggendo l'hint e decidendo in pochi secondi**, col tocco, 
 ### 2.1 Famiglie
 | Famiglia | Prefisso | Forma di base | Dove compare | Taglia tipica |
 |---|---|---|---|---|
-| **Posture** | `posture.` | Sagoma libera, una silhouette per postura | Pulsanti 2×2, targhe | 28 px (pulsanti), 16 px (targhe) |
-| **Intenzioni** | `intent.` | Sagoma libera; gli attacchi puntano in basso | Hint, sopra la testa del nemico nella scena (ripiego: al centro) | 44 px (ripiego 72 px) |
-| **Stati** | `stato.` | **Bollino**: disco pieno con filetto inciso, segno ritagliato | Nella targa, accanto al nome | 16–20 px |
-| **Risorse** | `risorsa.` | Sagoma libera, sempre accanto a un numero o a pallini | Barra del vigore, pallini del fiato | 12–16 px |
-| **Eventi** | `evento.` | Sagoma semplice, senza tagli | Registro | 16 px |
-| **Modificatori** *(proposta)* | `mod.` | Sagoma piena minima | Striscia dell'hint sotto la scena, solo con `hintCompleti` | 16–20 px |
+| **Posture** | `posture.` | Sagoma libera, una silhouette per postura | HUD (postura del nemico), registro, variante classica | 16 px; 28 px nella griglia classica |
+| **Medaglioni** *(proposta)* | `posture.*.medaglione` | **Anello** con il segno della postura in positivo | Ventaglio dietro il viandante | 52 px (min 44, bersaglio del tocco) |
+| **Intenzioni** | `intent.` | Sagoma libera; gli attacchi puntano in basso | Sopra la testa del nemico | 44 px |
+| **Stati** | `stato.` | **Bollino**: disco pieno con filetto inciso, segno ritagliato | HUD, accanto al nome | 16 px |
+| **Risorse** | `risorsa.` | Sagoma libera, sempre accanto a un numero o a pallini | HUD: barra del vigore, pallini del fiato | 10–12 px |
+| **Eventi** | `evento.` | Sagoma semplice, senza tagli | Cassetto del registro; testo nel punto del colpo | 16 px |
+| **Modificatori** *(proposta)* | `mod.` | Sagoma piena minima | Sotto il simbolo dell'hint, solo con `hintCompleti` | 16 px |
 
 ### 2.2 Regole che valgono per tutto il set
-- **Direzione.** Il nemico è in alto, il giocatore in basso. Ciò che il nemico scaglia contro il giocatore punta **in basso** (`intent.pesante`, `intent.leggero`, gli eventi con freccia); ciò che il giocatore scaglia contro il nemico punta **in alto** (`posture.assalto`, `evento.contrattacco`).
+- **Direzione: giù è subìto, su è inflitto.** Ciò che il nemico ti scaglia contro punta **in basso**: `intent.pesante`, `intent.leggero`, gli eventi con freccia. Ciò che porti tu punta **in alto**: `posture.assalto`, `evento.contrattacco`. L'anteprima usa la stessa convenzione: ↓ subito, ↑ inflitto. Nella scena di profilo è una convenzione del segno, non dello spazio: i colpi delle figure viaggiano in orizzontale (§6).
 - **Massa = forza.** Pesante è una massa larga (il maglio), leggero una sagoma sottile (il pugnale).
-- **Bollino = stato.** Solo gli stati stanno nel disco: si leggono come condizioni, mai come azioni.
+- **Disco pieno = stato.** Solo gli stati stanno nel bollino: si leggono come condizioni, mai come azioni.
+- **Anello = scelta.** I medaglioni del ventaglio sono anelli vuoti con il segno in positivo; in grigio si distinguono subito dal disco pieno degli stati. Doppio anello vuol dire selezionato, anello spesso vuol dire confermato.
 - **Nucleo.** Il rombo è la concentrazione: **converge** in `intent.preparazione`, **irradia** in `stato.preparato`, si **spacca** in `evento.rotta`.
 - **Frattura.** La linea a zig-zag con le metà sfalsate significa *rotto o negato*: `mod.sfondaGuardia` (scudo), `evento.interrotto` (freccia), `evento.rotta` (nucleo).
 - **Scintilla e vuoto.** La scintilla è l'impatto (`evento.colpo`, `evento.parata`); il tratteggio e lo spazio vuoto sono il colpo che non arriva (`evento.schivata`, `evento.evitato`).
-- **Coppie da non confondere,** verificate in grigio: pesante e leggero, parata e sfonda la guardia, interrotto e inarrestabile, preparazione e preparato, difesa e guardia (muro e scudo).
+- **Coppie da non confondere,** verificate in grigio:
+  - pesante e leggero;
+  - parata e sfonda la guardia;
+  - interrotto e inarrestabile;
+  - preparazione e preparato;
+  - difesa e guardia (muro e scudo);
+  - medaglione e bollino (anello e disco).
 
 ### 2.3 Modificatori componibili dell'hint completo *(proposta)*
-Con `hintCompleti`, `hint.dettaglio` porta portata, velocità e `flags`. Nella striscia dell'hint, sotto la scena (§5), compare una fila di modificatori a 18 px, ciascuno con la sua etichetta breve, poi l'intervallo di danno.
+Con `hintCompleti`, `hint.dettaglio` porta portata, velocità e `flags`. Sopra il nemico, sotto il simbolo dell'hint, compaiono il nome della mossa, poi una fila di modificatori a 16 px (icone parlanti, con `aria-label`), poi l'intervallo di danno.
 
 | Campo di `dettaglio` | Valore | Id |
 |---|---|---|
@@ -58,18 +72,27 @@ Con `hintCompleti`, `hint.dettaglio` porta portata, velocità e `flags`. Nella s
 | `velocita` | `rapido` / `normale` / `lento` | `mod.velocita.rapido` / `mod.velocita.normale` / `mod.velocita.lento` |
 | `flags` | `sfondaGuardia` | `mod.sfondaGuardia` |
 | `flags` | `inarrestabile` | `mod.inarrestabile` |
-| `forza` | solo se la categoria è `difesa` e la mossa attacca (es. Parata del Duellante) | `intent.leggero` / `intent.pesante` a 18 px |
+| `forza` | solo se la categoria è `difesa` e la mossa attacca (es. Parata del Duellante) | `intent.leggero` / `intent.pesante` a 16 px |
 
 Ordine fisso nella fila: portata, velocità, tratti (`flags`), poi il danno. La regola di costruzione è `mod.portata.${portata}`, `mod.velocita.${velocita}`, `mod.${flag}`: **non serve cambiare `DuelView`**.
 
 ---
 
 ## 3. Griglia e costruzione
-- **viewBox `0 0 24 24`**, area sicura **2–22**: nessuna forma ne esce, salvo la punta del bollino e due metà della frattura (fino a 1,8–22,2).
+- **viewBox `0 0 24 24`**, area sicura **2–22**. Ne escono soltanto il bordo del bollino e del medaglione (r 11,5) e le due metà della frattura (fino a 1,8–22,2).
 - **Riempimenti, non contorni.** Le sagome sono piene in `currentColor`. I pochi tratti (linee di velocità, arco dell'Attesa, linee del fiato) hanno spessore 1,6–3,2 e terminazione netta.
 - **Spigoli sfaccettati.** Niente raccordi morbidi: le curve sono spezzate in faccette, come un intaglio nel legno. Uniche curve vere: arco dell'Attesa, fiato, cerchi.
-- **Tagli di sgorbia.** Linee bianche di 0,7–0,8 unità ricavate con `fill-rule="evenodd"` (il filo dello scudo, la sgusciatura della lama, le fasce del maglio, i giunti del muro). Sotto i 24 px si usa la **variante piccola senza tagli** (`piccolo`), che resta una silhouette pulita.
-- **Bollino:** disco r 10,5, filetto ritagliato tra r 9 e r 8,3, segno ritagliato in scala 0,58. È un solo tracciato `evenodd`: niente `mask` né id, quindi si può ripetere nella pagina senza conflitti.
+- **Tagli di sgorbia.** Linee bianche di 0,7–0,8 unità, ricavate con `fill-rule="evenodd"`: il filo dello scudo, la sgusciatura della lama, le fasce del maglio, i giunti del muro. Sotto i 24 px si usa la **variante piccola senza tagli** (`piccolo`), che resta una silhouette pulita.
+- **Bollino (stati):** disco r 10,5, filetto ritagliato tra r 9 e r 8,3, segno ritagliato in scala 0,58. È un solo tracciato `evenodd`: niente `mask` né id, quindi si può ripetere nella pagina senza conflitti.
+- **Medaglione (posture del ventaglio):** il segno della postura è in positivo, al centro.
+
+  | Stato | Anello | Filetto interno | Scala del segno |
+  |---|---|---|---|
+  | Riposo | r 11,5–10,4 | nessuno | 0,62 |
+  | Selezionato | r 11,5–10,4 | r 9,4–8,8 | 0,62 |
+  | Confermato | r 11,5–9,2 | r 8,4–7,9 | 0,56 |
+
+  Il fondo carta dentro l'anello lo dà il contenitore (`border-radius: 50%; background: var(--carta)`), così il medaglione resta in `currentColor` e copre la scena dietro di sé.
 - **Solo `currentColor`.** Nessun colore, font o immagine dentro gli SVG. Il colore si decide nel CSS del contenitore.
 - **Taglia minima:** la colonna "Min" della §7 è la taglia sotto cui il simbolo smette di leggersi.
 
@@ -80,68 +103,107 @@ Inchiostro, carta e un solo colore di pericolo. Nessun altro accento.
 
 | Token | Chiaro | Scuro | Uso |
 |---|---|---|---|
-| `--carta` | `#e9e2d3` | `#141210` | Fondo |
-| `--carta-2` | `#ddd4c1` | `#1f1b17` | Fondo dell'hint, pannelli |
-| `--inchiostro` | `#1c1915` | `#e4d9c4` | Testo e simboli |
-| `--seppia` | `#685c4d` | `#a39682` | Testo secondario, costi, registro passato |
-| `--filo` | `#c2b69e` | `#3b342b` | Linee e bordi |
-| `--pericolo` | `#a1311f` | `#e2654b` | Intenzioni d'attacco, danni, `evento.colpo`, pulsante Conferma |
+| `--carta` | `#e9e2d3` | `#141210` | Fondo delle pagine, interno dei medaglioni, cassetto, cartiglio |
+| `--carta-2` | `#ddd4c1` | `#1f1b17` | Fondo della scena |
+| `--inchiostro` | `#1c1915` | `#e4d9c4` | Figure, testo e simboli |
+| `--seppia` | `#685c4d` | `#a39682` | Testo secondario, guida del ventaglio, contatore dei turni |
+| `--filo` | `#c2b69e` | `#3b342b` | Linee, bordi, quinta del fondale |
+| `--pericolo` | `#a1311f` | `#e2654b` | Intenzioni d'attacco, danni, `evento.colpo`, frecce ↓ e ↑ dell'anteprima |
 
 - Contrasto di `--pericolo` su `--carta`: circa 5,5:1 in entrambi i temi (AA per il testo).
 - **Il rosso marca solo ciò che fa male:** `intent.pesante`, `intent.leggero`, i modificatori sotto un hint d'attacco, i danni, `evento.colpo`. `intent.difesa` e `intent.preparazione` restano in inchiostro.
 - Il tema scuro non è un'inversione: la carta diventa inchiostro bruciato e l'inchiostro diventa osso; il rosso si schiarisce per mantenere il contrasto.
-- **Proposta:** l'attuale `styles.css` usa anche `--accento` (oro), `--ok` (verde) e `--fiato` (azzurro). In questa palette non servono: vantaggio e fiato si leggono dalla forma. Da decidere con Planning al momento dell'integrazione degli stili.
+- **Proposta:** l'attuale `styles.css` usa anche `--accento` (oro), `--ok` (verde) e `--fiato` (azzurro). In questa palette non servono, perché vantaggio e fiato si leggono dalla forma. Da decidere con Planning al momento dell'integrazione degli stili.
 - **Fiato a zero** (niente reazioni, danni ×1,25): tutti i pallini vuoti e `risorsa.fiato` in `--pericolo` con l'etichetta "Senza fiato". Nessun id nuovo.
 - Nel gioco **niente font esterni** (il file HTML è autosufficiente): pila di sistema con serif per i nomi e sans per il resto. I font del catalogo servono solo al catalogo.
 
 ---
 
-## 5. Scena del duello e collocazione dell'hint
-Decisione di Planning (DESIGN §8.1): in scena ci sono il viandante e il nemico come marionette SVG articolate. Finché l'inquadratura non è decisa, i mockup usano **sagome segnaposto di profilo**, il viandante a sinistra che guarda a destra e il nemico a destra che guarda a sinistra.
+## 5. Scena del duello (DESIGN §8.1)
+Telefono sempre in verticale. La scena occupa tutto lo schermo e l'interfaccia vive dentro di essa. I personaggi sono di profilo, uno di fronte all'altro: il viandante a sinistra, il nemico a destra. Fino alla fase delle marionette, i mockup usano **sagome segnaposto**.
 
-### 5.1 Ingombri a 375 px
-Altezza utile di riferimento: **560 px** (375 × 667 meno le barre del browser). Misure reali dei mockup del catalogo:
+### 5.1 Composizione a 375 × 560 px utili
+Le coordinate sono quelle del mockup del catalogo (origine in alto a sinistra; 560 = 667 meno le barre del browser). Sono un riferimento per la futura `SCENA_SPEC.md`, non pixel obbligatori.
 
-| Fascia, dall'alto | Altezza | Contenuto |
+| Elemento | Posizione | Note |
 |---|---|---|
-| **Scena** | 180 px | Le due figure sul terreno; sopra la testa del nemico, il simbolo dell'hint a 44 px |
-| **Targhe** | 56 px | Sotto ogni figura: nome, bollini degli stati, vigore, pallini del fiato (giocatore a sinistra, nemico a destra) |
-| Striscia dell'hint | 34–56 px | Nome della categoria; con `hintCompleti` anche il nome della mossa, i modificatori e il danno |
-| Registro | 50 px | Ultime due righe |
-| Posture 2×2 | 120–150 px | Pulsanti da 52 px minimi; l'anteprima sta su una riga: ↓ subito, ↑ inflitto |
-| Conferma | 54 px | |
+| Contatore dei turni | in alto a sinistra, y 12 | Testo seppia |
+| **HUD del viandante** | centrato su x 150, y 96–142, largo 128 | Nome e bollini degli stati, vigore (cuore e barra), pallini del fiato |
+| **HUD del nemico** | centrato su x 290, y 96–142, largo 128 | Come sopra, con il bollino `stato.fase2` per il boss |
+| **Hint** | sopra la testa del nemico; il blocco cresce verso l'alto dalla y 254 | §5.3 |
+| **Cartiglio dell'anteprima** | x 8, y 156: sempre nello stesso punto, sopra il ventaglio | Postura selezionata, ↓ subito e ↑ inflitto, "Tocca di nuovo per confermare" |
+| **Ventaglio** | arco intorno al viandante, §5.2 | Si apre solo nella fase di scelta |
+| Figure | terreno a y 440; viandante a x 160, nemico a x 290 | Quinta del fondale dietro, in `--filo` |
+| Testo del colpo | nel punto d'impatto, sulla figura colpita | Danno o esito in `--pericolo` con l'icona dell'evento, §5.4 |
+| **Cassetto del registro** | in basso, y 516–560 | Chiuso mostra l'ultima riga; si apre con un tocco |
 
-Scena più targhe valgono **236 px, cioè il 42%** dell'altezza utile. Le targhe stanno sotto le figure perché ogni dato resti accanto al suo proprietario.
+Nessun elemento si sovrappone a un altro e nessuno esce dallo schermo: il catalogo lo verifica misurando i riquadri.
 
-### 5.2 Hint sopra il nemico o al centro
-Il catalogo mette a confronto le due collocazioni con lo stesso stato di gioco.
+### 5.2 Ventaglio dei medaglioni
+- **Geometria:** arco di centro (160, 360), cioè il busto del viandante, e raggio 128.
+- **Ordine, dalla schiena verso il nemico:**
 
-| | **A. Sopra la testa del nemico** | **B. Al centro, sotto la scena** |
-|---|---|---|
-| Altezza totale | **513 px**, 553 con hint completo e anteprima: entra | **636 px**: Conferma finisce sotto la piega |
-| Lettura | Simbolo e posa telegrafata si leggono insieme: lo sguardo va al nemico e trova entrambi | Il simbolo è lontano dalla posa che lo spiega |
-| Taglia | 44 px: sopra il minimo (20) e grande quanto la testa della figura | 72–88 px |
-| Rischi | Le figure e le animazioni non devono mai coprirlo; con due o più nemici serve un simbolo per testa | Ripete in grande ciò che la scena già mostra |
+  | Postura | Angolo | Centro (x, y) |
+  |---|---|---|
+  | Distanza | 205° | (44, 414) |
+  | Attesa | 162° | (38, 320) |
+  | Guardia | 118° | (100, 247) |
+  | Assalto | 75° | (193, 236) |
 
-**Raccomandazione: A.** Il simbolo dell'hint sta in una zona riservata sopra la testa del nemico, larga 52 × 52 px, che nessuna posa e nessuna animazione può invadere. Sotto la scena resta la **striscia dell'hint**, che dà il nome alla categoria (accessibilità, poco testo) e ospita i dettagli dell'hint completo. B resta come ripiego se l'inquadratura scelta non lascia spazio sopra il nemico.
+  Più un medaglione è vicino al nemico, più la postura è aggressiva. Una guida tratteggiata in `--seppia` disegna l'arco.
+- **Medaglioni:** 52 px, più di 44 px di bersaglio, con almeno 40 px liberi tra un medaglione e l'altro. Sotto ciascuno c'è un'etichetta con il nome e il costo: pallino pieno e "1" per cambiare, pallino vuoto e "0" per la postura attuale.
+- **Stati e interazione:**
+
+  | Stato | Aspetto | Come ci si arriva |
+  |---|---|---|
+  | Riposo | Anello singolo | Ventaglio aperto, nessuna scelta |
+  | Selezionato | Doppio anello, ingrandito a 1,15 | **Primo tocco.** Il cartiglio fisso mostra l'anteprima |
+  | Confermato | Anello spesso; gli altri medaglioni scendono al 30% | **Secondo tocco** sullo stesso medaglione. Poi il ventaglio si chiude e parte la risoluzione |
+  | Non disponibile | Al 30% e senza risposta al tocco | Cambio non consentito per mancanza di fiato |
+
+  Toccare un altro medaglione sposta la selezione.
+- **Mancini (più avanti):** la scena si specchia, ma i segni dentro i medaglioni **non si capovolgono**. Si leggono come lettere.
+
+### 5.3 Hint sopra il nemico
+- Il simbolo dell'intenzione (44 px) sta in una **zona riservata sopra la testa del nemico**, accanto alla posa che telegrafa il colpo. Simbolo e posa si leggono insieme.
+- Sotto il simbolo c'è il nome della categoria, e con `hintCompleti` quello della mossa. Con `hintCompleti` seguono anche la fila dei modificatori e il danno (§2.3). Il blocco cresce verso l'alto e non deve mai raggiungere l'HUD.
+- Nella prima versione della scena (UI_SPEC 1.0) l'hint al centro dello schermo misurava 636 px contro 513 e spingeva fuori la conferma. La collocazione sopra il nemico, ora decisa in DESIGN §8.1, è anche la più compatta.
+
+### 5.4 Danni e registro
+- **Danni nel punto del colpo:** un'etichetta breve in `--pericolo` sulla figura colpita, con l'icona dell'evento a 16 px: `evento.colpo` con il numero, oppure `evento.parata`, `evento.evitato` o `evento.schivata` con la parola.
+- **Cassetto:** chiuso mostra la maniglia, l'icona e il testo dell'ultimo evento e la scritta "Registro". Aperto mostra lo storico, ogni riga con l'icona dell'evento a 16 px.
+
+### 5.5 Variante classica
+Come prevede DESIGN §8.1, nell'arena resta come riferimento e variante A/B la griglia 2×2 sotto la scena con il pulsante Conferma. È il terzo mockup del catalogo: pulsanti con icone a 28 px, anteprima su una riga e targhe sotto le figure.
 
 ---
 
 ## 6. Vincoli comuni tra icone e figure
-Icone e marionette (DESIGN §8.1) sono **lo stesso libro stampato con lo stesso legno**. Valgono per entrambe, e la futura `docs/SCENA_SPEC.md` li deve riprendere:
+Icone e marionette (DESIGN §8.1) sono **lo stesso libro stampato con lo stesso legno**. Questi vincoli valgono per entrambe, e la futura `docs/SCENA_SPEC.md` li deve riprendere.
 
-1. **Palette.** Solo i token della §4. Le figure sono in `--inchiostro` su `--carta-2`; `--pericolo` marca soltanto la minaccia e l'impatto (il simbolo dell'hint, il lampo del colpo, i numeri del danno), mai un costume o un'arma a riposo. Niente sfumature, ombre morbide, trasparenze decorative o altri colori.
+1. **Palette.** Solo i token della §4. Le figure sono in `--inchiostro` su `--carta-2`; la quinta del fondale è in `--filo`. `--pericolo` marca soltanto la minaccia e l'impatto (il simbolo dell'hint, il lampo del colpo, i numeri del danno), mai un costume o un'arma a riposo. Niente sfumature, ombre morbide, trasparenze decorative o altri colori.
 2. **Tecnica.** Masse piene, spigoli sfaccettati, nessun raccordo morbido. I dettagli interni sono **tagli bianchi** (sgorbia) e i volumi sono tratteggi di tagli paralleli, non gradienti.
-3. **Pesi in pixel.** A schermo, un taglio misura quanto quello di un'icona a 32 px, cioè circa **1 px**; le linee sottili delle figure (aste, lame, contorni dei tratteggi) misurano quanto i tratti delle icone, **2–4 px**. Sotto queste soglie i tagli si omettono, come nella variante `piccolo`.
+3. **Pesi in pixel.** A schermo, un taglio misura quanto quello di un'icona a 32 px, cioè circa **1 px**. Le linee sottili delle figure (aste, lame, contorni dei tratteggi) misurano quanto i tratti delle icone, **2–4 px**. Sotto queste soglie i tagli si omettono, come nella variante `piccolo`.
 4. **Stesse armi, stesse sagome.** Le armi delle figure ripetono le sagome dei simboli: il maglio di `intent.pesante`, il pugnale di `intent.leggero`, la spada di `posture.assalto`, lo scudo di `posture.guardia`. Così la posa e il simbolo dell'hint fanno rima.
-5. **Direzione.** Vale la §2.2: ciò che il nemico scaglia contro il giocatore va verso il giocatore. Finché l'inquadratura non è decisa, il viandante sta a sinistra e guarda a destra.
-6. **`currentColor` e temi.** Le parti delle marionette, come le icone, usano `currentColor` (o i token), così il tema scuro funziona senza ridisegnare: la carta diventa inchiostro bruciato e l'inchiostro diventa osso.
-7. **Spazi riservati.** La zona dell'hint sopra il nemico (§5.2) e le targhe sotto le figure non vengono mai coperte da pose o animazioni.
+5. **Direzione.** Nella scena i colpi viaggiano in orizzontale: il viandante colpisce verso destra, il nemico verso sinistra. Nei segni vale invece la convenzione verticale della §2.2: giù è subìto, su è inflitto.
+6. **`currentColor` e temi.** Le parti delle marionette, come le icone, usano `currentColor` o i token. Così il tema scuro funziona senza ridisegnare: la carta diventa inchiostro bruciato e l'inchiostro diventa osso.
+7. **Spazi riservati.** Pose e animazioni non coprono mai:
+   - l'HUD sopra ciascun personaggio;
+   - la zona dell'hint sopra il nemico;
+   - il cartiglio;
+   - i medaglioni del ventaglio aperto;
+   - il cassetto.
+
+   Le animazioni d'impatto possono passare *dietro* questi elementi, mai sopra.
 
 ---
 
 ## 7. Elenco dei simboli
-"Contratto" = id già in ARENA_SPEC §7. "Proposta" = estensione da approvare (§8). Varianti: **T** = ha i tagli, quindi esiste la variante `piccolo` sotto i 24 px; **R** = di norma in `--pericolo`.
+"Contratto" vuol dire che l'id è già in ARENA_SPEC §7; "Proposta" che è un'estensione da approvare (§8).
+Varianti:
+- **T**: il simbolo ha i tagli, quindi esiste la variante `piccolo` sotto i 24 px;
+- **R**: di norma è in `--pericolo`;
+- **3S**: ha tre stati (riposo, selezionato, confermato).
 
 | Id | Etichetta | Significato e disegno | Varianti | Min | Stato |
 |---|---|---|---|---|---|
@@ -150,6 +212,10 @@ Icone e marionette (DESIGN §8.1) sono **lo stesso libro stampato con lo stesso 
 | `posture.attesa` | Attesa | Arco che aggira il colpo (il disco): schiva e contrattacca | | 20 | Contratto |
 | `posture.distanza` | Distanza | Frecce che si allontanano dal vuoto centrale: evita i colpi corti | | 16 | Contratto |
 | `posture.preparazione` | Preparazione | Solo nemici. Stesso disegno di `intent.preparazione` | | 16 | Contratto |
+| `posture.assalto.medaglione` | Assalto | Medaglione del ventaglio: anello e spada | 3S | 44 | Proposta |
+| `posture.guardia.medaglione` | Guardia | Medaglione del ventaglio: anello e scudo | 3S | 44 | Proposta |
+| `posture.attesa.medaglione` | Attesa | Medaglione del ventaglio: anello e arco | 3S | 44 | Proposta |
+| `posture.distanza.medaglione` | Distanza | Medaglione del ventaglio: anello e frecce | 3S | 44 | Proposta |
 | `intent.pesante` | Colpo pesante | Maglio che cala in diagonale, testa larga in basso | T, R | 20 | Contratto |
 | `intent.leggero` | Colpo leggero | Pugnale che punta in basso, linee di velocità | T, R | 20 | Contratto |
 | `intent.difesa` | Difesa | Muro merlato: il nemico si chiude | T | 16 | Contratto |
@@ -185,6 +251,7 @@ Sono **solo id di simboli**, cioè righe in più nella tabella di ARENA_SPEC §7
 
 | Id | Ricavato da | Perché |
 |---|---|---|
+| `posture.<id>.medaglione` (4) | `posture[].simbolo` + `.medaglione` | Il ventaglio di DESIGN §8.1, richiesto da Planning. Gli stati selezionato e confermato sono stato dell'interfaccia, non della logica. |
 | `risorsa.fiato.pieno`, `risorsa.fiato.vuoto` | `fiato`, `fiatoMax` | Oggi i pallini ripetono `risorsa.fiato`: un disegno di vento ripetuto sei volte a 12 px non si legge. Pieno e vuoto si distinguono per forma, non per colore. |
 | `mod.portata.corta`, `mod.portata.lunga` | `hint.dettaglio.portata` | Mostrare i tratti con `hintCompleti` senza testo lungo (DESIGN §5.1: poco testo). |
 | `mod.velocita.rapido`, `mod.velocita.normale`, `mod.velocita.lento` | `hint.dettaglio.velocita` | Come sopra. Rapido batte l'Attesa, lento perde l'iniziativa. |
@@ -193,32 +260,37 @@ Sono **solo id di simboli**, cioè righe in più nella tabella di ARENA_SPEC §7
 ---
 
 ## 9. Integrazione (sessione Codice, coordinata da Planning)
-L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allora `src/` non si tocca da qui.
+L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allora `src/` non si tocca da qui. La scena con le marionette arriverà con una fase dedicata: per l'arena basta la **variante classica** (§5.5) con i nuovi simboli, più il ventaglio se Planning lo vuole già nell'arena.
 
-1. **Sostituire `src/ui/symbols.ts`** con `design/symbols.proposed.ts`. Il modulo è compatibile: esporta ancora `SIMBOLI`, `simbolo(id)` e il campo `glifo`, quindi il render attuale continua a compilare. In più esporta `icona(id, { px, classe, parlante })`, che restituisce l'SVG inline. Il file è stato verificato con `tsc --strict --erasableSyntaxOnly`.
-2. **Usare `icona()` in `render.ts`** al posto di `esc(simbolo(id).glifo)`. La stringa restituita è costante e sicura: **non va passata a `esc()`**, altrimenti l'SVG diventa testo.
+1. **Sostituire `src/ui/symbols.ts`** con `design/symbols.proposed.ts`. Il modulo è compatibile: esporta ancora `SIMBOLI`, `simbolo(id)` e il campo `glifo`, quindi il render attuale continua a compilare. In più esporta:
+   - `icona(id, { px, classe, parlante })`, che restituisce l'SVG inline;
+   - `medaglione(postura, stato, { px, classe, parlante })` per il ventaglio, con `stato` tra `'riposo'`, `'selezionato'` e `'confermato'`.
 
-   | Punto di `render.ts` | Chiamata |
+   Il file è stato verificato con `tsc --strict --erasableSyntaxOnly`.
+2. **Usare `icona()` e `medaglione()` in `render.ts`** al posto di `esc(simbolo(id).glifo)`. Le stringhe restituite sono costanti e sicure: **non vanno passate a `esc()`**, altrimenti l'SVG diventa testo.
+
+   | Punto dell'interfaccia | Chiamata |
    |---|---|
-   | Hint, nella scena (collocazione A, §5.2) | `icona(v.hint.simbolo, { px: 44, parlante: true })` nella zona riservata sopra il nemico; colore `--pericolo` solo per `pesante` e `leggero` |
-   | Striscia dell'hint, sotto la scena | Nome della categoria (o della mossa con `dettaglio`) come testo in `--pericolo` per gli attacchi |
-   | Hint al centro (ripiego B) | `icona(v.hint.simbolo, { px: 72, parlante: true })` |
-   | Modificatori dell'hint (con `dettaglio`) | `icona('mod.…', { px: 18 })` più l'etichetta breve, ordine della §2.3 |
-   | Pulsanti di postura | `icona(p.simbolo, { px: 28 })`; il nome resta testo visibile; anteprima su una riga, ↓ subito e ↑ inflitto |
-   | Chip della postura e degli stati | `icona(id, { px: 20 })` |
-   | Fase del boss | `icona('stato.fase2', { px: 20 })` |
-   | Registro | `icona(v.simbolo, { px: 16 })`; `evento.colpo` in `--pericolo` |
-   | Vigore | `icona('risorsa.vigore', { px: 16 })` |
-   | Pallini del fiato | `risorsa.fiato` a 16 px, poi `risorsa.fiato.pieno` / `.vuoto` a 12 px (se Planning approva; altrimenti cerchi in CSS) |
-3. **CSS minimo:** `.icona { display: inline-block; vertical-align: middle; flex: none; }`. Il colore arriva dal contenitore (`color: var(--pericolo)` sull'hint d'attacco). I token della §4 sostituiscono la palette segnaposto quando Grafica prenderà `styles.css`.
-4. **Accessibilità:** le icone accanto a un testo visibile sono decorative (predefinito, `aria-hidden`). L'icona dell'hint è `parlante: true` (`role="img"` con `aria-label`). I pulsanti mantengono il nome della postura come testo.
-5. **Rigenerare:** ogni modifica ai disegni si fa in `design/genera.mjs`; `node design/genera.mjs` riscrive `design/icons/`, `design/symbols.proposed.ts` e `design/catalogo.html`. `symbols.proposed.ts` non si modifica a mano.
+   | Hint sopra il nemico | `icona(v.hint.simbolo, { px: 44, parlante: true })`, colore `--pericolo` solo per `pesante` e `leggero` |
+   | Modificatori dell'hint (con `dettaglio`) | `icona('mod.…', { px: 16, parlante: true })`, ordine della §2.3 |
+   | Medaglioni del ventaglio | `medaglione(p.id, stato, { px: 52, parlante: true })` dentro un `<button>` rotondo con fondo `--carta`; etichetta e costo sotto |
+   | Pulsanti della variante classica | `icona(p.simbolo, { px: 28 })`; il nome resta testo visibile; anteprima su una riga, ↓ subito e ↑ inflitto |
+   | HUD: stati e fase | `icona(id, { px: 16, parlante: true })` |
+   | HUD: vigore e fiato | `icona('risorsa.vigore', { px: 12 })`; pallini `risorsa.fiato.pieno` / `.vuoto` a 10 px (se Planning approva; altrimenti cerchi in CSS) |
+   | Registro e testo del colpo | `icona(v.simbolo, { px: 16 })`; `evento.colpo` in `--pericolo` |
+3. **CSS minimo:** `.icona { display: inline-block; vertical-align: middle; flex: none; }` e `.medaglione` dentro un contenitore con `border-radius: 50%; background: var(--carta)`. Il colore arriva dal contenitore (`color: var(--pericolo)` sull'hint d'attacco). I token della §4 sostituiscono la palette segnaposto quando Grafica prenderà `styles.css`.
+4. **Accessibilità:**
+   - le icone accanto a un testo visibile sono decorative (predefinito, `aria-hidden`);
+   - l'hint, i modificatori e i bollini sono `parlante: true` (`role="img"` con `aria-label`);
+   - i medaglioni sono pulsanti con il nome della postura come nome accessibile e `aria-pressed` per la selezione.
+5. **Rigenerare:** ogni modifica ai disegni si fa in `design/genera.mjs`. `node design/genera.mjs` riscrive `design/icons/`, `design/symbols.proposed.ts` e `design/catalogo.html`. `symbols.proposed.ts` non si modifica a mano.
 6. **Test suggerito** (di proprietà di Codice): ogni `simbolo` emesso da `toDuelView` esiste in `SIMBOLI`.
 
 ---
 
 ## 10. Domande per Planning
-1. Approvare le estensioni della §8 e aggiungerle alla tabella di ARENA_SPEC §7?
+1. Approvare le estensioni della §8 (ora 13 id, con i 4 medaglioni) e aggiungerle alla tabella di ARENA_SPEC §7?
 2. `posture.preparazione` e `intent.preparazione` hanno lo stesso disegno, perché sono la stessa azione vista come postura o come intenzione. Va bene, o si preferisce distinguerle?
 3. Palette dell'integrazione: si possono togliere `--accento`, `--ok` e `--fiato` da `styles.css` a favore della palette a un solo colore (§4)?
-4. Collocazione dell'hint: confermate la A (sopra la testa del nemico, con la striscia del nome sotto la scena)? La scelta dipende anche dall'inquadratura ancora da decidere (§5).
+4. Ventaglio: va bene l'etichetta con nome e costo sotto ogni medaglione? Aiuta a imparare le posture, ma aggiunge testo in scena; più avanti si potrebbe nasconderla.
+5. Il ventaglio entra già nell'arena (come variante A/B accanto alla griglia classica) o solo con la fase della scena?
