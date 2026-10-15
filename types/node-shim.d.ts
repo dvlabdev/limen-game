@@ -39,6 +39,10 @@ declare module 'node:url' {
   export function fileURLToPath(url: string | URL): string;
 }
 
+declare module 'node:child_process' {
+  export function execSync(comando: string, opz?: { cwd?: string; encoding?: 'utf8' }): string;
+}
+
 declare module 'esbuild' {
   export interface OutputFile { path: string; text: string }
   export interface BuildResult { outputFiles?: OutputFile[]; errors: unknown[]; warnings: unknown[] }
@@ -56,4 +60,5 @@ declare const process: {
   exit(codice?: number): never;
   exitCode?: number;
   cwd(): string;
+  env: Record<string, string | undefined>;
 };
