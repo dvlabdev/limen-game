@@ -147,7 +147,8 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
 .med { position: absolute; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; background: var(--carta); color: var(--inchiostro); }
 .med svg { display: block; }
 .med.sel { transform: scale(1.08); }
-.med.spento { opacity: .3; }
+.med.spento svg { opacity: .3; }
+.motivo { position: absolute; width: 22px; height: 22px; border-radius: 50%; background: var(--carta); color: var(--inchiostro); display: grid; place-items: center; }
 .med-et { position: absolute; transform: translateX(-50%); font-size: 12px; white-space: nowrap; display: flex; gap: 3px; align-items: center; background: var(--carta-2); padding: 0 3px; }
 .med-et.spento { opacity: .3; }
 .cartiglio { position: absolute; background: var(--carta); border: 1.5px solid var(--inchiostro); padding: 5px 7px; display: grid; gap: 3px; }
@@ -345,7 +346,20 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     return { p: v[0], x: +(SCR.CX + SCR.R * Math.cos(a)).toFixed(1), y: +(SCR.CY - SCR.R * Math.sin(a)).toFixed(1) };
   });
   var TESTA_NEMICO = { x: +(SCR.XN + (262 - 270) * SCR.K).toFixed(1), y: +(SCR.TERRA - (166 - 42) * SCR.K).toFixed(1) };
-  function sagome() {
+  // Spazio alle spalle (ARENA_SPEC §12 R2): paletto di confine e due tacche sul terreno dietro il viandante.
+  // Ogni turno concluso in Distanza svuota una tacca, a partire da quella più vicina al viandante.
+  function spazioSvg(spazio) {
+    var T = SCR.TERRA, s = "";
+    s += '<path d="M84 ' + (T - 34) + 'H89V' + T + 'H84Z M82 ' + (T - 38) + 'H91V' + (T - 34) + 'H82Z"/>';
+    [[98, 2], [116, 1]].forEach(function (k) {
+      var x = k[0], vuota = spazio >= k[1];
+      s += vuota
+        ? '<path fill-rule="evenodd" d="M' + x + " " + (T - 7) + "H" + (x + 13) + "V" + T + "H" + x + "Z M" + (x + 1.6) + " " + (T - 5.4) + "H" + (x + 11.4) + "V" + (T - 1.6) + "H" + (x + 1.6) + 'Z"/>'
+        : '<path d="M' + x + " " + (T - 7) + "H" + (x + 13) + "V" + T + "H" + x + 'Z"/>';
+    });
+    return s;
+  }
+  function sagome(spazio) {
     var c = VENTAGLIO[0], d = VENTAGLIO[3], T = SCR.TERRA;
     var tratteggio = "";
     for (var yy = T + 12; yy < 652; yy += 9) for (var xx = (yy % 2 ? 6 : 16); xx < SCR.W; xx += 22) tratteggio += "M" + xx + " " + (yy + 4) + "L" + (xx + 8) + " " + yy;
@@ -353,6 +367,7 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
       '<path class="quinta" d="M0 512L40 492L78 504L130 480L190 500L240 476L300 498L340 484L360 492V560H0Z"/>' +
       '<path d="M0 ' + T + "H" + SCR.W + "V" + (T + 3) + 'H0Z"/>' +
       '<path d="' + tratteggio + '" fill="none" stroke="currentColor" stroke-width="1.2"/>' +
+      spazioSvg(spazio || 0) +
       '<path class="guida" d="M' + c.x + " " + c.y + "A" + SCR.R + " " + SCR.R + " 0 0 1 " + d.x + " " + d.y + '" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 5"/>' +
       '<g transform="translate(' + SCR.XV + " " + T + ") scale(" + SCR.K + ') translate(-108 -166)">' +
         '<path d="M92 166L100 126H114L122 166H113L107 138L101 166Z M98 84L84 140L100 128Z M97 128L100 84H116L120 128Z M114 90L134 102L131 107L112 98Z"/>' +
@@ -375,43 +390,54 @@ section { display: grid; gap: 18px; padding-block: 36px; border-top: 1px solid v
     var meds = VENTAGLIO.map(function (v) {
       var st = o.posture[v.p] || {};
       var stato = st.stato || "riposo";
-      var cls = stato === "selezionato" ? " sel" : (o.spenti && stato !== "confermato" ? " spento" : "");
-      var costo = ic(st.attuale ? "risorsa.fiato.vuoto" : "risorsa.fiato.pieno", 10) + (st.attuale ? "0" : "1");
-      return '<div class="med' + cls + '" style="left:' + v.x + "px;top:" + v.y + 'px" title="' + P["posture." + v.p].etichetta + '">' + icMed(v.p, stato, 52) + "</div>" +
-        '<div class="med-et' + (cls === " spento" ? " spento" : "") + '" style="left:' + v.x + "px;top:" + (v.y + (stato === "selezionato" ? 33 : 29)) + 'px">' + P["posture." + v.p].etichetta + " · " + costo + "</div>";
+      var cls = stato === "selezionato" ? " sel" : ((o.spenti && stato !== "confermato") || st.motivo ? " spento" : "");
+      var gratis = st.attuale || o.cambioGratis;
+      var costo = st.motivo ? "" : " · " + ic(gratis ? "risorsa.fiato.vuoto" : "risorsa.fiato.pieno", 10) + (gratis ? "0" : "1");
+      var motivo = st.motivo ? '<span class="motivo" style="left:' + (v.x + 12) + "px;top:" + (v.y - 34) + 'px" title="' + (st.motivo === "spazio" ? "Spalle al muro" : "Fiato insufficiente") + '">' +
+        ic(st.motivo === "spazio" ? "stato.spalle" : "risorsa.fiato.vuoto", 20, "", true) + "</span>" : "";
+      return '<div class="med' + cls + '" style="left:' + v.x + "px;top:" + v.y + 'px" title="' + P["posture." + v.p].etichetta + '">' + icMed(v.p, stato, 52) + "</div>" + motivo +
+        '<div class="med-et' + (cls === " spento" ? " spento" : "") + '" style="left:' + v.x + "px;top:" + (v.y + (stato === "selezionato" ? 33 : 29)) + 'px">' + P["posture." + v.p].etichetta + costo + "</div>";
     }).join("");
     var cart = "";
     if (o.cartiglio) {
       cart = '<div class="cartiglio" style="left:8px;top:288px"><span class="d">' + P["posture." + o.cartiglio.p].etichetta + " " + o.cartiglio.testo + "</span><small>" + o.cartiglio.nota + "</small></div>";
     }
     var mods = o.mods ? '<span class="mods">' + o.mods.map(function (m) { return ic(m, 16, "", true); }).join("") + ic("evento.colpo", 14) + o.danno + "</span>" : "";
-    return '<div class="schermo-wrap"><div class="schermo">' + sagome() +
+    return '<div class="schermo-wrap"><div class="schermo">' + sagome(o.spazio) +
       '<span class="turno">Turno ' + o.turno + " / 25</span>" +
       hud(o.gioc, 130) + hud(o.nemico, 280) +
       '<div class="sopra-nemico" style="left:' + TESTA_NEMICO.x + "px;bottom:" + (SCR.H - TESTA_NEMICO.y + 6) + 'px">' + ic(o.hint, 44, "", true) + '<span class="cat">' + o.cat + "</span>" + mods + "</div>" +
-      meds + cart + (o.colpo ? '<div class="colpo-testo" style="left:' + o.colpo.x + "px;top:" + o.colpo.y + 'px">' + ic(o.colpo.icona, 16) + o.colpo.testo + "</div>" : "") +
+      meds + cart + (o.colpi || []).map(function (c) { return '<div class="colpo-testo" style="left:' + c.x + "px;top:" + c.y + 'px">' + ic(c.icona, 16) + c.testo + "</div>"; }).join("") +
       '<div class="cassetto"><span class="maniglia"></span>' + ic(o.registro[0], 16) + '<span class="t">' + o.registro[1] + '</span><span class="e">Registro</span></div>' +
       "</div></div>";
   }
   var v1 = ventaglio({
     turno: 4, hint: "intent.pesante", cat: "Colpo pesante",
-    gioc: { nome: "Viandante", stati: bollini(["stato.vantaggio"]), pct: 80, vig: "24/30", fiato: [4, 6] },
+    gioc: { nome: "Viandante", stati: bollini(["stato.preparato"]), pct: 80, vig: "16/20", fiato: [4, 6] },
     nemico: { nome: "Bruto", stati: "", pct: 73, vig: "22/30", fiato: [3, 5] },
-    posture: { guardia: { attuale: true }, attesa: { stato: "selezionato" } },
-    cartiglio: { p: "attesa", testo: "<b>↓</b>0 <b>↑</b>3–4", nota: "Tocca di nuovo per confermare" },
-    registro: ["evento.parata", "Hai parato il Maglio: 6 → 2."]
+    posture: { attesa: { attuale: true, stato: "selezionato" } }, spazio: 0,
+    cartiglio: { p: "attesa", testo: "<b>↓</b>0 <b>↑</b>5–6", nota: "Tocca di nuovo per confermare" },
+    registro: ["stato.preparato", "Nessuno ti raggiunge mentre attendi: sei preparato."]
   });
   var v2 = ventaglio({
     turno: 9, hint: "intent.pesante", cat: "Carica", mods: ["mod.portata.corta", "mod.velocita.normale", "mod.inarrestabile"], danno: "7–9",
     gioc: { nome: "Viandante", stati: "", pct: 63, vig: "19/30", fiato: [1, 6] },
     nemico: { nome: "Mietitore", stati: bollini(["stato.fase2"]), pct: 42, vig: "19/45", fiato: [2, 6] },
-    posture: { distanza: { stato: "confermato", attuale: true } }, spenti: true,
-    colpo: { x: 176, y: 468, icona: "evento.evitato", testo: "Evitato" },
+    posture: { distanza: { stato: "confermato", attuale: true } }, spenti: true, spazio: 1,
+    colpi: [{ x: 176, y: 468, icona: "evento.evitato", testo: "Evitato" }, { x: 236, y: 504, icona: "evento.incalza", testo: "Incalza" }],
     registro: ["evento.contrattacco", "Schivi la Falciata e contrattacchi: 4."]
   });
+  var v3 = ventaglio({
+    turno: 7, hint: "intent.pesante", cat: "Colpo pesante",
+    gioc: { nome: "Viandante", stati: bollini(["stato.spalle"]), pct: 55, vig: "11/20", fiato: [2, 6] },
+    nemico: { nome: "Bruto", stati: bollini(["stato.vantaggio"]), pct: 80, vig: "24/30", fiato: [4, 5] },
+    posture: { distanza: { attuale: true, motivo: "spazio" } }, cambioGratis: true, spazio: 2,
+    registro: ["evento.incalza", "Arretri ancora: il Bruto incalza e prende l'iniziativa."]
+  });
   document.getElementById("duelli").innerHTML =
-    '<figure>' + v1 + '<figcaption><b>Scelta.</b> Il ventaglio è aperto dietro il viandante, dalla schiena verso il nemico. Primo tocco su Attesa: il medaglione si ingrandisce con il doppio anello e il cartiglio, sempre nello stesso punto sopra il ventaglio, mostra l\'anteprima (↓ subito, ↑ inflitto). Guardia è la postura attuale: costo 0.</figcaption></figure>' +
-    '<figure>' + v2 + '<figcaption><b>Conferma e risoluzione.</b> Secondo tocco su Distanza: anello spesso, gli altri medaglioni si spengono e il ventaglio si chiude. Hint completo sopra il Mietitore in seconda fase; l\'esito compare come testo nel punto del colpo.</figcaption></figure>' +
+    '<figure>' + v1 + '<figcaption><b>Scelta.</b> Il ventaglio è aperto dietro il viandante, dalla schiena verso il nemico. Il viandante non è stato raggiunto mentre attendeva, quindi è preparato (bollino nell\'HUD). Primo tocco su Attesa, la postura attuale: il medaglione si ingrandisce con il doppio anello e il cartiglio, sempre nello stesso punto sopra il ventaglio, mostra l\'anteprima con il contrattacco ×1,5 (↓ subito, ↑ inflitto). Spazio alle spalle intatto: due tacche piene dietro il viandante, chiuse dal paletto.</figcaption></figure>' +
+    '<figure>' + v2 + '<figcaption><b>Conferma e risoluzione.</b> Secondo tocco su Distanza: anello spesso, gli altri medaglioni si spengono e il ventaglio si chiude. Hint completo sopra il Mietitore in seconda fase. Gli esiti compaiono come testo nel punto del colpo: il colpo corto è evitato e il Mietitore incalza. Una tacca dello spazio alle spalle è vuota.</figcaption></figure>' +
+    '<figure>' + v3 + '<figcaption><b>Spalle al muro.</b> Due turni in Distanza: le tacche sono vuote, il viandante ha il bollino delle spalle e il medaglione della Distanza è spento, con lo stesso bollino a indicare il motivo. Il cambio di postura è gratuito (costo 0 ovunque). Il Bruto, che ha incalzato, ha il vantaggio.</figcaption></figure>' +
     '<figure>' + m1 + '<figcaption><b>Variante classica</b> (A/B dell\'arena): griglia 2×2 sotto la scena e Conferma. Resta come riferimento.</figcaption></figure>';
 
   // --- Grammatica --------------------------------------------------------------------------

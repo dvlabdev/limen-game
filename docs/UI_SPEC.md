@@ -133,6 +133,7 @@ Il dispositivo di riferimento è il Samsung Galaxy S23 (CLAUDE.md): viewport 360
 | **Hint** | sopra la testa del nemico (x 275); il blocco cresce verso l'alto dalla y 411, fino a y 311 con l'hint completo | §5.3 |
 | **Cartiglio dell'anteprima** | x 8, y 288: sempre nello stesso punto, sopra il ventaglio | Postura selezionata, ↓ subito e ↑ inflitto, "Tocca di nuovo per confermare" |
 | **Ventaglio** | arco intorno al viandante, §5.2 | Si apre solo nella fase di scelta |
+| Spazio alle spalle | paletto a x 84–89 (y 522–560), tacche a x 98–111 e 116–129 (y 553–560) | §5.4b |
 | Figure | terreno a y 560; viandante a x 160, nemico a x 284, scala 1,15 (circa 120 px) | Quinta del fondale dietro, in `--filo`; sopra l'HUD resta cielo libero per il fondale |
 | Testo del colpo | nel punto d'impatto, sulla figura colpita | Danno o esito in `--pericolo` con l'icona dell'evento, §5.4 |
 | **Cassetto del registro** | in basso, y 656–700 | Chiuso mostra l'ultima riga; si apre con un tocco |
@@ -173,9 +174,12 @@ Il dispositivo di riferimento è il Samsung Galaxy S23 (CLAUDE.md): viewport 360
 - **Danni nel punto del colpo:** un'etichetta breve in `--pericolo` sulla figura colpita, con l'icona dell'evento a 16 px: `evento.colpo` con il numero, oppure `evento.parata`, `evento.evitato` o `evento.schivata` con la parola.
 - **Cassetto:** chiuso mostra la maniglia, l'icona e il testo dell'ultimo evento e la scritta "Registro". Aperto mostra lo storico, ogni riga con l'icona dell'evento a 16 px.
 
-### 5.4b Spazio alle spalle e preparato (ARENA_SPEC 1.1) *(proposta, mockup da completare)*
+### 5.4b Spazio alle spalle e preparato (ARENA_SPEC 1.1) *(proposta)*
 - **Spazio** (`CombattenteView.spazio`, 0–2): sul terreno dietro il viandante, un **paletto di confine** (x 84–89) e **due tacche** (x 98 e 116, alte 7 px). Ogni turno concluso in Distanza svuota una tacca, partendo da quella più vicina al viandante (tacca vuota = rettangolo a filo). Con le marionette il viandante arretrerà davvero di una tacca per turno.
-- **Spazio = 2:** bollino `stato.spalle` nell'HUD del viandante; il medaglione della Distanza è spento e porta in alto a destra lo stesso bollino a 20 px come **motivo** (`motivo: 'spazio'`). Con `motivo: 'fiato'` il badge è `risorsa.fiato.vuoto`. Il cambio è gratuito: tutte le etichette mostrano costo 0.
+- **Spazio = 2:** bollino `stato.spalle` nell'HUD del viandante; il medaglione della Distanza è spento e porta in alto a destra lo stesso bollino a 20 px come **motivo** (`motivo: 'spazio'`), su un disco carta di 22 px. Con `motivo: 'fiato'` il badge è `risorsa.fiato.vuoto`. Il cambio è gratuito: tutte le etichette mostrano costo 0.
+- **Medaglione spento:** si attenua al 30% solo il segno; il fondo carta resta pieno, così la scena e la guida del ventaglio non trasparono. L'etichetta perde il costo e si attenua.
+- **Nemico:** `spazio` esiste anche per il nemico (per esempio il Lanciere che tiene a bada). Proposta: le stesse tacche, specchiate, dietro il nemico, e il bollino `stato.spalle` nel suo HUD.
+- **Mockup:** il catalogo mostra lo spazio in tutti e tre gli stati: scelta (0, due tacche piene), conferma (1, una tacca vuota, testi "Evitato" e "Incalza" nel punto del colpo) e **spalle al muro** (2, terzo mockup). Verificato a 360 × 780: niente scroll orizzontale, testi ≥ 12 px, bersagli ≥ 44 px, nessuna sovrapposizione tranne il badge del motivo, che sta sull'angolo del suo medaglione per scelta.
 - **Preparato del viandante** (R3): lo stesso bollino `stato.preparato` del nemico, nell'HUD del viandante; l'anteprima del cartiglio include il ×1,5.
 - **Eventi** `incalza`, `punta`, `arresto`: come testo nel punto del colpo (§5.4) e nel registro.
 
@@ -304,3 +308,5 @@ L'integrazione avviene **dopo la consegna dell'arena** (CLAUDE.md). Fino ad allo
 3. Palette dell'integrazione: si possono togliere `--accento`, `--ok` e `--fiato` da `styles.css` a favore della palette a un solo colore (§4)?
 4. Ventaglio: va bene l'etichetta con nome e costo sotto ogni medaglione? Aiuta a imparare le posture, ma aggiunge testo in scena; più avanti si potrebbe nasconderla.
 5. Il ventaglio entra già nell'arena (come variante A/B accanto alla griglia classica) o solo con la fase della scena?
+6. Spazio alle spalle del nemico: va mostrato con le tacche specchiate dietro di lui (§5.4b)?
+7. `stato.spalle` resta visibile nell'HUD per tutto il turno in cui la Distanza è indisponibile, oppure basta il badge sul medaglione?
