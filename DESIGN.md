@@ -237,7 +237,9 @@ Principi già fissati:
   - Bersagli di almeno 44px. Più avanti, un'opzione per mancini che rovescia la scena.
   - Nell'arena la griglia classica resta come riferimento e variante A/B.
 - **Riuso:** la stessa marionetta del viandante si muove anche nell'esplorazione (mappa delle milestone, nucleo §9.2).
-- **Tempi:** fase successiva all'arena (vedi 9.2a), con una specifica dedicata `docs/SCENA_SPEC.md`.
+- **Tempi:** fase successiva all'arena (vedi 9.2a), con una specifica dedicata [docs/SCENA_SPEC.md](docs/SCENA_SPEC.md).
+- **Ordine di lavoro ✅:** prima i **criteri delle pose** (SCENA_SPEC §1), poi i disegni, poi le animazioni.
+- 🟡 Linguaggio delle pose: bozza in SCENA_SPEC §1, in revisione.
 
 ---
 

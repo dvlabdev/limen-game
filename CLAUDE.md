@@ -28,6 +28,13 @@ Se una regola è ambigua o un obiettivo non si può raggiungere senza cambiare l
 
 Puoi cambiare solo i **numeri**: `src/data/balance.ts`, oltre a pesi, danni e vigore in `src/data/enemies.ts`. Non puoi aggiungere regole o meccaniche.
 
+## Dispositivo di riferimento e artefatti
+Il riferimento è un **Samsung Galaxy S23**: schermo 1080×2340 px, **viewport CSS 360×780**, densità ×3. Valgono per il gioco e per **ogni artefatto o pagina di revisione** (cataloghi, mockup, laboratori di animazione):
+- tutto deve essere leggibile e usabile **nell'app Claude su S23**, in verticale, a 360px di larghezza, senza scroll orizzontale; l'altezza utile nell'app è di circa 700px;
+- grafica **vettoriale (SVG)**; eventuali immagini raster a risoluzione ×3, così restano nitide a densità ×3;
+- testo di almeno 14px, etichette di almeno 12px, bersagli tattili di almeno 44×44px;
+- prima di consegnare, verifica nel browser integrato a **360×780**; il preset "mobile" (375px) non basta.
+
 ## Codice
 - Node 24 o superiore. Le uniche dipendenze di sviluppo sono `typescript` ed `esbuild`; per aggiungerne altre serve l'ok di Planning.
 - I `.ts` girano direttamente con il type stripping di Node, quindi va usata solo sintassi cancellabile: niente `enum`, `namespace` o parameter properties. Gli import usano l'estensione `.ts`.

@@ -1,6 +1,6 @@
 # Arena di prova del duello: specifica operativa
 
-> **Versione:** 1.0 (15 ottobre 2026) · **Proprietario:** Planning · **Esecutore:** sessione Codice
+> **Versione:** 1.0.1 (15 ottobre 2026: dispositivo di riferimento S23) · **Proprietario:** Planning · **Esecutore:** sessione Codice
 > **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5 (combattimento) e [CLAUDE.md](../CLAUDE.md) (regole delle sessioni).
 
 ## 0. Scopo
@@ -312,7 +312,7 @@ resolveTurn(stato: StatoDuello, scelta: PosturaId,
 ---
 
 ## 8. Arena (interfaccia segnaposto)
-- **Mobile prima di tutto:** larghezza minima 360px, solo clic o tocco, nessuno scroll orizzontale.
+- **Mobile prima di tutto:** dispositivo di riferimento Samsung Galaxy S23 (viewport 360×780, vedi CLAUDE.md), solo clic o tocco, nessuno scroll orizzontale.
 - **Menu:**
   - i 5 nemici;
   - il **pannello di configurazione**: gradi di Parata e Schivata (1–3), seed (campo numerico più pulsante "casuale") e i tre interruttori A/B (§3).
@@ -382,7 +382,7 @@ Euristica `lettore` (si può rifinire, sempre con le sole informazioni visibili)
 | **F1 Core** | `types`, `rng`, `postures`, `balance`, `resolve` | Matrice §4.6 e test dedicati verdi; determinismo, serializzazione e immutabilità verificati |
 | **F2 Nemici** | `enemies`, `ai`, `view` (con anteprima), simulatore, bilanciamento | Obiettivi del §9 raggiunti, oppure domanda aperta nel report; report scritto |
 | **F3 Arena** | `symbols`, `styles`, `render`, `arena`, `main` | Duello completo giocabile contro tutti i nemici; pannello e telemetria funzionanti |
-| **F4 Verifica** | Build finale e prova nel browser a 375px di larghezza: un duello per nemico, ciascun interruttore A/B provato | Report finale aggiornato |
+| **F4 Verifica** | Build finale e prova nel browser a 360×780 (S23): un duello per nemico, ciascun interruttore A/B provato | Report finale aggiornato |
 
 ## 11. Consegna: `docs/ARENA_REPORT.md`
 1. Stato delle fasi e comandi verificati.
