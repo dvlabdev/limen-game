@@ -1,7 +1,7 @@
 # Arena di prova: rapporto della sessione Codice
 
 > **Autore:** sessione Codice · **Riferimento:** [ARENA_SPEC.md](ARENA_SPEC.md) v1.0 (§11)
-> **Stato:** F0, F1, F2 e F3 completate; F4 vedi §1.
+> **Stato:** F0–F4 completate. **Obiettivi del simulatore raggiunti in parte**: vedi §2 e §5.
 
 ## 1. Stato delle fasi e comandi verificati
 
@@ -11,7 +11,7 @@
 | F1 Core | fatta: matrice §4.6 e test dedicati verdi | `F1 Core: …` |
 | F2 Nemici | fatta; **obiettivi del §9 raggiunti solo in parte**, vedi §2 e §5 | `F2 Nemici: …` |
 | F3 Arena | fatta: duello completo contro i cinque nemici, pannello, interruttori A/B e telemetria funzionanti | `F3 Arena: …` |
-| F4 Verifica | da aggiornare a fine lavoro | |
+| F4 Verifica | fatta: build finale provata nel browser integrato a 360×780 (S23), vedi sotto | `F4 Verifica: …` |
 
 Comandi verificati su Node 24.19.0 (Windows):
 
@@ -22,6 +22,17 @@ Comandi verificati su Node 24.19.0 (Windows):
 | `npm run build` | produce `dist/index.html` autosufficiente (JS e CSS inline) |
 | `npm run dev` | server su `http://localhost:8000` con ricaricamento |
 | `npm run sim -- --duelli 1000 --gradi 1 --adattamento on --seed 1` | tabella in console e `sim-out/report.json` (circa 3 secondi) |
+
+### Prova nel browser (F4)
+
+Provata la build finale `dist/index.html` (servita come file singolo, nessun `src=` o `href=` verso risorse esterne) nel browser integrato con viewport emulato **360×780**, come richiesto dalla specifica 1.0.2:
+
+- **Un duello contro ciascun nemico** con ciascun interruttore: 4 configurazioni (base, hint completi, anteprima dei danni, adattamento spento) × 5 nemici = **20 duelli giocati fino in fondo**, tutti conclusi (vittoria o sconfitta). Il gioco è stato pilotato da uno script nella pagina che legge l'hint dal DOM e applica l'euristica del `lettore` cliccando i pulsanti veri; in più ho giocato **a mano con clic reali** un turno contro il Mietitore (selezione della postura, Conferma, registro). Non ho giocato duelli interi "da umano": il giudizio sul divertimento (domanda 3 dell'arena) resta da fare a Planning.
+- **Interruttori A/B:** gli hint completi mostrano mossa, forza, portata, velocità, danno e tratti (es. "Spallata · pesante · portata corta · normale · 7–8 danni · sfonda la guardia"); l'anteprima mostra "subisci x–y · infliggi x–y" sulle quattro posture disponibili e si aggiorna a ogni turno; con l'adattamento spento e con gradi 3/2 e seed 777 la configurazione viene salvata in `limen.arena.config` e ripristinata nel menu.
+- **Telemetria:** 20 record in `limen.arena.telemetria` (nemico, seed, opzioni, gradi, esito, turni, usoPosture, cambi, danni, data ISO). "Copia JSON" ripiega sull'area di testo selezionabile quando la clipboard è negata (nel browser integrato lo è); "Azzera" svuota.
+- **Misure a 360×780:** nessun elemento oltre il bordo e nessuno scroll orizzontale, in menu, duello e fine duello; il pulsante Conferma termina a 703px e l'intera schermata del duello è alta circa 720px (appena oltre i ~700px utili dell'app: un po' di scroll verticale può servire con registro lungo); bersagli tattili ≥ 44px (la griglia delle posture è 164×80); testo minimo 12px (etichette), corpo ≥ 14px.
+- **Limite dello strumento:** gli screenshot del browser integrato a 360px si deformano (zoom del visual viewport), quindi l'aspetto l'ho controllato a 375px (screenshot) e le misure a 360px via DOM. Non ho provato su un S23 vero.
+- Nessun errore in console oltre a quelli dei miei script di prova.
 
 I numeri delle tabelle qui sotto si riproducono con `--duelli 1000 --seed 1` (gradi e adattamento come indicato).
 
