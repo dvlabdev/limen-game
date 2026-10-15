@@ -1,6 +1,6 @@
 # Scena del duello: specifica
 
-> **Versione:** 0.2, bozza da rivedere (15 ottobre 2026): §1 allineata al modello delle posture (DESIGN §5.2) e ad ARENA_SPEC 1.1 · **Proprietario:** Planning
+> **Versione:** 0.2 (15 ottobre 2026), **§1 approvata dall'utente**: §1 allineata al modello delle posture (DESIGN §5.2) e ad ARENA_SPEC 1.1 · **Proprietario:** Planning
 > **Stato:** è scritta solo la §1 (linguaggio delle pose). Le parti su rig, animazioni, contratto `DuelView.scena` e laboratorio arriveranno dopo l'approvazione della §1.
 > **Riferimenti:** DESIGN §8.1 (scena, profilo, ventaglio); CLAUDE.md (dispositivo di riferimento S23).
 
