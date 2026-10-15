@@ -173,6 +173,12 @@ Il dispositivo di riferimento è il Samsung Galaxy S23 (CLAUDE.md): viewport 360
 - **Danni nel punto del colpo:** un'etichetta breve in `--pericolo` sulla figura colpita, con l'icona dell'evento a 16 px: `evento.colpo` con il numero, oppure `evento.parata`, `evento.evitato` o `evento.schivata` con la parola.
 - **Cassetto:** chiuso mostra la maniglia, l'icona e il testo dell'ultimo evento e la scritta "Registro". Aperto mostra lo storico, ogni riga con l'icona dell'evento a 16 px.
 
+### 5.4b Spazio alle spalle e preparato (ARENA_SPEC 1.1) *(proposta, mockup da completare)*
+- **Spazio** (`CombattenteView.spazio`, 0–2): sul terreno dietro il viandante, un **paletto di confine** (x 84–89) e **due tacche** (x 98 e 116, alte 7 px). Ogni turno concluso in Distanza svuota una tacca, partendo da quella più vicina al viandante (tacca vuota = rettangolo a filo). Con le marionette il viandante arretrerà davvero di una tacca per turno.
+- **Spazio = 2:** bollino `stato.spalle` nell'HUD del viandante; il medaglione della Distanza è spento e porta in alto a destra lo stesso bollino a 20 px come **motivo** (`motivo: 'spazio'`). Con `motivo: 'fiato'` il badge è `risorsa.fiato.vuoto`. Il cambio è gratuito: tutte le etichette mostrano costo 0.
+- **Preparato del viandante** (R3): lo stesso bollino `stato.preparato` del nemico, nell'HUD del viandante; l'anteprima del cartiglio include il ×1,5.
+- **Eventi** `incalza`, `punta`, `arresto`: come testo nel punto del colpo (§5.4) e nel registro.
+
 ### 5.5 Variante classica
 Come prevede DESIGN §8.1, nell'arena resta come riferimento e variante A/B la griglia 2×2 sotto la scena con il pulsante Conferma. È il terzo mockup del catalogo: pulsanti con icone a 28 px, anteprima su una riga e targhe sotto le figure.
 
@@ -223,6 +229,7 @@ Varianti:
 | `stato.vantaggio` | Vantaggio | Bollino con due gradi in salita | | 16 | Contratto |
 | `stato.preparato` | Preparato | Bollino con il nucleo che irradia: prossimo colpo ×1,5 | | 16 | Contratto |
 | `stato.fase2` | Seconda fase | Bollino con il numerale II | | 16 | Contratto |
+| `stato.spalle` | Spalle al muro | Bollino: la freccia che arretra tocca il muro (ARENA_SPEC §12 R2) | | 16 | Contratto 1.1 |
 | `risorsa.vigore` | Vigore | Cuore sfaccettato | T | 12 | Contratto |
 | `risorsa.fiato` | Fiato | Tre linee di vento | | 12 | Contratto |
 | `risorsa.fiato.pieno` | Fiato disponibile | Pallino pieno | | 8 | Proposta |
@@ -234,6 +241,9 @@ Varianti:
 | `evento.evitato` | Evitato | La freccia si ferma lontano dalla linea | | 12 | Contratto |
 | `evento.interrotto` | Interrotto | Freccia spezzata dalla frattura | | 12 | Contratto |
 | `evento.rotta` | Preparazione rotta | Nucleo spaccato in due | | 12 | Contratto |
+| `evento.incalza` | Incalza | Freccia piena che spinge una freccia vuota verso le spalle (§12 R1) | | 16 | Contratto 1.1 |
+| `evento.punta` | Punta | Lancia della Distanza che punta in alto, con la scintilla (grado 2) | | 12 | Contratto 1.1 |
+| `evento.arresto` | Arresto | La stessa lancia sormontata dal grado del vantaggio (grado 3) | | 16 | Contratto 1.1 |
 | `mod.portata.corta` | Portata corta | Squadra stretta | R | 16 | Proposta |
 | `mod.portata.lunga` | Portata lunga | Squadra larga | R | 16 | Proposta |
 | `mod.velocita.rapido` | Rapido | Due punte | R | 16 | Proposta |

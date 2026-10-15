@@ -79,6 +79,11 @@ export const SIMBOLI: Record<string, Simbolo> = {
     glifo: '☠',
     svg: '<path fill-rule="evenodd" d="M1.5 12A10.5 10.5 0 1 0 22.5 12A10.5 10.5 0 1 0 1.5 12Z M3 12A9 9 0 1 0 21 12A9 9 0 1 0 3 12Z M3.7 12A8.3 8.3 0 1 0 20.3 12A8.3 8.3 0 1 0 3.7 12Z M7.36 6.78H16.64V8.23H14.61V15.77H16.64V17.22H7.36V15.77H9.39V8.23H7.36ZM10.84 8.23H13.16V15.77H10.84Z"/>',
   },
+  'stato.spalle': {
+    etichetta: 'Spalle al muro',
+    glifo: '▌',
+    svg: '<path fill-rule="evenodd" d="M1.5 12A10.5 10.5 0 1 0 22.5 12A10.5 10.5 0 1 0 1.5 12Z M3 12A9 9 0 1 0 21 12A9 9 0 1 0 3 12Z M3.7 12A8.3 8.3 0 1 0 20.3 12A8.3 8.3 0 1 0 3.7 12Z M6.78 6.78H9.39V17.22H6.78ZM10.55 12L14.03 8.52V10.72H17.22V13.28H14.03V15.48Z"/>',
+  },
   'risorsa.vigore': {
     etichetta: 'Vigore',
     glifo: '♥',
@@ -134,6 +139,21 @@ export const SIMBOLI: Record<string, Simbolo> = {
     etichetta: 'Preparazione rotta',
     glifo: '✗',
     svg: '<path d="M10.8 3L1.8 12L10.8 21L11.4 18L9.8 15L11.8 11L9.6 7.5Z M13.2 3L12 7.5L14.2 11L12.2 15L13.8 18L13.2 21L22.2 12Z"/>',
+  },
+  'evento.incalza': {
+    etichetta: 'Incalza',
+    glifo: '«',
+    svg: '<path fill-rule="evenodd" d="M2 12L7.5 6.5V9.5H10.5V14.5H7.5V17.5Z M4.6 12L6.5 10.1V11H9V13H6.5V13.9Z"/><path d="M11.8 12L18 5.5V9.2H22V14.8H18V18.5Z"/>',
+  },
+  'evento.punta': {
+    etichetta: 'Punta',
+    glifo: '↑',
+    svg: '<path d="M12 0.8L13.4 3.6L16.2 5L13.4 6.4L12 9.2L10.6 6.4L7.8 5L10.6 3.6Z"/><path d="M12 10L15.5 14.2L13.8 17.2H10.2L8.5 14.2Z"/><path d="M10.9 17.2H13.1V22.5H10.9Z"/>',
+  },
+  'evento.arresto': {
+    etichetta: 'Arresto',
+    glifo: '⤒',
+    svg: '<path d="M12 1L19 8L16.4 10.6L12 6.2L7.6 10.6L5 8Z"/><path d="M12 11.2L15.5 15.2L13.8 18H10.2L8.5 15.2Z"/><path d="M10.9 18H13.1V22.5H10.9Z"/>',
   },
   'mod.portata.corta': {
     etichetta: 'Portata corta',

@@ -89,6 +89,9 @@ export const SET = [
   { id: 'stato.fase2', etichetta: 'Seconda fase', glifo: '☠', min: 16, bollino: true,
     nota: 'Numerale II: il boss cambia modo di combattere.',
     parti: bollino('M4 3H20V5.5H16.5V18.5H20V21H4V18.5H7.5V5.5H4Z M10 5.5H14V18.5H10Z') },
+  { id: 'stato.spalle', etichetta: 'Spalle al muro', glifo: '▌', min: 16, bollino: true,
+    nota: 'La freccia che arretra tocca il muro: niente più Distanza per un turno (ARENA_SPEC §12 R2).',
+    parti: bollino('M3 3H7.5V21H3Z M9.5 12L15.5 6V9.8H21V14.2H15.5V18Z') },
 
   // Risorse
   { id: 'risorsa.vigore', etichetta: 'Vigore', glifo: '♥', min: 12,
@@ -126,6 +129,15 @@ export const SET = [
   { id: 'evento.rotta', etichetta: 'Preparazione rotta', glifo: '✗', min: 12,
     nota: 'Il nucleo della preparazione spaccato in due.',
     parti: [{ d: 'M10.8 3L1.8 12L10.8 21L11.4 18L9.8 15L11.8 11L9.6 7.5Z M13.2 3L12 7.5L14.2 11L12.2 15L13.8 18L13.2 21L22.2 12Z' }] },
+  { id: 'evento.incalza', etichetta: 'Incalza', glifo: '«', min: 16,
+    nota: 'La freccia piena spinge quella vuota verso le spalle: chi arretra cede l\'iniziativa (§12 R1).',
+    parti: [{ d: 'M2 12L7.5 6.5V9.5H10.5V14.5H7.5V17.5Z M4.6 12L6.5 10.1V11H9V13H6.5V13.9Z', pari: true }, { d: 'M11.8 12L18 5.5V9.2H22V14.8H18V18.5Z' }] },
+  { id: 'evento.punta', etichetta: 'Punta', glifo: '↑', min: 12,
+    nota: 'La lancia della Distanza punta in alto (inflitto) e la scintilla colpisce chi entra con un colpo pesante (grado 2).',
+    parti: [{ d: 'M12 0.8L13.4 3.6L16.2 5L13.4 6.4L12 9.2L10.6 6.4L7.8 5L10.6 3.6Z' }, { d: 'M12 10L15.5 14.2L13.8 17.2H10.2L8.5 14.2Z' }, { d: 'M10.9 17.2H13.1V22.5H10.9Z' }] },
+  { id: 'evento.arresto', etichetta: 'Arresto', glifo: '⤒', min: 16,
+    nota: 'La stessa lancia sormontata dal grado del vantaggio: colpo d\'arresto che prende l\'iniziativa (grado 3).',
+    parti: [{ d: 'M12 1L19 8L16.4 10.6L12 6.2L7.6 10.6L5 8Z' }, { d: 'M12 11.2L15.5 15.2L13.8 18H10.2L8.5 15.2Z' }, { d: 'M10.9 18H13.1V22.5H10.9Z' }] },
 
   // Modificatori dell'hint completo (estensione proposta): sagome piene, pensate per 16–20 px.
   { id: 'mod.portata.corta', etichetta: 'Portata corta', glifo: '⊔', min: 16, estensione: true,
