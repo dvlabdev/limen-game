@@ -9,7 +9,7 @@
 | 0 | **Trasloco della copia di lavoro** da Google Drive a `C:\Users\irond\Dropbox\Buffer\claude-yard\limen-game`, con `node_modules`, `dist` e `sim-out` esclusi dalla sincronizzazione | Planning | A | **Fatto** |
 | B | **Audit sulla 1.1**: cancelli G0–G3 in un solo passaggio, più G4 sui simboli ([AUDIT_PROTOCOL](AUDIT_PROTOCOL.md)) | Audit (Opus) | 0 | **In corso** |
 | C1 | **SCENA_SPEC §1 v0.2**: pose allineate al modello delle posture | Planning | — | **Approvata** |
-| C2 | **Arena giocabile su S23** (ARENA_SPEC 1.2): simboli definitivi, ventaglio e interfaccia nella scena con sagome statiche (A/B con la griglia), pubblicazione come pagina privata Claude con telemetria su database | Grafica (sagome), Codice | B (rilievi bloccanti chiusi) | Bozza: [ARENA_S23_SPEC](ARENA_S23_SPEC.md) |
+| C2 | **Arena giocabile su S23** (ARENA_SPEC 1.2): simboli definitivi, ventaglio e interfaccia nella scena con sagome statiche (A/B con la griglia), pubblicazione come pagina privata Claude con telemetria su database | Grafica (sagome), Codice | B (rilievi bloccanti chiusi) | Specifica **approvata**: [ARENA_S23_SPEC](ARENA_S23_SPEC.md) |
 | D | **Playtest** con l'utente ([PLAYTEST](PLAYTEST.md)), analisi della telemetria, decisioni in DESIGN; cancello verso il nucleo | Planning con l'utente | C2 | Bozza del protocollo pronta |
 | E1 | **Specifica della scena** (SCENA_SPEC §2–§5) e **prototipo di animazione**: viandante e Bruto, 6 animazioni, laboratorio pubblicato come pagina privata | Planning, poi Grafica | C1 approvata | Specifica in bozza (SCENA_SPEC 0.3) |
 | E2 | Produzione completa della scena, integrazione, audit G5 | Grafica, Codice, Audit | E1 approvato, D | — |

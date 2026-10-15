@@ -1,6 +1,6 @@
 # Arena giocabile su S23: specifica operativa (passo C2)
 
-> **Versione:** 0.1, bozza (15 ottobre 2026) · **Proprietario:** Planning · **Esecutore:** sessione Codice (Sonnet 5.5, effort high), più un piccolo compito Grafica (§3)
+> **Versione:** 1.0, **approvata dall'utente** (15 ottobre 2026) · **Proprietario:** Planning · **Esecutore:** sessione Codice (Sonnet 5.5, effort high), più un piccolo compito Grafica (§3)
 > **Parte da:** ARENA_SPEC 1.1.1 (le regole del duello non cambiano, salvo le decisioni della §12.6); UI_SPEC (simboli, scena, ventaglio); SCENA_SPEC §1 (pose); CLAUDE.md.
 > **Prerequisito:** l'audit G0–G4 senza rilievi Bloccanti aperti (ROADMAP, passo B). Questa specifica può cambiare in base ai rilievi.
 
