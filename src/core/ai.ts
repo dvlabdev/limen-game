@@ -14,9 +14,11 @@ export function faseProfilo(p: Profilo, fase: 1 | 2): FaseProfilo {
 }
 
 // Vero se la mossa m "batte" la postura p secondo la tabella dell'adattamento.
-export function battePostura(m: Mossa, p: PosturaId): boolean {
+export function battePostura(m: Mossa, p: PosturaId, gradoDistanzaNemico = 1): boolean {
   const b = BALANCE.battute[p];
   if (b.archetipi?.includes(m.archetipo)) return true;
+  // R6: con la Distanza di grado 2 o 3 anche arretrare batte l'Assalto.
+  if (p === 'assalto' && m.archetipo === 'distanza' && gradoDistanzaNemico >= BALANCE.gradoDistanzaPerBattereAssalto) return true;
   const a = m.attacco;
   if (!a) return false;
   if (b.sfondaGuardia && a.sfondaGuardia) return true;
@@ -52,6 +54,16 @@ function posturaRipetuta(s: StatoDuello): PosturaId | null {
   return ultime.every((p) => p === ultime[0]) ? (ultime[0] as PosturaId) : null;
 }
 
+// Il nemico può giocare la mossa? Stessa postura attuale, oppure fiato per il cambio.
+// R2: senza spazio alle spalle le mosse di Distanza sono escluse e il cambio è gratuito.
+export function mossaAccessibile(s: StatoDuello, mossa: Mossa): boolean {
+  const n = s.nemico;
+  const senzaSpazio = n.distanzaConsecutive >= BALANCE.distanzaConsecutiveMax;
+  if (mossa.archetipo === 'distanza' && senzaSpazio) return false;
+  if (n.postura === 'distanza' && senzaSpazio) return true;
+  return mossa.archetipo === n.postura || n.fiato >= BALANCE.costoCambio;
+}
+
 // Pesi correnti di ogni mossa candidata (utile anche ai test e al simulatore).
 export function pesiCandidate(s: StatoDuello): Array<{ mossa: Mossa; peso: number }> {
   const profilo = trovaProfilo(s.nemico.profiloId);
@@ -61,11 +73,10 @@ export function pesiCandidate(s: StatoDuello): Array<{ mossa: Mossa; peso: numbe
   for (const pm of fase.mosse) {
     const mossa = profilo.mosse.find((m) => m.id === pm.mossa);
     if (!mossa) throw new Error(`Mossa sconosciuta nel profilo: ${pm.mossa}`);
-    // Candidata: stessa postura attuale, oppure fiato per il cambio.
-    if (mossa.archetipo !== s.nemico.postura && s.nemico.fiato < BALANCE.costoCambio) continue;
+    if (!mossaAccessibile(s, mossa)) continue;
     let peso = pm.peso;
     for (const mod of pm.modificatori ?? []) if (condizioneVera(mod.quando, s)) peso *= mod.x;
-    if (ripetuta && battePostura(mossa, ripetuta)) peso *= fase.adattamento;
+    if (ripetuta && battePostura(mossa, ripetuta, s.nemico.gradi.distanza)) peso *= fase.adattamento;
     out.push({ mossa, peso });
   }
   return out;

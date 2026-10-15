@@ -23,8 +23,13 @@ function postureAttuale(v: DuelView): PosturaId {
 }
 
 // Non cambia mai postura. Il primo turno paga il cambio, se serve.
+// Revisione 1.1: quando la Distanza non è disponibile (spalle al muro) ripiega sulla Guardia.
 export function fissa(p: PosturaId): Politica {
-  return (v) => (v.posture.find((x) => x.id === p)?.disponibile ? p : postureAttuale(v));
+  return (v) => {
+    if (v.posture.find((x) => x.id === p)?.disponibile) return p;
+    if (p === 'distanza' && v.posture.find((x) => x.id === 'guardia')?.disponibile) return 'guardia';
+    return postureAttuale(v);
+  };
 }
 
 export const casuale: Politica = (v, caso) => {
@@ -32,29 +37,26 @@ export const casuale: Politica = (v, caso) => {
   return d[Math.floor(estrai(caso) * d.length)] as PosturaId;
 };
 
-// Euristica di riferimento: legge l'hint e gestisce il fiato.
+// Euristica di riferimento (ARENA_SPEC §12.2 R8): legge l'hint e gestisce fiato e spazio.
 export const lettore: Politica = (v) => {
-  let scelta: PosturaId;
-  if (v.giocatore.vantaggio) scelta = 'assalto';
-  else {
-    switch (v.hint.categoria) {
-      case 'pesante': {
-        const costoAttesa = postureAttuale(v) === 'attesa' ? 0 : 1;
-        scelta = v.giocatore.fiato >= costoAttesa + 2 ? 'attesa' : 'distanza';
-        break;
-      }
-      case 'leggero':
-        scelta = 'guardia';
-        break;
-      case 'difesa':
-        scelta = v.giocatore.fiato < 3 ? 'distanza' : 'guardia';
-        break;
-      case 'preparazione':
-        scelta = 'assalto';
-        break;
+  const ok = disponibili(v);
+  const preferisci = (...ordine: PosturaId[]): PosturaId => ordine.find((p) => ok.includes(p)) ?? postureAttuale(v);
+  if (v.giocatore.vantaggio) return preferisci('assalto');
+  const h = v.hint.categoria;
+  if (v.giocatore.preparato && h !== 'pesante') return preferisci('assalto');
+  switch (h) {
+    case 'pesante': {
+      const costoAttesa = postureAttuale(v) === 'attesa' ? 0 : 1;
+      if (v.giocatore.fiato >= costoAttesa + 2) return preferisci('attesa');
+      return preferisci('distanza', 'guardia');
     }
+    case 'leggero':
+      return preferisci('guardia');
+    case 'difesa':
+      return v.giocatore.fiato >= 2 ? preferisci('attesa') : preferisci('guardia');
+    case 'preparazione':
+      return preferisci('assalto');
   }
-  return disponibili(v).includes(scelta) ? scelta : postureAttuale(v);
 };
 
 export const POLITICHE: Array<{ nome: string; scegli: Politica }> = [
@@ -91,7 +93,7 @@ export function simula(nemico: string, politica: { nome: string; scegli: Politic
   let turniVittorie = 0;
   for (let i = 0; i < par.duelli; i++) {
     const seed = par.seed + i;
-    let stato = creaDuello(nemico, seed, { adattamento: par.adattamento }, { parata: par.gradi, schivata: par.gradi });
+    let stato = creaDuello(nemico, seed, { adattamento: par.adattamento }, { parata: par.gradi, schivata: par.gradi, distanza: par.gradi });
     const caso = { rng: (seed * 2654435761) | 0 }; // caso dei bot, separato da quello del duello
     while (stato.esito === 'in corso') {
       const v = toDuelView(stato);

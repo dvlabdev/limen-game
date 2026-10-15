@@ -26,7 +26,7 @@ export const OPZIONI_PREDEFINITE: OpzioniArena = {
   adattamento: true,
 };
 
-export const GRADI_PREDEFINITI: Gradi = { parata: 1, schivata: 1 };
+export const GRADI_PREDEFINITI: Gradi = { parata: 1, schivata: 1, distanza: 1 };
 
 export function creaDuello(
   profiloId: string,
@@ -49,6 +49,7 @@ export function creaDuello(
       postura: g.posturaIniziale,
       vantaggio: false,
       preparato: false,
+      distanzaConsecutive: 0,
       gradi: { ...GRADI_PREDEFINITI, ...gradi },
     },
     nemico: {
@@ -61,6 +62,7 @@ export function creaDuello(
       postura: 'assalto',
       vantaggio: false,
       preparato: false,
+      distanzaConsecutive: 0,
       gradi: { ...p.gradi },
       profiloId: p.id,
       fase: 1,
@@ -89,8 +91,29 @@ export function clonaStato(s: StatoDuello): StatoDuello {
   };
 }
 
+// R2: in Distanza da troppi turni non si può restarci né tornarci subito.
+export function senzaSpazio(c: Combattente): boolean {
+  return c.distanzaConsecutive >= BALANCE.distanzaConsecutiveMax;
+}
+
+// Con le spalle al muro il cambio di postura è gratuito (R2).
+export function costoCambioDi(c: Combattente): number {
+  return c.postura === 'distanza' && senzaSpazio(c) ? 0 : BALANCE.costoCambio;
+}
+
+export type MotivoNonDisponibile = 'fiato' | 'spazio';
+
+// Perché una postura non si può scegliere (undefined se è disponibile).
+export function motivoNonDisponibile(stato: StatoDuello, scelta: PosturaId): MotivoNonDisponibile | undefined {
+  const g = stato.giocatore;
+  const archetipo = POSTURE[scelta].archetipo;
+  if (archetipo === 'distanza' && senzaSpazio(g)) return 'spazio';
+  if (archetipo === g.postura || g.fiato >= costoCambioDi(g)) return undefined;
+  return 'fiato';
+}
+
 export function cambioConsentito(stato: StatoDuello, scelta: PosturaId): boolean {
-  return POSTURE[scelta].archetipo === stato.giocatore.postura || stato.giocatore.fiato >= BALANCE.costoCambio;
+  return motivoNonDisponibile(stato, scelta) === undefined;
 }
 
 // Stato di un combattente durante la risoluzione di un turno.
@@ -106,6 +129,7 @@ interface Lato {
   attaccoPendente: boolean;
   interrotto: boolean;
   rotta: boolean;
+  raggiunto: boolean; // un attacco avversario si è risolto contro di lui (R3)
 }
 
 function creaLato(chi: Chi, c: Combattente, mossa: Mossa): Lato {
@@ -121,6 +145,7 @@ function creaLato(chi: Chi, c: Combattente, mossa: Mossa): Lato {
     attaccoPendente: mossa.attacco !== undefined,
     interrotto: false,
     rotta: false,
+    raggiunto: false,
   };
 }
 
@@ -130,7 +155,7 @@ export function resolveTurn(
   opz: { dado?: Dado; saltaIA?: boolean } = {},
 ): { stato: StatoDuello; eventi: EventoConTurno[] } {
   if (stato.esito !== 'in corso') throw new Error('Il duello è già concluso');
-  if (!cambioConsentito(stato, scelta)) throw new Error('Cambio di postura non consentito: fiato insufficiente');
+  if (!cambioConsentito(stato, scelta)) throw new Error('Postura non disponibile: fiato insufficiente o niente spazio alle spalle');
 
   const s = clonaStato(stato);
   const turno = s.turno;
@@ -148,10 +173,12 @@ export function resolveTurn(
   // 3. Pagamento dei cambi di postura.
   for (const l of lati) {
     if (l.mossa.archetipo === l.c.postura) continue;
-    if (l.c.fiato < BALANCE.costoCambio) throw new Error(`${l.c.nome} non ha il fiato per cambiare postura`);
-    l.c.fiato -= BALANCE.costoCambio;
+    if (l.mossa.archetipo === 'distanza' && senzaSpazio(l.c)) throw new Error(`${l.c.nome} non ha spazio per arretrare`);
+    const costo = costoCambioDi(l.c);
+    if (l.c.fiato < costo) throw new Error(`${l.c.nome} non ha il fiato per cambiare postura`);
+    l.c.fiato -= costo;
     l.c.postura = l.mossa.archetipo;
-    ev({ tipo: 'cambio', chi: l.chi, a: l.mossa.archetipo, costo: BALANCE.costoCambio });
+    ev({ tipo: 'cambio', chi: l.chi, a: l.mossa.archetipo, costo });
   }
 
   const finito = (): boolean => G.c.vigore <= 0 || N.c.vigore <= 0;
@@ -168,10 +195,22 @@ export function resolveTurn(
     }
   };
 
+  // Colpo di risposta senza reazioni (contrattacco, Punta, Arresto): preparato ×1,5 e fiato zero ×1,25.
+  const colpoDiRisposta = (da: Lato, a: Lato, [lo, hi]: [number, number]): number => {
+    let v = dado(lo, hi);
+    if (da.c.preparato) {
+      v *= BALANCE.moltPreparato;
+      da.c.preparato = false;
+    }
+    if (a.c.fiato <= 0) v *= BALANCE.moltFiatoZero;
+    return Math.max(0, Math.round(v));
+  };
+
   // 5. Risoluzione di un colpo (§4.4).
   const risolviColpo = (A: Lato, D: Lato, simultaneo: boolean): void => {
     const att = A.mossa.attacco as Attacco;
     A.attaccoPendente = false;
+    D.raggiunto = true;
 
     let tiro = dado(att.danno[0], att.danno[1]);
     let vantaggioMassimo = false;
@@ -212,6 +251,21 @@ export function resolveTurn(
 
     if (esito === 'evitato') {
       ev({ tipo: 'evitato', chi: D.chi, mossa: A.mossa.nome });
+      // R4: Punta (grado 2) contro i colpi pesanti, Arresto (grado 3) contro quelli non rapidi.
+      const g = D.c.gradi.distanza;
+      const risposta = g >= 3 && att.velocita !== 'rapido' ? 'arresto' : g >= 2 && att.forza === 'pesante' ? 'punta' : null;
+      if (risposta) {
+        const arresto = risposta === 'arresto';
+        D.c.fiato -= arresto ? BALANCE.costoArresto : BALANCE.costoPunta;
+        const dr = colpoDiRisposta(D, A, arresto ? BALANCE.arresto : BALANCE.punta);
+        infliggi(A, dr);
+        ev({ tipo: arresto ? 'arresto' : 'punta', chi: D.chi, danno: dr });
+        if (arresto) D.vantArrivo = true;
+      } else {
+        // R1: chi arretra cede l'iniziativa.
+        A.vantArrivo = true;
+        ev({ tipo: 'incalza', chi: A.chi });
+      }
       return;
     }
 
@@ -222,9 +276,7 @@ export function resolveTurn(
       if (att.portata === 'corta') {
         const bonus = D.c.gradi.schivata >= 2 ? BALANCE.contrattaccoBonusDalGrado2 : 0;
         const [lo, hi] = BALANCE.contrattacco;
-        let dc = dado(lo + bonus, hi + bonus);
-        if (A.c.fiato <= 0) dc *= BALANCE.moltFiatoZero;
-        dc = Math.max(0, Math.round(dc));
+        const dc = colpoDiRisposta(D, A, [lo + bonus, hi + bonus]);
         infliggi(A, dc);
         ev({ tipo: 'contrattacco', chi: D.chi, danno: dc });
       }
@@ -259,6 +311,12 @@ export function resolveTurn(
       senzaFiato,
       ...(negata ? { reazioneNegata: negata } : {}),
     });
+
+    // R1: anche un colpo che arriva a segno contro la Distanza (lungo, o senza fiato) fa incalzare.
+    if (postura === 'distanza' && D.c.vigore > 0) {
+      A.vantArrivo = true;
+      ev({ tipo: 'incalza', chi: A.chi });
+    }
 
     // Colpo a segno: danno > 0.
     if (danno > 0 && att.forza === 'pesante') {
@@ -306,10 +364,21 @@ export function resolveTurn(
       if (l.mossa.archetipo === 'preparazione' && !l.rotta) {
         l.c.preparato = true;
         ev({ tipo: 'preparato', chi: l.chi });
+      } else if (l.c.postura === 'attesa' && !l.raggiunto && !l.c.preparato) {
+        // R3: l'Attesa che nessun attacco ha raggiunto diventa una preparazione.
+        l.c.preparato = true;
+        ev({ tipo: 'preparato', chi: l.chi });
       }
     }
   }
   for (const l of lati) {
+    // R2: turni consecutivi conclusi in Distanza.
+    if (l.c.postura === 'distanza') {
+      l.c.distanzaConsecutive += 1;
+      if (l.c.distanzaConsecutive === BALANCE.distanzaConsecutiveMax && !finito()) ev({ tipo: 'spalleAlMuro', chi: l.chi });
+    } else {
+      l.c.distanzaConsecutive = 0;
+    }
     l.c.fiato = Math.min(l.c.fiatoMax, l.c.fiato + BALANCE.recupero[l.c.postura]);
     l.c.vantaggio = l.vantAttuale || l.vantArrivo;
     if (l.vantArrivo) ev({ tipo: 'vantaggio', chi: l.chi });

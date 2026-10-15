@@ -8,32 +8,32 @@ import { gioca, inflitto, statoProva, subito } from './util.ts';
 
 describe('gradi di Parata e Schivata', () => {
   it('Parata grado 2: il colpo leggero è annullato, quello pesante vale ×0,4', () => {
-    const s1 = statoProva('L1', 'guardia', { giocatore: { gradi: { parata: 2, schivata: 1 } } });
+    const s1 = statoProva('L1', 'guardia', { giocatore: { gradi: { parata: 2, schivata: 1, distanza: 1 } } });
     assert.strictEqual(subito(s1, gioca(s1, 'guardia').stato), 0);
-    const s2 = statoProva('P1', 'guardia', { giocatore: { gradi: { parata: 2, schivata: 1 } } });
+    const s2 = statoProva('P1', 'guardia', { giocatore: { gradi: { parata: 2, schivata: 1, distanza: 1 } } });
     const r2 = gioca(s2, 'guardia');
     assert.strictEqual(subito(s2, r2.stato), 2);
     assert.strictEqual(r2.stato.giocatore.vantaggio, false);
   });
 
   it('Parata grado 3: il colpo pesante parato dà il vantaggio', () => {
-    const s = statoProva('P1', 'guardia', { giocatore: { gradi: { parata: 3, schivata: 1 } } });
+    const s = statoProva('P1', 'guardia', { giocatore: { gradi: { parata: 3, schivata: 1, distanza: 1 } } });
     const r = gioca(s, 'guardia');
     assert.strictEqual(subito(s, r.stato), 2);
     assert.strictEqual(r.stato.giocatore.vantaggio, true);
   });
 
   it('Schivata grado 2: contrattacco +1 e vantaggio; contro un colpo rapido fallisce ancora', () => {
-    const s = statoProva('P1', 'attesa', { giocatore: { gradi: { parata: 1, schivata: 2 } } });
+    const s = statoProva('P1', 'attesa', { giocatore: { gradi: { parata: 1, schivata: 2, distanza: 1 } } });
     const r = gioca(s, 'attesa');
     assert.strictEqual(inflitto(s, r.stato), 4);
     assert.strictEqual(r.stato.giocatore.vantaggio, true);
-    const s2 = statoProva('L1', 'attesa', { giocatore: { gradi: { parata: 1, schivata: 2 } } });
+    const s2 = statoProva('L1', 'attesa', { giocatore: { gradi: { parata: 1, schivata: 2, distanza: 1 } } });
     assert.strictEqual(subito(s2, gioca(s2, 'attesa').stato), 3);
   });
 
   it('Schivata grado 3: schiva anche i colpi rapidi', () => {
-    const s = statoProva('L1', 'attesa', { giocatore: { gradi: { parata: 1, schivata: 3 } } });
+    const s = statoProva('L1', 'attesa', { giocatore: { gradi: { parata: 1, schivata: 3, distanza: 1 } } });
     const r = gioca(s, 'attesa');
     assert.strictEqual(subito(s, r.stato), 0);
     assert.strictEqual(inflitto(s, r.stato), 4);
@@ -75,7 +75,7 @@ describe('fiato zero', () => {
 
 describe('sfondaGuardia e inarrestabile', () => {
   it('sfondaGuardia ignora la Parata', () => {
-    const s = statoProva('SG', 'guardia', { giocatore: { gradi: { parata: 3, schivata: 1 } } });
+    const s = statoProva('SG', 'guardia', { giocatore: { gradi: { parata: 3, schivata: 1, distanza: 1 } } });
     const r = gioca(s, 'guardia');
     assert.strictEqual(subito(s, r.stato), 6);
     assert.strictEqual(r.stato.giocatore.fiato, 6); // nessun fiato speso in Parata (4 + 2)

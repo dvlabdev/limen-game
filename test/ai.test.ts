@@ -14,7 +14,7 @@ describe('IA dei nemici', () => {
     let s = creaDuello('recluta', 5);
     const viste: string[] = [s.mossaNemico];
     for (let i = 0; i < 5; i++) {
-      s = resolveTurn(s, 'distanza').stato;
+      s = resolveTurn(s, i % 2 ? 'attesa' : 'guardia').stato;
       if (s.esito !== 'in corso') break;
       viste.push(s.mossaNemico);
     }

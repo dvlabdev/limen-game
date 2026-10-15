@@ -38,7 +38,7 @@ export const PROFILO_BANCO: Profilo = {
   vigore: 100,
   fiato: 5,
   velocita: 2,
-  gradi: { parata: 1, schivata: 1 },
+  gradi: { parata: 1, schivata: 1, distanza: 1 },
   mosse: Object.values(MOSSE_BANCO),
   fase1: { mosse: Object.keys(MOSSE_BANCO).map((mossa) => ({ mossa, peso: 1 })), adattamento: 1 },
   fase2: { mosse: Object.keys(MOSSE_BANCO).map((mossa) => ({ mossa, peso: 1 })), adattamento: 1 },
@@ -65,7 +65,8 @@ export function statoProva(
       postura: POSTURE[posturaGiocatore].archetipo,
       vantaggio: false,
       preparato: false,
-      gradi: { parata: 1, schivata: 1 },
+      distanzaConsecutive: 0,
+      gradi: { parata: 1, schivata: 1, distanza: 1 },
     },
     nemico: {
       nome: 'Banco',
@@ -77,7 +78,8 @@ export function statoProva(
       postura: m.archetipo,
       vantaggio: false,
       preparato: false,
-      gradi: { parata: 1, schivata: 1 },
+      distanzaConsecutive: 0,
+      gradi: { parata: 1, schivata: 1, distanza: 1 },
       profiloId: 'banco',
       fase: 1,
       sequenzaIdx: 0,
@@ -93,11 +95,12 @@ export function statoProva(
   return stato;
 }
 
-// Tiri della matrice: Assalto 5, Guardia 2, contrattacco 3; le mosse nemiche hanno danno fisso.
+// Tiri della matrice: Assalto 5, Guardia 2 (e Punta 2), contrattacco 3, Arresto 3; le mosse nemiche hanno danno fisso.
 export const dadoMatrice: Dado = (min, max) => {
   if (min === 4 && max === 6) return 5;
   if (min === 1 && max === 2) return 2;
   if (min === 3 && max === 4) return 3;
+  if (min === 2 && max === 3) return 3; // Arresto
   return min;
 };
 

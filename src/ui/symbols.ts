@@ -20,6 +20,7 @@ export const SIMBOLI: Record<string, Simbolo> = {
   'stato.vantaggio': { glifo: '★', etichetta: 'Vantaggio' },
   'stato.preparato': { glifo: '✧', etichetta: 'Raccolto' },
   'stato.fase2': { glifo: '☠', etichetta: 'Seconda fase' },
+  'stato.spalle': { glifo: '▕', etichetta: 'Spalle al muro' },
   // Risorse
   'risorsa.vigore': { glifo: '♥', etichetta: 'Vigore' },
   'risorsa.fiato': { glifo: '●', etichetta: 'Fiato' },
@@ -31,6 +32,9 @@ export const SIMBOLI: Record<string, Simbolo> = {
   'evento.evitato': { glifo: '⇢', etichetta: 'Evitato' },
   'evento.interrotto': { glifo: '✂', etichetta: 'Interrotto' },
   'evento.rotta': { glifo: '✗', etichetta: 'Rotta' },
+  'evento.incalza': { glifo: '➤', etichetta: 'Incalza' },
+  'evento.punta': { glifo: '✱', etichetta: 'Punta' },
+  'evento.arresto': { glifo: '⊣', etichetta: 'Arresto' },
 };
 
 export function simbolo(id: string | undefined): Simbolo {

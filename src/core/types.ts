@@ -28,6 +28,7 @@ export interface Mossa {
 export interface Gradi {
   parata: 1 | 2 | 3;
   schivata: 1 | 2 | 3;
+  distanza: 1 | 2 | 3; // 2 = Punta, 3 = Arresto (revisione 1.1, R4)
 }
 
 export interface Combattente {
@@ -39,7 +40,8 @@ export interface Combattente {
   velocita: number;
   postura: Archetipo;
   vantaggio: boolean;
-  preparato: boolean; // il prossimo attacco vale ×1,5
+  preparato: boolean; // il prossimo colpo a danno vale ×1,5
+  distanzaConsecutive: number; // turni consecutivi conclusi in Distanza (R2)
   gradi: Gradi;
 }
 
@@ -128,6 +130,10 @@ export type EventoDuello =
   | { tipo: 'preparato'; chi: Chi }
   | { tipo: 'vantaggio'; chi: Chi } // guadagnato: effettivo dal turno successivo
   | { tipo: 'vantaggioPerso'; chi: Chi }
+  | { tipo: 'incalza'; chi: Chi } // chi = l'attaccante che prende l'iniziativa (R1)
+  | { tipo: 'punta'; chi: Chi; danno: number } // chi = chi arretra e risponde (R4)
+  | { tipo: 'arresto'; chi: Chi; danno: number }
+  | { tipo: 'spalleAlMuro'; chi: Chi } // la Distanza non è più disponibile (R2)
   | { tipo: 'fase2' }
   | { tipo: 'fine'; esito: Esito };
 

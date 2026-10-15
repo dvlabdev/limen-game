@@ -1,7 +1,7 @@
 # Arena di prova: rapporto della sessione Codice
 
 > **Autore:** sessione Codice · **Riferimento:** [ARENA_SPEC.md](ARENA_SPEC.md) v1.0 (§11)
-> **Stato:** F0–F4 completate. **Obiettivi del simulatore raggiunti in parte**: vedi §2 e §5.
+> **Stato:** F0–F4 completate sulle regole 1.0; **F2b Revisione 1.1** (ARENA_SPEC §12) implementata, vedi **§7**. Le tabelle e i numeri validi oggi sono quelli del §7.
 
 ## 1. Stato delle fasi e comandi verificati
 
@@ -10,6 +10,7 @@
 | F0 Impalcatura | fatta | `F0 Impalcatura: …` |
 | F1 Core | fatta: matrice §4.6 e test dedicati verdi | `F1 Core: …` |
 | F2 Nemici | fatta; **obiettivi del §9 raggiunti solo in parte**, vedi §2 e §5 | `F2 Nemici: …` |
+| F2b Revisione 1.1 | fatta: R1–R8, test §12.3, nuovo bilanciamento (§7); obiettivi raggiunti tranne i turni del Lanciere | `F2b Revisione 1.1: …` |
 | F3 Arena | fatta: duello completo contro i cinque nemici, pannello, interruttori A/B e telemetria funzionanti | `F3 Arena: …` |
 | F4 Verifica | fatta: build finale provata nel browser integrato a 360×780 (S23), vedi sotto | `F4 Verifica: …` |
 
@@ -174,3 +175,132 @@ Emerse dai test e dal simulatore, non decisioni:
 5. **Il ripiego del `lettore` sulla Distanza è una trappola contro i colpi lunghi** (Colpo d'asta ×1,25). L'hint non rivela la portata, quindi senza memoria dei turni precedenti non si può evitare.
 6. **Il carattere dei nemici si è appiattito.** Per rompere la catena dell'Assalto il Duellante usa quasi solo Parata e Affondo (peso 20 su 23) e il Bruto quasi solo Spallata. È il prezzo di raggiungere gli obiettivi con soli numeri; se Planning preferisce nemici più caratterizzati, conviene rivedere gli obiettivi (domande 1–3) piuttosto che i pesi.
 7. **I Pareggi del Mietitore contro `fissa:attesa` (~30%)** sono duelli che arrivano al turno 25: l'Attesa fissa schiva ma non chiude mai il duello.
+
+---
+
+## 7. Revisione 1.1 (ARENA_SPEC §12): regole R1–R8 e nuovo bilanciamento
+
+> **Stato:** implementata nella fase **F2b**. Le sezioni 2 e 3 sopra descrivono la versione 1.0 delle regole e restano come **storico**; i numeri validi oggi sono quelli di questa sezione.
+
+### 7.1 Che cosa è stato implementato
+
+| Regola | Implementazione |
+|---|---|
+| **R1** incalzare | Un attacco che si risolve contro un difensore in `distanza` (evitato, oppure a segno ×1,25 per colpo lungo o per fiato zero) dà all'attaccante il vantaggio in arrivo, salvo risposta con Punta o Arresto. Evento `incalza`. Non si emette se il difensore muore. |
+| **R2** spazio alle spalle | `Combattente.distanzaConsecutive`, aggiornato a fine turno; con 2 o più la Distanza non è disponibile (`motivo: 'spazio'` nella vista, errore in `resolveTurn`, mosse escluse per l'IA); chi è in Distanza senza spazio cambia postura gratis. Evento `spalleAlMuro` quando il contatore arriva a 2. Il limite (2) è in `balance.ts`. |
+| **R3** Attesa = preparazione | A fine turno un combattente in `attesa` che nessun attacco ha raggiunto diventa `preparato` (evento `preparato`, nessun accumulo). Il ×1,5 vale ora sul prossimo colpo a danno: attacco, contrattacco, Punta, Arresto. |
+| **R4** gradi della Distanza | `Gradi.distanza`; Punta (1–2) e Arresto (2–3) sono reazioni da 1 fiato, non scattano a fiato zero né contro i colpi lunghi; l'Arresto dà il vantaggio al difensore. Numeri in `balance.ts` (`punta`, `arresto`, `costoPunta`, `costoArresto`). Nel pannello c'è il nuovo selettore "Grado di Distanza". |
+| **R5** roster | Invito (Duellante, archetipo `attesa`), Incassare (Bruto, `guardia`), Lanciere con `gradi.distanza = 3`. |
+| **R6** adattamento | L'Assalto è battuto anche da `distanza` se il nemico ha il grado della Distanza ≥ 2 (soglia in `balance.ts`). |
+| **R7** vista e simboli | `posture[].motivo`, `CombattenteView.spazio` (massimo 2), simboli segnaposto `stato.spalle`, `evento.incalza`, `evento.punta`, `evento.arresto` in `src/ui/symbols.ts`, frasi del registro per i nuovi eventi. La vista nasconde `motivo` a duello concluso. |
+| **R8** bot | `lettore` riscritto come da §12.2 (la regola 3, "preparato e hint non pesante → Assalto", prevale sulla regola 2); `fissa:distanza` ripiega sulla Guardia quando la Distanza non è disponibile. `--gradi N` ora vale anche per il grado della Distanza. |
+
+**Test** (89 in tutto): le celle modificate della matrice §12.3 (Attesa contro D e PR, riga della Distanza con "il nemico incalza") e i test dedicati in `test/revisione11.test.ts`: Punta, Arresto e le loro eccezioni (colpo leggero, rapido, lungo), fiato zero, spazio alle spalle (indisponibilità, cambio gratuito anche a fiato zero, azzeramento), Attesa preparata e senza accumulo, ×1,5 sul contrattacco e su Punta e Arresto.
+
+**Interpretazioni** (da confermare):
+1. *R1 e fiato zero:* l'incalzare scatta anche quando il colpo corto arriva a segno perché senza fiato non si arretra.
+2. *R3, "attacco interrotto prima di risolversi":* con le mosse attuali il caso non si presenta (l'Attesa non attacca, quindi niente può interromperlo); il codice lo gestisce perché un combattente è "raggiunto" solo quando un colpo avversario si **risolve**, ma **non c'è un test** per questo caso.
+3. *Punta e Arresto:* sono colpi senza reazioni come il contrattacco: moltiplicatori preparato (×1,5) e fiato zero dell'attaccante (×1,25), nessuna interruzione.
+4. *R2 e IA:* il contatore dell'IA si aggiorna a fine turno e la scelta della mossa successiva ne tiene conto; con le spalle al muro ogni mossa non di Distanza è candidata anche a fiato zero.
+
+### 7.2 Modifiche di bilanciamento (spec 1.0 → 1.1)
+
+Metodo come in §3, ripartendo dai **valori della specifica** (non da quelli già bilanciati nella 1.0) con il vigore del giocatore a 20 (accettato). Il nuovo vincolo su `fissa:distanza` (meno del 25% di vittorie e meno del 50% di pareggi contro ogni nemico) è nell'obiettivo della ricerca. "Spec" = ARENA_SPEC 1.0; "1.0 bilanciata" = valori committati in F2; **1.1** = oggi.
+
+| Nemico | Voce | Spec | 1.0 bilanciata | **1.1** |
+|---|---|---|---|---|
+| Recluta | vigore · fiato | 16 · 4 | 11 · 2 | **17 · 3** |
+| | Fendente | 3–5 | 3–5 | **10–12** |
+| Duellante | vigore · fiato | 20 · 6 | 11 · 5 | **15 · 7** |
+| | Stoccata · Battuta · Parata · Affondo | 2–3 · 2–3 · 1–2 · 4–6 | 5–6 · 6–7 · 4–5 · 8–10 | **6–7 · 2–3 · 2–3 · 10–12** |
+| | Pesi Stoccata, Battuta, Parata, Affondo, Invito | 5, 1, 2, 1, (3) | 1, 2, 10, 10, (non c'era) | **5, 1, 2, 9, 5** |
+| Bruto | vigore · fiato · velocità | 30 · 5 · 1 | 20 · 5 · 3 | **22 · 7 · 3** |
+| | Maglio · Spallata | 6–8 · 4–5 | 7–9 · 7–8 | **3–5 · 10–11** |
+| | Pesi Maglio, Spallata, Raccogliersi, Incassare | 4, 2, 2, (2) | 1, 10, 1, (non c'era) | **1, 10, 1, 1** |
+| Lanciere | vigore · velocità | 22 · 2 | 14 · 2 | **17 · 1** |
+| | Affondo lungo · Colpo d'asta | 3–4 · 5–6 | 4–5 · 14–15 | **6–7 · 8–9** |
+| | Pesi Affondo lungo, Colpo d'asta, Tenere a bada | 4, 2, 2 | 10, 3, 2 | **8, 1, 8** |
+| Mietitore | vigore · fiato | 45 · 6 | 44 · 8 | **44 · 5** |
+| | Falciata · Mietere · Carica | 5–7 · 3–4 · 7–9 | 7–9 · 7–8 · 10–12 | **7–9 · 3–4 · 7–9** |
+| | Pesi fase 1 (Falciata, Mietere, Guardia d'osso, Raccogliersi) | 3, 3, 2, 1 | 10, 4, 3, 5 | **5, 4, 1, 3** |
+| | Pesi fase 2 (Carica, Falciata, Mietere, Guardia d'osso, Raccogliersi) | 4, 2, 2, 1, 1 | 9, 7, 2, 3, 4 | **8, 2, 1, 1, 3** |
+
+`balance.ts`: `giocatore.vigore` resta **20** (30 nella specifica). I valori di Punta (1–2), Arresto (2–3), costo di Punta e Arresto (1) e il limite di 2 turni in Distanza sono quelli suggeriti dalla specifica e non sono stati toccati. L'adattamento, i modificatori e i gradi dei nemici non sono cambiati (a parte `gradi.distanza`).
+
+**Motivi principali.** Con le nuove regole bastano ritocchi molto più piccoli: i nemici non hanno più bisogno di pesi estremi (Parata 10 nel Duellante, Spallata 10 e velocità 3 per rompere la catena dell'Assalto) perché la catena la spezzano Invito, Incassare e l'Arresto. Restano alti solo i danni dei colpi che contano contro chi non legge l'hint. La **Recluta** richiede Fendente 10–12: contro `fissa:distanza` (che ripiega sulla Guardia ogni terzo turno) la Recluta a danni bassi non riusciva né a vincere né a perdere in 25 turni, e il nuovo vincolo (< 25% vittorie, < 50% pareggi) vale anche per lei.
+
+### 7.3 Confronto prima/dopo per le domande 1 e 2 del report
+
+| | Regole 1.0 (committate in F2) | **Regole 1.1** |
+|---|---|---|
+| **Lanciere**: `fissa:assalto` | **99,8%** | **23,9%** ✅ |
+| Lanciere: `lettore` · turni | 64,3% · 12,8 | 61,7% · 8,7 (obiettivo 4–8: ❌ per poco) |
+| Lanciere: `fissa:guardia` · `fissa:attesa` · `fissa:distanza` | 15,9 · 0,0 · 0,0 | 6,8 · 0,0 (68% pareggi) · 0,0 |
+| **Bruto**: `fissa:assalto` | **28,0%** | **17,0%** ✅ (l'eccezione del 30% non serve) |
+| Bruto: `lettore` · turni | 80,5% · 7,4 | 68,6% · 7,8 ✅ |
+| Bruto: `fissa:attesa` | 17,6% | 24,1% (soglia 25%: ✅ ma al limite) |
+
+**Risposta alle due domande:** la Distanza di grado 3 sul Lanciere e l'Incassare sul Bruto fanno scendere l'Assalto fisso sotto il 25% **senza** distorcere i pesi e con il `lettore` ancora sopra il 60%.
+
+### 7.4 Tabelle del simulatore (1000 duelli, seed 1)
+
+Ogni cella: **vittorie %** (pareggi %) · turni medi. `lettore` = R8. I gradi "3" valgono per Parata, Schivata e Distanza.
+
+#### 7.4a Obiettivi: gradi 1, adattamento attivo
+
+| Nemico | fissa:assalto | fissa:guardia | fissa:attesa | fissa:distanza | casuale | lettore |
+|---|---|---|---|---|---|---|
+| Recluta | 100.0 (0.0) · 5.0 | 0.9 (0.0) · 9.0 | 100.0 (0.0) · 7.0 | 0.0 (0.0) · 21.0 | 88.4 (0.0) · 9.1 | 100.0 (0.0) · 7.0 |
+| Duellante | 17.0 (0.0) · 3.8 | 11.4 (0.0) · 8.2 | 13.2 (0.0) · 6.9 | 0.4 (15.4) · 19.3 | 13.6 (0.0) · 7.0 | 69.3 (0.0) · 7.4 |
+| Bruto | 17.0 (0.0) · 2.9 | 0.0 (0.0) · 2.5 | 24.1 (0.0) · 7.1 | 0.0 (0.0) · 7.8 | 1.8 (0.0) · 4.6 | 68.6 (0.0) · 7.8 |
+| Lanciere | 23.9 (0.0) · 5.7 | 6.8 (0.0) · 14.1 | 0.0 (68.0) · 22.7 | 0.0 (0.0) · 5.3 | 19.3 (0.0) · 8.8 | 61.7 (0.0) · 8.7 |
+| Mietitore | 13.5 (0.0) · 6.7 | 0.0 (0.3) · 12.6 | 10.0 (14.7) · 18.1 | 0.0 (0.6) · 11.9 | 2.1 (0.9) · 10.2 | 53.6 (0.0) · 11.1 |
+
+#### 7.4b Informativa: gradi 3, adattamento attivo
+
+| Nemico | fissa:assalto | fissa:guardia | fissa:attesa | fissa:distanza | casuale | lettore |
+|---|---|---|---|---|---|---|
+| Recluta | 100.0 (0.0) · 5.0 | 17.2 (0.0) · 9.0 | 100.0 (0.0) · 5.3 | 100.0 (0.0) · 12.0 | 95.4 (0.0) · 7.2 | 100.0 (0.0) · 6.7 |
+| Duellante | 17.0 (0.0) · 3.8 | 62.5 (0.0) · 9.3 | 98.1 (0.0) · 5.2 | 97.9 (0.1) · 12.6 | 65.1 (0.0) · 6.4 | 86.1 (0.0) · 5.1 |
+| Bruto | 17.0 (0.0) · 2.9 | 0.0 (0.0) · 2.5 | 42.6 (0.0) · 6.4 | 13.2 (0.0) · 7.4 | 26.3 (0.0) · 4.9 | 99.7 (0.0) · 4.8 |
+| Lanciere | 23.9 (0.0) · 5.7 | 99.9 (0.1) · 17.8 | 0.0 (68.0) · 22.7 | 0.0 (0.1) · 6.7 | 25.2 (0.1) · 9.7 | 84.6 (0.0) · 9.5 |
+| Mietitore | 13.5 (0.0) · 6.7 | 0.0 (2.8) · 16.1 | 30.5 (5.8) · 16.7 | 3.4 (7.1) · 15.0 | 15.3 (0.5) · 11.6 | 64.8 (0.0) · 9.5 |
+
+#### 7.4c Informativa: gradi 1, adattamento disattivato
+
+| Nemico | fissa:assalto | fissa:guardia | fissa:attesa | fissa:distanza | casuale | lettore |
+|---|---|---|---|---|---|---|
+| Recluta | 100.0 (0.0) · 5.0 | 0.9 (0.0) · 9.0 | 100.0 (0.0) · 7.0 | 0.0 (0.0) · 21.0 | 88.4 (0.0) · 9.1 | 100.0 (0.0) · 7.0 |
+| Duellante | 29.3 (0.0) · 3.5 | 13.3 (0.0) · 8.2 | 48.9 (0.0) · 7.5 | 0.4 (15.4) · 19.3 | 13.6 (0.0) · 6.9 | 68.9 (0.0) · 7.3 |
+| Bruto | 20.1 (0.0) · 2.8 | 0.0 (0.0) · 2.6 | 24.1 (0.0) · 7.1 | 0.0 (0.0) · 7.8 | 1.9 (0.0) · 4.6 | 68.9 (0.0) · 7.7 |
+| Lanciere | 37.8 (0.0) · 5.4 | 6.8 (0.0) · 14.1 | 0.0 (68.0) · 22.7 | 0.0 (0.0) · 5.3 | 19.5 (0.0) · 8.8 | 59.9 (0.0) · 8.7 |
+| Mietitore | 16.5 (0.0) · 6.4 | 0.0 (0.0) · 11.1 | 10.0 (14.7) · 18.1 | 0.0 (0.9) · 11.7 | 1.9 (1.0) · 10.1 | 51.9 (0.0) · 10.7 |
+
+### 7.5 Obiettivi del §12.4: esito
+
+| Obiettivo | Esito |
+|---|---|
+| `lettore` ≥ 90% contro la Recluta | ✅ 100% |
+| `lettore` 60–85% contro Duellante, Bruto, Lanciere | ✅ 69,3 · 68,6 · 61,7 |
+| `lettore` 35–65% contro il Mietitore | ✅ 53,6 |
+| `fissa:*` < 25% contro Duellante, Bruto, Lanciere, Mietitore | ✅ massimo 24,1% (Bruto, `fissa:attesa`) e 23,9% (Lanciere, `fissa:assalto`). Con un altro seed (9000): 23,3% e 24,0%. Il margine è stretto |
+| `casuale` < 30% | ✅ massimo 19,3% |
+| **Nuovo:** `fissa:distanza` < 25% di vittorie e < 50% di pareggi contro ogni nemico | ✅ massimo 0,4% di vittorie; pareggi: Duellante 15,4%, tutti gli altri ≤ 0,6% |
+| Turni medi `lettore` 4–8 (Recluta, Duellante, Bruto, Lanciere) | ✅ 7,0 · 7,4 · 7,8 · ❌ **Lanciere 8,7** |
+| Turni medi `lettore` ≤ 14 contro il Mietitore | ✅ 11,1 |
+
+L'unico obiettivo mancato è il **turno medio del `lettore` contro il Lanciere** (8,7 contro 4–8). In 12 ricerche indipendenti il minimo è 8,5: il Lanciere tiene la distanza (Tenere a bada pesa 8 su 17) e il `lettore` ha poche risposte offensive contro i colpi lunghi. Basterebbe una soglia di 9 per il Lanciere, oppure meno peso a Tenere a bada a costo di riportare `fissa:assalto` oltre il 25%.
+
+### 7.6 Osservazioni dopo la revisione
+
+1. **`fissa:attesa` contro il Lanciere:** 0% di vittorie ma **68% di pareggi** (22,7 turni). Il Lanciere non entra mai in contatto con un'Attesa che non può raggiungere e l'Attesa non attacca: è uno stallo che R3 (preparato) non rompe. Il §12.4 vieta lo stallo solo per `fissa:distanza`.
+2. **Gradi 3:** i gradi alti ribaltano molti equilibri: `fissa:guardia` vince 99,9% contro il Lanciere, `fissa:attesa` 98,1% e `fissa:distanza` 97,9% contro il Duellante, `fissa:distanza` 100% contro la Recluta. L'Arresto contro nemici che attaccano a colpi corti non rapidi è molto forte; i nemici dovranno scalare con la progressione dei gradi.
+3. **Il Duellante contro `fissa:distanza`** chiude spesso per il limite dei turni (15% di pareggi): l'Invito del nemico e lo spazio alle spalle del giocatore si alternano senza incrociarsi.
+4. **Recluta con Fendente 10–12:** la Recluta è un nemico di apprendimento, ma ora colpisce più forte della Spallata del Bruto se non si legge l'hint. È un effetto del vincolo su `fissa:distanza` esteso alla Recluta: se Planning preferisce una Recluta mite, basta escluderla dal vincolo.
+
+### 7.7 Domande per Planning (revisione 1.1)
+
+1. **Recluta nel vincolo `fissa:distanza`:** vale anche per lei (§12.4 dice "ogni nemico")? Per rispettarlo il Fendente passa da 3–5 a 10–12.
+2. **Lanciere, turni del `lettore`:** 8,7 contro 4–8. È accettabile un obiettivo di 4–9 per il Lanciere, o preferite meno Tenere a bada a scapito di `fissa:assalto`?
+3. **Stallo di `fissa:attesa` contro il Lanciere** (68% di pareggi): serve un obiettivo anche per `fissa:attesa`, o una regola (per esempio un attacco a distanza del Lanciere che raggiunge l'Attesa)?
+4. **Caso "Attesa raggiunta da un attacco interrotto" (R3):** non è raggiungibile con le mosse attuali. Va bene lasciarlo senza test finché non esisterà una mossa che lo produce?

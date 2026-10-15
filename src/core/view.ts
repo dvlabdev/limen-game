@@ -15,8 +15,8 @@ import type {
 import { BALANCE } from '../data/balance.ts';
 import { trovaMossa, trovaProfilo } from '../data/enemies.ts';
 import { NOMI_ARCHETIPO, ORDINE_POSTURE, POSTURE } from '../data/postures.ts';
-import { categoriaDi, faseProfilo } from './ai.ts';
-import { cambioConsentito, resolveTurn } from './resolve.ts';
+import { categoriaDi, faseProfilo, mossaAccessibile } from './ai.ts';
+import { costoCambioDi, motivoNonDisponibile, resolveTurn } from './resolve.ts';
 import { dadoMassimo, dadoMinimo } from './rng.ts';
 
 export interface CombattenteView {
@@ -28,6 +28,7 @@ export interface CombattenteView {
   postura: { id: Archetipo; nome: string; simbolo: string };
   vantaggio: boolean;
   preparato: boolean;
+  spazio: number; // turni consecutivi in Distanza, al massimo 2: la scena mostra il bordo
 }
 
 export interface DuelView {
@@ -55,6 +56,7 @@ export interface DuelView {
     attiva: boolean;
     costo: number;
     disponibile: boolean;
+    motivo?: 'fiato' | 'spazio'; // perché non è disponibile
     anteprima?: { subito: [number, number]; inflitto: [number, number] }; // solo con anteprimaDanni
   }>;
   registro: Array<{ turno: number; testo: string; simbolo?: string; tipo: string }>;
@@ -70,6 +72,7 @@ function combattenteView(c: StatoDuello['giocatore']): CombattenteView {
     postura: { id: c.postura, nome: NOMI_ARCHETIPO[c.postura], simbolo: `posture.${c.postura}` },
     vantaggio: c.vantaggio,
     preparato: c.preparato,
+    spazio: Math.min(c.distanzaConsecutive, BALANCE.distanzaConsecutiveMax),
   };
 }
 
@@ -92,8 +95,7 @@ function mosseCandidate(stato: StatoDuello): string[] {
   for (const pm of faseProfilo(profilo, stato.nemico.fase).mosse) {
     const m = profilo.mosse.find((x) => x.id === pm.mossa);
     if (!m || categoriaDi(m) !== categoria) continue;
-    const accessibile = m.archetipo === stato.nemico.postura || stato.nemico.fiato >= BALANCE.costoCambio;
-    if (accessibile) ids.add(m.id);
+    if (mossaAccessibile(stato, m)) ids.add(m.id);
   }
   return [...ids];
 }
@@ -217,6 +219,34 @@ function frase(stato: StatoDuello, e: EventoConTurno): { testo: string; simbolo?
         testo: tu(e.chi) ? 'Perdi il vantaggio: hai incassato un colpo.' : `${n.Il} perde il vantaggio: ha incassato un colpo.`,
         simbolo: 'stato.vantaggio',
       };
+    case 'incalza':
+      return {
+        testo: tu(e.chi)
+          ? `${n.Il} arretra: incalzi e prendi l'iniziativa.`
+          : `Arretri: ${n.il} incalza e prende l'iniziativa.`,
+        simbolo: 'evento.incalza',
+      };
+    case 'punta':
+      return {
+        testo: tu(e.chi)
+          ? `Arretri puntando la lama: ${e.danno} danni ${n.al} e nessuno ti incalza.`
+          : `${n.Il} arretra puntando la lama: ${e.danno} danni a te e non lo incalzi.`,
+        simbolo: 'evento.punta',
+      };
+    case 'arresto':
+      return {
+        testo: tu(e.chi)
+          ? `Fermi il colpo con l'arresto: ${e.danno} danni ${n.al} e prendi il vantaggio.`
+          : `${n.Il} ti ferma con l'arresto: ${e.danno} danni a te e prende il vantaggio.`,
+        simbolo: 'evento.arresto',
+      };
+    case 'spalleAlMuro':
+      return {
+        testo: tu(e.chi)
+          ? 'Hai le spalle al muro: non puoi più arretrare, cambia postura.'
+          : `${n.Il} ha le spalle al muro: non può più arretrare.`,
+        simbolo: 'stato.spalle',
+      };
     case 'fase2':
       return { testo: `${n.Il} entra nella seconda fase: cambia il modo di combattere.`, simbolo: 'stato.fase2' };
     case 'fine':
@@ -256,14 +286,16 @@ export function toDuelView(stato: StatoDuello, eventiUltimoTurno: EventoConTurno
     hint,
     posture: ORDINE_POSTURE.map((id) => {
       const attiva = stato.giocatore.postura === POSTURE[id].archetipo;
-      const disponibile = inCorso && cambioConsentito(stato, id);
+      const motivo = inCorso ? motivoNonDisponibile(stato, id) : undefined;
+      const disponibile = inCorso && motivo === undefined;
       const p: DuelView['posture'][number] = {
         id,
         nome: POSTURE[id].nome,
         simbolo: `posture.${id}`,
         attiva,
-        costo: attiva ? 0 : BALANCE.costoCambio,
+        costo: attiva ? 0 : costoCambioDi(stato.giocatore),
         disponibile,
+        ...(motivo ? { motivo } : {}),
       };
       if (stato.opzioni.anteprimaDanni && disponibile) p.anteprima = anteprima(stato, id);
       return p;

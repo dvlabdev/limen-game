@@ -12,6 +12,7 @@ export interface VoceRegistro {
 export interface ConfigArena {
   parata: 1 | 2 | 3;
   schivata: 1 | 2 | 3;
+  distanza: 1 | 2 | 3;
   seed: number;
   hintCompleti: boolean;
   anteprimaDanni: boolean;
@@ -63,6 +64,8 @@ export function disegnaMenu(radice: HTMLElement, m: ModelloMenu): void {
         <select id="cfg-parata" data-config="parata">${opzioniGrado(c.parata)}</select></div>
       <div class="riga"><label for="cfg-schivata">Grado di Schivata</label>
         <select id="cfg-schivata" data-config="schivata">${opzioniGrado(c.schivata)}</select></div>
+      <div class="riga"><label for="cfg-distanza">Grado di Distanza<br><span class="tenue">2 = Punta, 3 = Arresto</span></label>
+        <select id="cfg-distanza" data-config="distanza">${opzioniGrado(c.distanza)}</select></div>
       <div class="riga"><label for="cfg-seed">Seed</label>
         <div class="campo"><input type="number" id="cfg-seed" data-config="seed" inputmode="numeric" value="${esc(c.seed)}">
         <button data-azione="seed-casuale">Casuale</button></div></div>
@@ -101,7 +104,7 @@ function barra(c: CombattenteView): string {
 function stati(c: CombattenteView): string {
   const chip = (id: string, attivo: boolean) =>
     attivo ? `<span class="chip attivo">${esc(simbolo(id).glifo)} ${esc(simbolo(id).etichetta)}</span>` : '';
-  return chip('stato.vantaggio', c.vantaggio) + chip('stato.preparato', c.preparato);
+  return chip('stato.vantaggio', c.vantaggio) + chip('stato.preparato', c.preparato) + chip('stato.spalle', c.spazio >= 2);
 }
 
 function voce(v: VoceRegistro): string {
@@ -147,7 +150,7 @@ export function disegnaDuello(radice: HTMLElement, m: ModelloDuello): void {
     .map((p) => {
       const s = simbolo(p.simbolo);
       const classi = [p.id === m.selezione ? 'scelta' : '', p.attiva ? 'attiva' : ''].filter(Boolean).join(' ');
-      const costo = p.attiva ? 'gratis' : `costo ${p.costo} fiato`;
+      const costo = p.motivo === 'spazio' ? 'niente spazio' : p.motivo === 'fiato' ? 'fiato insufficiente' : p.attiva ? 'gratis' : p.costo === 0 ? 'gratis' : `costo ${p.costo} fiato`;
       const anteprima = p.anteprima
         ? `<span class="a">subisci ${intervallo(p.anteprima.subito)} · infliggi ${intervallo(p.anteprima.inflitto)}</span>`
         : '';

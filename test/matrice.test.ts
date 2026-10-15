@@ -11,6 +11,11 @@ interface Attesa {
 }
 
 const nemicoPreparato = (r: ReturnType<typeof gioca>) => assert.strictEqual(r.stato.nemico.preparato, true);
+const nemicoIncalza = (r: ReturnType<typeof gioca>) => {
+  assert.ok(r.eventi.some((e) => e.tipo === 'incalza' && e.chi === 'nemico'));
+  assert.strictEqual(r.stato.nemico.vantaggio, true);
+};
+const nessunaIncalzata = (r: ReturnType<typeof gioca>) => assert.ok(!r.eventi.some((e) => e.tipo === 'incalza'));
 
 const MATRICE: Record<PosturaId, Record<string, Attesa>> = {
   assalto: {
@@ -48,20 +53,30 @@ const MATRICE: Record<PosturaId, Record<string, Attesa>> = {
     P1: {
       subisce: 0,
       infligge: 3,
-      note: (r) => assert.ok(r.eventi.some((e) => e.tipo === 'schivata' && e.chi === 'giocatore')),
+      note: (r) => {
+        assert.ok(r.eventi.some((e) => e.tipo === 'schivata' && e.chi === 'giocatore'));
+        assert.strictEqual(r.stato.giocatore.preparato, false); // raggiunto da un attacco: nessuna carica
+      },
     },
-    P2: { subisce: 0, infligge: 0 },
+    P2: { subisce: 0, infligge: 0, note: (r) => assert.strictEqual(r.stato.giocatore.preparato, false) },
     L1: { subisce: 3, infligge: 0 },
     L2: { subisce: 0, infligge: 0 },
-    D: { subisce: 0, infligge: 0 },
-    PR: { subisce: 0, infligge: 0, note: nemicoPreparato },
+    D: { subisce: 0, infligge: 0, note: (r) => assert.strictEqual(r.stato.giocatore.preparato, true) }, // R3
+    PR: {
+      subisce: 0,
+      infligge: 0,
+      note: (r) => {
+        nemicoPreparato(r);
+        assert.strictEqual(r.stato.giocatore.preparato, true); // entrambi preparati
+      },
+    },
   },
   distanza: {
-    P1: { subisce: 0, infligge: 0 },
-    P2: { subisce: 8, infligge: 0 },
-    L1: { subisce: 0, infligge: 0 },
-    L2: { subisce: 4, infligge: 0 },
-    D: { subisce: 0, infligge: 0 },
+    P1: { subisce: 0, infligge: 0, note: nemicoIncalza },
+    P2: { subisce: 8, infligge: 0, note: nemicoIncalza },
+    L1: { subisce: 0, infligge: 0, note: nemicoIncalza },
+    L2: { subisce: 4, infligge: 0, note: nemicoIncalza },
+    D: { subisce: 0, infligge: 0, note: (r) => { nessunaIncalzata(r); assert.strictEqual(r.stato.nemico.vantaggio, false); } },
     PR: { subisce: 0, infligge: 0, note: nemicoPreparato },
   },
 };

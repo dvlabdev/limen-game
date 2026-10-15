@@ -21,6 +21,7 @@ const ETICHETTE: Record<string, string> = {
 const CONFIG_PREDEFINITA: ConfigArena = {
   parata: 1,
   schivata: 1,
+  distanza: 1,
   seed: 1,
   hintCompleti: false,
   anteprimaDanni: false,
@@ -58,6 +59,7 @@ function caricaConfig(): ConfigArena {
   return {
     parata: grado(o['parata'], d.parata),
     schivata: grado(o['schivata'], d.schivata),
+    distanza: grado(o['distanza'], d.distanza),
     seed: typeof o['seed'] === 'number' && Number.isFinite(o['seed']) ? Math.trunc(o['seed']) : d.seed,
     hintCompleti: typeof o['hintCompleti'] === 'boolean' ? o['hintCompleti'] : d.hintCompleti,
     anteprimaDanni: typeof o['anteprimaDanni'] === 'boolean' ? o['anteprimaDanni'] : d.anteprimaDanni,
@@ -104,7 +106,7 @@ export function avvia(radice: HTMLElement): void {
   };
 
   const nuovoDuello = (nemicoId: string): void => {
-    const stato = creaDuello(nemicoId, config.seed, opzioni(), { parata: config.parata, schivata: config.schivata });
+    const stato = creaDuello(nemicoId, config.seed, opzioni(), { parata: config.parata, schivata: config.schivata, distanza: config.distanza });
     const attiva = stato.giocatore.postura as PosturaId;
     sessione = { nemicoId, stato, eventi: [], storico: [], selezione: attiva, cambi: 0, salvata: false };
     disegna();
@@ -238,7 +240,7 @@ export function avvia(radice: HTMLElement): void {
     const chiave = el.dataset['config'];
     if (!chiave) return;
     const c: Record<string, unknown> = { ...config };
-    if (chiave === 'parata' || chiave === 'schivata') c[chiave] = grado(Number(el.value), 1);
+    if (chiave === 'parata' || chiave === 'schivata' || chiave === 'distanza') c[chiave] = grado(Number(el.value), 1);
     else if (chiave === 'seed') c[chiave] = Number.isFinite(Number(el.value)) && el.value !== '' ? Math.trunc(Number(el.value)) : config.seed;
     else c[chiave] = el.checked;
     config = c as unknown as ConfigArena;

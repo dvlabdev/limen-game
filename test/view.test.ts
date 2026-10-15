@@ -9,9 +9,10 @@ import { gioca, statoProva } from './util.ts';
 const SIMBOLI = new Set([
   'posture.assalto', 'posture.guardia', 'posture.attesa', 'posture.distanza', 'posture.preparazione',
   'intent.pesante', 'intent.leggero', 'intent.difesa', 'intent.preparazione',
-  'stato.vantaggio', 'stato.preparato', 'stato.fase2',
+  'stato.vantaggio', 'stato.preparato', 'stato.fase2', 'stato.spalle',
   'risorsa.vigore', 'risorsa.fiato',
   'evento.colpo', 'evento.parata', 'evento.schivata', 'evento.contrattacco', 'evento.evitato', 'evento.interrotto', 'evento.rotta',
+  'evento.incalza', 'evento.punta', 'evento.arresto',
 ]);
 
 describe('DuelView', () => {

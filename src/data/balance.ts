@@ -23,6 +23,8 @@ export const BALANCE = {
   costoCambio: 1,
   costoParata: 1,
   costoSchivata: 2,
+  costoPunta: 1,
+  costoArresto: 1,
 
   recupero: {
     assalto: 0,
@@ -41,6 +43,13 @@ export const BALANCE = {
   contrattacco: [3, 4] as [number, number],
   contrattaccoBonusDalGrado2: 1,
 
+  // Distanza di grado 2 (Punta) e 3 (Arresto): colpo senza reazioni all'attaccante.
+  punta: [1, 2] as [number, number],
+  arresto: [2, 3] as [number, number],
+
+  // Spazio alle spalle: turni consecutivi in Distanza dopo i quali non è più disponibile.
+  distanzaConsecutiveMax: 2,
+
   // Ordinamento per velocità della mossa: più alto = prima.
   velocitaMossa: { rapido: 3, normale: 2, lento: 1 } as Record<Velocita, number>,
 
@@ -49,6 +58,8 @@ export const BALANCE = {
 
   // Adattamento: quante scelte uguali consecutive servono, e quali mosse "battono" la postura.
   adattamentoScelte: 2,
+  // L'Assalto è battuto anche da `distanza` se il nemico ha almeno questo grado della Distanza (R6).
+  gradoDistanzaPerBattereAssalto: 2,
   battute: {
     assalto: { archetipi: ['guardia', 'attesa'] },
     guardia: { sfondaGuardia: true, archetipi: ['preparazione'] },
