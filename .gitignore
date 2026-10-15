@@ -1,0 +1,9 @@
+node_modules/
+dist/
+sim-out/
+*.log
+.DS_Store
+desktop.ini
+Thumbs.db
+*.tmp
+.claude/settings.local.json
