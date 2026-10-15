@@ -166,6 +166,12 @@ Da definire nel blocco 3: contenuto di ogni tipo di milestone, valute (denaro, i
 | **Distanza** | Nessun attacco ravvicinato | Evita i colpi corti | Alto |
 
 - Mantenere la postura è gratuito; **cambiarla costa fiato**.
+- ✅ Le 4 posture corrispondono a famiglie reali di guardie della scherma storica: Assalto = *posta di donna*, Guardia = *posta frontale*, Attesa = *dente di zenghiaro*, Distanza = *posta longa*. Analisi completa e confronto con altri giochi in [docs/ricerca/POSTURE_ANALISI.md](docs/ricerca/POSTURE_ANALISI.md).
+- 🟡 Candidate per l'arena v1.1 (POSTURE_ANALISI §4), tutte da verificare con il simulatore:
+  - **P1 spazio alle spalle:** limite di 2 Distanze consecutive;
+  - **P2:** un nemico con mosse di Attesa;
+  - **P3:** gradi della Distanza (*Punta*, *Arresto*);
+  - **P4:** il *Colpo maestro* come tecnica da boss.
 - L'equipaggiamento può aggiungere o modificare posture (per esempio la lancia aggiunge *Ricevere*).
 - Il terreno può abilitare o vietare posture.
 

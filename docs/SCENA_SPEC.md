@@ -19,12 +19,14 @@ Ogni posa si descrive su cinque assi. Usarne pochi e sempre gli stessi rende le 
 | **E. Posizione in scena** | Un passo avanti · posizione base · posizione base · **un passo indietro**: lo spazio tra le figure cresce |
 
 ### 1.2 Le quattro posture del viandante
-| Postura | A. Busto | B. Testa | C. Arma | D. Piedi | E. Posizione | Forma della sagoma |
-|---|---|---|---|---|---|---|
-| **Assalto** | Avanti, circa 15–20° | Media | Caricata alta | Larga, avanzata | Un passo avanti | **Freccia** verso il nemico |
-| **Guardia** | Centrato, eretto | Alta | Davanti al corpo | Media, ginocchia flesse | Base | **Muro**: compatta e verticale |
-| **Attesa** | Basso e raccolto | Bassa | Bassa lungo il fianco | Stretta, sulle punte | Base | **Molla**: raccolta, pronta a scattare |
-| **Distanza** | Indietro | Media | Protesa e bassa | Arretrata | Un passo indietro | **Ritirata**: la sagoma si allontana |
+| Postura | A. Busto | B. Testa | C. Arma | D. Piedi | E. Posizione | Forma della sagoma | Riferimento storico |
+|---|---|---|---|---|---|---|---|
+| **Assalto** | Avanti, circa 15–20° | Media | Caricata alta, sopra la spalla | Larga, avanzata | Un passo avanti | **Freccia** verso il nemico | *Posta di donna* (Fiore) |
+| **Guardia** | Centrato, eretto | Alta | Davanti al corpo | Media, ginocchia flesse | Base | **Muro**: compatta e verticale | *Posta frontale* o *di corona* |
+| **Attesa** | Basso e raccolto | Bassa | Bassa, di traverso davanti alle gambe | Stretta, sulle punte | Base | **Molla**: raccolta, pronta a scattare | *Dente di zenghiaro*, *tutta porta di ferro* |
+| **Distanza** | Indietro | Media | **Protesa verso il nemico all'altezza del petto**, punta "in presenza" | Arretrata | Un passo indietro | **Ritirata con minaccia**: il corpo si allontana, la punta resta | *Posta longa*, fuori misura |
+
+I riferimenti storici e le loro fonti sono in [docs/ricerca/POSTURE_ANALISI.md](ricerca/POSTURE_ANALISI.md). Servono come modello per il disegno; la regola di distinzione resta comunque prioritaria.
 
 **Regola di distinzione:** ogni postura differisce da ciascuna delle altre su **almeno 2 assi tra A, B e C**, i tre leggibili anche nella sola sagoma. Le coppie più a rischio di confusione:
 - Guardia e Attesa si distinguono per altezza della testa e posizione dell'arma;
