@@ -95,6 +95,10 @@ input, select, textarea {
 .vigore > .valore { position: relative; display: flex; align-items: center; justify-content: center; gap: 3px; font-size: 0.75rem; line-height: 16px; }
 .fiato { display: inline-flex; gap: 2px; align-items: center; white-space: nowrap; }
 .fiato.zero { color: var(--pericolo); }
+/* Fiato previsto a fine turno (ARENA_SPEC §13.2): provvisorio, Grafica lo rivede nella fase S. */
+.fiato .incerto { flex: none; }
+.fiato .prev { margin-left: 4px; font-size: 12px; line-height: 14px; color: var(--seppia); }
+.fiato.zero .prev { color: var(--pericolo); }
 .chip { display: inline-flex; align-items: center; gap: 4px; padding: 1px 8px; border: 1px solid var(--filo); border-radius: 999px; font-size: 0.8rem; margin-right: 4px; white-space: nowrap; }
 .chip.attivo { border-color: var(--inchiostro); }
 .bollino { display: inline-flex; }

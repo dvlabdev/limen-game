@@ -13,6 +13,7 @@ import type {
   OpzioniArena,
   PosturaId,
   StatoDuello,
+  VoceFiato,
 } from './types.ts';
 import { BALANCE } from '../data/balance.ts';
 import { trovaMossa, trovaProfilo } from '../data/enemies.ts';
@@ -122,6 +123,8 @@ interface Lato {
   interrotto: boolean;
   rotta: boolean;
   raggiunto: boolean; // un attacco avversario si è risolto contro di lui (R3)
+  fiatoInizio: number; // per il bilancio del fiato (§13.2)
+  voci: VoceFiato[];
 }
 
 function creaLato(chi: Chi, c: Combattente, mossa: Mossa): Lato {
@@ -138,7 +141,15 @@ function creaLato(chi: Chi, c: Combattente, mossa: Mossa): Lato {
     interrotto: false,
     rotta: false,
     raggiunto: false,
+    fiatoInizio: c.fiato,
+    voci: [],
   };
+}
+
+// Ogni variazione del fiato passa da qui, così il bilancio del turno coincide con ciò che è successo davvero.
+function variaFiato(l: Lato, tipo: VoceFiato['tipo'], delta: number): void {
+  l.c.fiato += delta;
+  if (delta !== 0) l.voci.push({ tipo, valore: delta });
 }
 
 export function resolveTurn(
@@ -168,7 +179,7 @@ export function resolveTurn(
     if (l.mossa.archetipo === 'distanza' && senzaSpazio(l.c)) throw new Error(`${l.c.nome} non ha spazio per arretrare`);
     const costo = costoCambioDi(l.c);
     if (l.c.fiato < costo) throw new Error(`${l.c.nome} non ha il fiato per cambiare postura`);
-    l.c.fiato -= costo;
+    variaFiato(l, 'cambio', -costo);
     l.c.postura = l.mossa.archetipo;
     ev({ tipo: 'cambio', chi: l.chi, a: l.mossa.archetipo, costo });
   }
@@ -257,7 +268,7 @@ export function resolveTurn(
       const risposta = candidata && D.c.fiato >= costoRisposta ? candidata : null;
       if (risposta) {
         const arresto = risposta === 'arresto';
-        D.c.fiato -= arresto ? BALANCE.costoArresto : BALANCE.costoPunta;
+        variaFiato(D, arresto ? 'arresto' : 'punta', -(arresto ? BALANCE.costoArresto : BALANCE.costoPunta));
         const dr = colpoDiRisposta(D, A, arresto ? BALANCE.arresto : BALANCE.punta);
         infliggi(A, dr);
         ev({ tipo: arresto ? 'arresto' : 'punta', chi: D.chi, danno: dr });
@@ -271,7 +282,7 @@ export function resolveTurn(
     }
 
     if (esito === 'schivato') {
-      D.c.fiato -= BALANCE.costoSchivata;
+      variaFiato(D, 'schivata', -BALANCE.costoSchivata);
       ev({ tipo: 'schivata', chi: D.chi, mossa: A.mossa.nome });
       if (D.c.gradi.schivata >= 2) D.vantArrivo = true;
       if (att.portata === 'corta') {
@@ -286,7 +297,7 @@ export function resolveTurn(
 
     const lungaControDistanza = postura === 'distanza' && att.portata === 'lunga';
     if (esito === 'parato') {
-      D.c.fiato -= BALANCE.costoParata;
+      variaFiato(D, 'parata', -BALANCE.costoParata);
       d *= att.forza === 'leggero' && D.c.gradi.parata >= 2 ? 0 : BALANCE.moltParataNonAnnullata;
     }
     if (lungaControDistanza) d *= BALANCE.moltLungaControDistanza;
@@ -390,9 +401,12 @@ export function resolveTurn(
     } else {
       l.c.distanzaConsecutive = 0;
     }
-    l.c.fiato = Math.min(l.c.fiatoMax, l.c.fiato + BALANCE.recupero[l.c.postura]);
+    variaFiato(l, 'recupero', Math.min(l.c.fiatoMax, l.c.fiato + BALANCE.recupero[l.c.postura]) - l.c.fiato);
     l.c.vantaggio = l.vantAttuale || l.vantArrivo;
     if (l.vantArrivo) ev({ tipo: 'vantaggio', chi: l.chi });
+  }
+  for (const l of lati) {
+    if (l.voci.length) ev({ tipo: 'fiato', chi: l.chi, da: l.fiatoInizio, a: l.c.fiato, voci: l.voci });
   }
 
   const gm = G.c.vigore <= 0;

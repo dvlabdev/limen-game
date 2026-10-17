@@ -2,7 +2,7 @@
 import type { PosturaId } from '../core/types.ts';
 import type { DuelView } from '../core/view.ts';
 import type { VoceRegistro } from './comuni.ts';
-import { attacco, barraVigore, costoEtichetta, dettaglioHint, esc, intervallo, pallini, stati, voce } from './comuni.ts';
+import { attacco, barraVigore, costoEtichetta, dettaglioHint, esc, fiatoPrevisto, intervallo, pallini, stati, voce } from './comuni.ts';
 import { disegnaScena } from './scena.ts';
 import { icona, simbolo } from './symbols.ts';
 
@@ -103,10 +103,10 @@ export function disegnaMenu(radice: HTMLElement, m: ModelloMenu): void {
   }
 }
 
-function combattenteGriglia(v: DuelView['giocatore'], extra: string): string {
+function combattenteGriglia(v: DuelView['giocatore'], extra: string, previsione?: [number, number]): string {
   return `<div class="nome"><span>${esc(v.nome)}</span>${extra}</div>
       ${barraVigore(v)}
-      <div class="dettagli">${pallini(v)}<span><span class="chip">${icona(v.postura.simbolo, { px: 16 })} ${esc(v.postura.nome)}</span>${stati(v, true)}</span></div>
+      <div class="dettagli">${pallini(v, 10, previsione)}<span><span class="chip">${icona(v.postura.simbolo, { px: 16 })} ${esc(v.postura.nome)}</span>${stati(v, true)}</span></div>
       ${v.fiato <= 0 ? `<div class="senzafiato">${icona('risorsa.fiato', { px: 12 })} Senza fiato: niente reazioni</div>` : ''}`;
 }
 
@@ -182,7 +182,7 @@ export function disegnaGriglia(radice: HTMLElement, m: ModelloDuello): void {
     </section>
 
     <section class="combattente giocatore">
-      ${combattenteGriglia(g, '')}
+      ${combattenteGriglia(g, '', fiatoPrevisto(v, m.selezione))}
     </section>
 
     ${comandi}

@@ -21,13 +21,37 @@ export function fiatoPieno(c: CombattenteView): number {
   return Math.max(0, Math.min(c.fiatoMax, c.fiato));
 }
 
+// Pallino "incerto" del fiato previsto (ARENA_SPEC §13.2): anello tratteggiato, nei colori del testo.
+// Provvisorio: Grafica lo rivedrà nella fase S.
+function pallinoIncerto(px: number): string {
+  return `<svg class="icona incerto" viewBox="0 0 24 24" width="${px}" height="${px}" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="4 3.18" focusable="false" aria-hidden="true"><circle cx="12" cy="12" r="8"/></svg>`;
+}
+
 // Pallini del fiato (UI_SPEC §9): pieno e vuoto si distinguono per forma. A zero: niente reazioni, in --pericolo.
-export function pallini(c: CombattenteView, px = 10): string {
-  const pieni = fiatoPieno(c);
-  const zero = pieni === 0;
-  const punti = Array.from({ length: c.fiatoMax }, (_, i) => icona(i < pieni ? 'risorsa.fiato.pieno' : 'risorsa.fiato.vuoto', { px })).join('');
-  const nome = `Fiato ${pieni} su ${c.fiatoMax}${zero ? ', senza fiato' : ''}`;
-  return `<span class="fiato${zero ? ' zero' : ''}" role="img" aria-label="${esc(nome)}" title="${esc(nome)}">${punti}</span>`;
+// Con `previsione` (fiato a fine turno della postura selezionata, §13.2): pieno fino al minimo, tratteggiato
+// fino al massimo, vuoto il resto, e l'etichetta "4 → 2–3".
+export function pallini(c: CombattenteView, px = 10, previsione?: [number, number]): string {
+  if (!previsione) {
+    const pieni = fiatoPieno(c);
+    const zero = pieni === 0;
+    const punti = Array.from({ length: c.fiatoMax }, (_, i) => icona(i < pieni ? 'risorsa.fiato.pieno' : 'risorsa.fiato.vuoto', { px })).join('');
+    const nome = `Fiato ${pieni} su ${c.fiatoMax}${zero ? ', senza fiato' : ''}`;
+    return `<span class="fiato${zero ? ' zero' : ''}" role="img" aria-label="${esc(nome)}" title="${esc(nome)}">${punti}</span>`;
+  }
+  const min = Math.max(0, Math.min(c.fiatoMax, previsione[0]));
+  const max = Math.max(min, Math.min(c.fiatoMax, previsione[1]));
+  const punti = Array.from({ length: c.fiatoMax }, (_, i) =>
+    i < min ? icona('risorsa.fiato.pieno', { px }) : i < max ? pallinoIncerto(px) : icona('risorsa.fiato.vuoto', { px }),
+  ).join('');
+  const dopo = min === max ? `${min}` : `${min}–${max}`;
+  const zero = max === 0;
+  const nome = `Fiato ${fiatoPieno(c)} su ${c.fiatoMax}; a fine turno ${min === max ? min : `tra ${min} e ${max}`}${zero ? ', senza fiato' : ''}`;
+  return `<span class="fiato previsto${zero ? ' zero' : ''}" role="img" aria-label="${esc(nome)}" title="${esc(nome)}">${punti}<span class="prev">${fiatoPieno(c)} → ${dopo}</span></span>`;
+}
+
+// Fiato previsto a fine turno per la postura selezionata, se c'è una selezione (primo tocco, fino alla conferma).
+export function fiatoPrevisto(v: DuelView, selezione: string | null): [number, number] | undefined {
+  return selezione ? v.posture.find((p) => p.id === selezione)?.fiatoFine : undefined;
 }
 
 export function barraVigore(c: CombattenteView): string {

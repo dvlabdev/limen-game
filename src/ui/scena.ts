@@ -3,7 +3,7 @@
 import type { Chi } from '../core/types.ts';
 import type { CombattenteView, DuelView } from '../core/view.ts';
 import type { ModelloDuello } from './render.ts';
-import { attacco, esc, intervallo, modificatori, pallini, stati, voce } from './comuni.ts';
+import { attacco, esc, fiatoPrevisto, intervallo, modificatori, pallini, stati, voce } from './comuni.ts';
 import { sagoma } from './sagome.ts';
 import { icona, medaglione, simbolo } from './symbols.ts';
 import type { StatoMedaglione } from './symbols.ts';
@@ -66,14 +66,14 @@ function fondale(v: DuelView): string {
   </svg>`;
 }
 
-function hud(chi: Chi, c: CombattenteView, extra: string): string {
+function hud(chi: Chi, c: CombattenteView, extra: string, previsione?: [number, number]): string {
   const pct = c.vigoreMax > 0 ? Math.max(0, Math.min(100, (100 * c.vigore) / c.vigoreMax)) : 0;
   const zero = c.fiato <= 0;
   const left = chi === 'giocatore' ? 66 : 216;
   return `<div class="hud ${chi}" style="left:${left}px;top:230px">
     <div class="hud-nome"><span class="nm">${esc(c.nome)}</span><span class="bollini">${stati(c, false)}${extra}</span></div>
     <div class="hud-vigore" role="img" aria-label="Vigore ${c.vigore} su ${c.vigoreMax}">${icona('risorsa.vigore', { px: 12 })}<span class="barra"><i style="width:${pct.toFixed(1)}%"></i></span><span class="num">${c.vigore}/${c.vigoreMax}</span></div>
-    <div class="hud-fiato">${zero ? `<span class="zero" role="img" aria-label="Senza fiato">${icona('risorsa.fiato', { px: 12 })}<span>Senza fiato</span></span>` : pallini(c, 10)}</div>
+    <div class="hud-fiato">${zero && !previsione ? `<span class="zero" role="img" aria-label="Senza fiato">${icona('risorsa.fiato', { px: 12 })}<span>Senza fiato</span></span>` : pallini(c, 10, previsione)}</div>
   </div>`;
 }
 
@@ -179,7 +179,7 @@ export function disegnaScena(radice: HTMLElement, m: ModelloDuello): void {
       ${fondale(v)}
       <div class="turno">Turno ${esc(Math.min(v.turno, v.turnoMax))}/${esc(v.turnoMax)}</div>
       <button class="menu-btn" data-azione="menu">‹ Menu</button>
-      ${hud('giocatore', v.giocatore, '')}
+      ${hud('giocatore', v.giocatore, '', fiatoPrevisto(v, m.selezione))}
       ${hud('nemico', n, n.haFase2 && n.fase === 2 ? `<span class="bollino">${icona('stato.fase2', { px: 16, parlante: true })}</span>` : '')}
       ${figura('giocatore', idViandante, m.anima)}
       ${figura('nemico', m.nemicoId, false)}

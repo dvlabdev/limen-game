@@ -107,6 +107,12 @@ export interface Profilo {
 
 export type MotivoReazioneNegata = 'senzaFiato' | 'sfondaGuardia' | 'rapido' | 'fiatoInsufficiente';
 
+// Una voce del bilancio del fiato: negativa se costa, positiva se recupera.
+export interface VoceFiato {
+  tipo: 'cambio' | 'schivata' | 'parata' | 'punta' | 'arresto' | 'recupero';
+  valore: number;
+}
+
 export type EventoDuello =
   | { tipo: 'cambio'; chi: Chi; a: Archetipo; costo: number }
   | {
@@ -134,6 +140,7 @@ export type EventoDuello =
   | { tipo: 'punta'; chi: Chi; danno: number } // chi = chi arretra e risponde (R4)
   | { tipo: 'arresto'; chi: Chi; danno: number }
   | { tipo: 'spalleAlMuro'; chi: Chi } // la Distanza non è più disponibile (R2)
+  | { tipo: 'fiato'; chi: Chi; da: number; a: number; voci: VoceFiato[] } // bilancio del fiato del turno (§13.2)
   | { tipo: 'fase2' }
   | { tipo: 'fine'; esito: Esito };
 

@@ -11,6 +11,7 @@ import type {
   PosturaId,
   StatoDuello,
   Velocita,
+  VoceFiato,
 } from './types.ts';
 import { BALANCE } from '../data/balance.ts';
 import { trovaMossa, trovaProfilo } from '../data/enemies.ts';
@@ -60,6 +61,9 @@ export interface DuelView {
     disponibile: boolean;
     motivo?: 'fiato' | 'spazio'; // perché non è disponibile
     anteprima?: { subito: [number, number]; inflitto: [number, number] }; // solo con anteprimaDanni
+    // Fiato del giocatore a fine turno se sceglie questa postura: minimo e massimo sulle mosse nemiche
+    // candidate. Sempre presente, indipendente dall'anteprima dei danni (ARENA_SPEC §13.2).
+    fiatoFine: [number, number];
   }>;
   // dove e breve (aggiunta di C2, da confermare con Planning): su quale figura cade l'evento e la sua
   // etichetta breve ("−5", "Parata"), per il testo del colpo della scena (UI_SPEC §5.4).
@@ -116,12 +120,18 @@ function dannoDaEventi(eventi: EventoConTurno[], chi: Chi): number {
   return somma;
 }
 
-// Anteprima: riusa resolveTurn con dado minimo e massimo, senza duplicare le regole.
-function anteprima(stato: StatoDuello, postura: PosturaId): { subito: [number, number]; inflitto: [number, number] } {
+// Simulazione di un turno per ogni mossa nemica candidata, con dado minimo e massimo: riusa resolveTurn,
+// senza duplicare le regole. Ne ricava l'anteprima dei danni e il fiato previsto a fine turno.
+function simulaPostura(
+  stato: StatoDuello,
+  postura: PosturaId,
+): { subito: [number, number]; inflitto: [number, number]; fiatoFine: [number, number] } {
   let sMin = Infinity;
   let sMax = -Infinity;
   let iMin = Infinity;
   let iMax = -Infinity;
+  let fMin = Infinity;
+  let fMax = -Infinity;
   for (const id of mosseCandidate(stato)) {
     for (const dado of [dadoMinimo, dadoMassimo]) {
       const r = resolveTurn({ ...stato, mossaNemico: id }, postura, { dado, saltaIA: true });
@@ -131,9 +141,11 @@ function anteprima(stato: StatoDuello, postura: PosturaId): { subito: [number, n
       sMax = Math.max(sMax, subito);
       iMin = Math.min(iMin, inflitto);
       iMax = Math.max(iMax, inflitto);
+      fMin = Math.min(fMin, r.stato.giocatore.fiato);
+      fMax = Math.max(fMax, r.stato.giocatore.fiato);
     }
   }
-  return { subito: [sMin, sMax], inflitto: [iMin, iMax] };
+  return { subito: [sMin, sMax], inflitto: [iMin, iMax], fiatoFine: [fMin, fMax] };
 }
 
 // --- Registro --------------------------------------------------------------
@@ -292,6 +304,12 @@ function frase(stato: StatoDuello, e: EventoConTurno): { testo: string; simbolo?
           : `${n.Il} ha le spalle al muro: non può più arretrare.`,
         simbolo: 'stato.spalle',
       };
+    case 'fiato': {
+      if (!tu(e.chi)) return null; // il bilancio del nemico non si mostra
+      const nomi: Record<VoceFiato['tipo'], string> = { cambio: 'cambio', schivata: 'schivata', parata: 'parata', punta: 'punta', arresto: 'arresto', recupero: 'recupero' };
+      const voci = e.voci.map((x) => `${nomi[x.tipo]} ${x.valore < 0 ? '−' : '+'}${Math.abs(x.valore)}`).join(', ');
+      return { testo: `Fiato ${e.da} → ${e.a}: ${voci}.`, simbolo: 'risorsa.fiato' };
+    }
     case 'fase2':
       return { testo: `${n.Il} entra nella seconda fase: cambia il modo di combattere.`, simbolo: 'stato.fase2' };
     case 'fine':
@@ -334,6 +352,7 @@ export function toDuelView(stato: StatoDuello, eventiUltimoTurno: EventoConTurno
       const attiva = stato.giocatore.postura === POSTURE[id].archetipo;
       const motivo = inCorso ? motivoNonDisponibile(stato, id) : undefined;
       const disponibile = inCorso && motivo === undefined;
+      const sim = disponibile ? simulaPostura(stato, id) : undefined;
       const p: DuelView['posture'][number] = {
         id,
         nome: POSTURE[id].nome,
@@ -342,8 +361,9 @@ export function toDuelView(stato: StatoDuello, eventiUltimoTurno: EventoConTurno
         costo: attiva ? 0 : costoCambioDi(stato.giocatore),
         disponibile,
         ...(motivo ? { motivo } : {}),
+        fiatoFine: sim ? sim.fiatoFine : [stato.giocatore.fiato, stato.giocatore.fiato],
       };
-      if (stato.opzioni.anteprimaDanni && disponibile) p.anteprima = anteprima(stato, id);
+      if (stato.opzioni.anteprimaDanni && sim) p.anteprima = { subito: sim.subito, inflitto: sim.inflitto };
       return p;
     }),
     registro,

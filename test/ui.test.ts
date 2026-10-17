@@ -97,3 +97,38 @@ describe('sagome (C2a)', () => {
     }
   });
 });
+
+describe('fiato previsto (ARENA_SPEC §13.2)', () => {
+  const conta = (s: string, re: RegExp): number => (s.match(re) ?? []).length;
+
+  it('senza selezione i pallini mostrano il fiato attuale, senza etichetta', () => {
+    const h = html(modello('scena'));
+    assert.ok(!h.includes('class="prev"'));
+    assert.strictEqual(conta(h, /icona incerto/g), 0);
+  });
+
+  it('con una postura selezionata: pieni fino al minimo, tratteggiati fino al massimo, il resto vuoti', () => {
+    const s = statoProva('L1', 'guardia'); // Attesa contro un colpo leggero: fiato finale da 2 a 4
+    const h = html(modello('scena', s, 'attesa'));
+    assert.strictEqual(conta(h, /icona incerto/g), 2);
+    const pallini = /<span class="fiato previsto"[^>]*>([\s\S]*?)<span class="prev">/.exec(h)?.[1] ?? '';
+    assert.strictEqual(conta(pallini, /<svg class="icona"/g) + conta(pallini, /icona incerto/g), 6, 'sei pallini in tutto');
+    assert.ok(pallini.indexOf('icona incerto') > pallini.indexOf('<svg class="icona"'), 'prima i pieni');
+  });
+
+  it("in entrambi i layout compare l'etichetta della previsione quando c'è una selezione", () => {
+    const s = statoProva('L1', 'guardia');
+    for (const layout of ['scena', 'griglia'] as const) {
+      const h = html(modello(layout, s, 'attesa'));
+      assert.ok(h.includes('class="prev">4 → 2–4<'), layout);
+      assert.ok(h.includes('a fine turno tra 2 e 4'), layout);
+    }
+  });
+
+  it("se il fiato previsto è certo, l'etichetta è '4 → 3' e non ci sono pallini tratteggiati", () => {
+    const s = statoProva('D', 'guardia');
+    const h = html(modello('scena', s, 'assalto')); // cambio −1, recupero 0: 4 → 3
+    assert.ok(h.includes('class="prev">4 → 3<'));
+    assert.strictEqual(conta(h, /icona incerto/g), 0);
+  });
+});
