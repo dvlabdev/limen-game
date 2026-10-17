@@ -43,7 +43,7 @@ Calcolate da Planning sul database della pagina:
 | Uso di ciascuna postura | Ogni postura ≥ 10% | Nessuna postura inutile |
 
 ## 5. Esiti e decisioni
-Dopo la sessione 3, Planning scrive in `docs/ricerca/PLAYTEST_ESITI.md` le risposte, le metriche e le proposte. Poi si decide con l'utente e si registra in DESIGN:
+Dopo ogni sessione, Planning salva i dati in `docs/playtest/dati/` e scrive le interpretazioni in `docs/playtest/ESITI.md` (procedura: `docs/playtest/README.md`) le risposte, le metriche e le proposte. Poi si decide con l'utente e si registra in DESIGN:
 - numero di posture e gradi;
 - regole facoltative (colpo a vuoto, finte);
 - layout definitivo;

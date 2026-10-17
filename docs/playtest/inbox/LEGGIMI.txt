@@ -1,0 +1,1 @@
+Metti qui i file JSON copiati dal gioco ("Copia JSON"). Planning li sposta in ../dati/.
