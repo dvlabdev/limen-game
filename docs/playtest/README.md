@@ -32,5 +32,12 @@ Uno script (`sim/playtest.ts`, di proprietà di Codice):
 
 Così le metriche si ricalcolano in un secondo su qualunque quantità di dati, e una sessione nuova può leggerle senza conoscere la storia della conversazione.
 
-## 4. Dimensioni
+## 4. Conservazione: grezzo finché serve, sintesi per sempre
+- **Il dato grezzo resta in `dati/` finché vale la versione delle regole che l'ha prodotto,** più la versione precedente, per i confronti. Serve a rifare analisi con domande nuove: tabella di lettura, confronto con il monitor, nuove metriche.
+- **Quando una versione delle regole viene superata:**
+  1. Planning sintetizza in `ESITI.md` le strategie osservate, la logica delle scelte e le metriche aggregate;
+  2. i file grezzi di quella versione **si tolgono da `dati/`**. Restano nella storia di git e si recuperano con `git log -- docs/playtest/dati/`.
+- **Formato compatto:** un record per riga, senza spazi, esattamente come esportato dal gioco. Nessuna trasformazione: evita errori e non serve, visto il peso.
+
+## 5. Dimensioni
 Un duello pesa circa 0,8–1,2 KB, quindi 1000 duelli occupano circa 1 MB: per il repository git va bene a lungo. Se un giorno i dati crescessero di ordini di grandezza, si archivieranno per versione in file compressi e l'analisi lavorerà sugli aggregati.
