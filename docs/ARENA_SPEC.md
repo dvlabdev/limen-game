@@ -1,6 +1,6 @@
 # Arena di prova del duello: specifica operativa
 
-> **Versione:** 1.1.1 (15 ottobre 2026): modello delle posture, nuove regole e risposte al report. **La §12 prevale sulle sezioni precedenti dove le modifica.** · **Proprietario:** Planning · **Esecutore:** sessione Codice
+> **Versione:** 1.3 parte 1 (17 ottobre 2026): monitor delle strategie e fiato leggibile (§13). **Le §12 e §13 prevalgono sulle sezioni precedenti dove le modificano.** · **Proprietario:** Planning · **Esecutore:** sessione Codice
 > Storico: 1.0.1 dispositivo di riferimento S23 · 1.0.2 la mossa "Finta" del Duellante diventa "Battuta" · 1.1.1 risposte alle domande del report dopo la F2b (§12.6)
 > **Prerequisiti:** [DESIGN.md](../DESIGN.md) §5 (combattimento) e [CLAUDE.md](../CLAUDE.md) (regole delle sessioni).
 
@@ -536,3 +536,51 @@ Si applicano nella fase C2. Il dettaglio dell'assegnazione è in ARENA_S23_SPEC 
 | **4. Altezza della griglia** (circa 850 px con hint completi e anteprima) | **Accettato lo scorrimento:** la griglia è la variante di riferimento, la scena quella principale. |
 | **5. Telemetria con `doc(record.id).set`** | **Approvato:** è idempotente ed evita doppioni nella copia dei record locali. |
 | **6. Visualizzatori** | Confermato: chi non può scrivere nel database ricade sulla memoria del browser, con l'avviso. |
+
+---
+
+## 13. Revisione 1.3, parte 1: monitor delle strategie e fiato leggibile
+Nasce dalla sessione 1 del playtest (17 ottobre 2026). Tre esigenze:
+- il fiato non si legge mentre si gioca;
+- serve sapere verso quali strategie converge chi gioca bene;
+- la strategia deve premiare l'Assalto, invece di ridursi a "schiva e contrattacca".
+
+La **parte 2** (revisione del ritmo del duello) si scrive dopo la linea di base del monitor, con l'approvazione dell'utente. **Fino ad allora le regole del duello non cambiano.**
+
+### 13.1 Monitor delle strategie (`sim/monitor.ts`, `npm run monitor`)
+È uno **strumento di monitoraggio, non un obiettivo di gioco**. Si rilancia dopo ogni modifica a regole o numeri, e i risultati vanno nel report.
+- **Giocata ottima contro l'IA reale:** expectimax sulla distribuzione delle mosse calcolata da `src/core/ai.ts`, con `resolveTurn` come unico risolutore. **Nessuna regola duplicata.**
+- **Due livelli di conoscenza:**
+  - **categoria**: la politica vede solo ciò che vede il giocatore, con hint per categoria;
+  - **mossa**: la politica vede anche la mossa esatta, come con "hint completi".
+- **Stato memoizzato:** vigore, fiato, posture, vantaggio, preparato, spazio, fase, turno, più lo stato dell'IA che influenza le scelte (storico delle posture per l'adattamento). Il caso dei danni si tratta con il valore atteso, con i tiri del dado ridotti a minimo, medio e massimo equiprobabili. Si possono usare approssimazioni dichiarate nel report, purché le misure restino confrontabili tra versioni.
+- **Valore da massimizzare:** probabilità di vittoria, poi meno danni subiti, poi meno turni.
+- **Misure per nemico e per livello di conoscenza:**
+  - vittorie, pareggi, danni subiti medi, probabilità di un duello pulito, turni medi;
+  - **uso delle posture** nella giocata ottima (percentuale dei turni);
+  - **da dove arriva il danno inflitto** (percentuale): Assalto, Guardia, contrattacco, Punta, Arresto.
+- **Politiche di confronto, ottimizzate con lo stesso metodo:**
+  - **senza Assalto** (Assalto vietato);
+  - **solo difesa più contrattacco** (solo Attesa, Guardia e Distanza).
+  - Il report confronta vittorie e turni con la giocata ottima.
+- **Soglie di allarme** (indicatori da evidenziare nel report, non obiettivi del simulatore):
+  - nella giocata ottima l'Assalto produce **almeno il 40% del danno inflitto** e occupa **il 25–50% dei turni**;
+  - la politica senza Assalto vince **almeno 15 punti in meno** o impiega **almeno il 30% di turni in più**.
+- **Uscita:** tabella in console, `sim-out/monitor.json` e la sezione "Monitor" in `docs/ARENA_REPORT.md`, con la **linea di base sulle regole attuali**.
+
+### 13.2 Fiato previsto a fine turno
+- **Contratto:** ogni elemento di `posture[]` riceve `fiatoFine: [number, number]`.
+  - È il fiato a fine turno se il giocatore sceglie quella postura: minimo e massimo sulle mosse nemiche candidate (stesso metodo e stesse candidate dell'anteprima del §7 e §12.7, oppure la sola mossa esatta con hint completi).
+  - È **sempre calcolato**, indipendente dall'interruttore dell'anteprima dei danni.
+- **Pallini sotto la barra del vigore**, quando una postura è selezionata (primo tocco) e fino alla conferma:
+  - **pieno:** fiato sicuro a fine turno (fino a `min`);
+  - **tratteggiato:** fiato che dipende da cosa fa il nemico (da `min` a `max`);
+  - **vuoto:** il resto fino al massimo.
+  - Accanto, l'etichetta "4 → 2–3" (oppure "4 → 3" se `min` = `max`).
+  - Senza selezione i pallini mostrano il fiato attuale, come oggi.
+  - Lo stile tratteggiato usa i token esistenti; Grafica lo rivedrà nella fase S.
+- **Bilancio nel registro** dopo ogni turno, ricavato dagli eventi del risolutore: "Fiato 4 → 2: cambio −1, schivata −2, recupero +1". Nel registro, voce di tipo `fiato`.
+- **Test:** cambio; schivata riuscita e fallita; parata; recupero per postura; fiato zero; cambio gratuito con le spalle al muro; intervallo con più mosse candidate.
+
+### 13.3 Rilievo AUD-025
+Riallineare `src/ui/symbols.ts` a `design/symbols.proposed.ts`: campo `min`, limite in `icona()` e disegno aggiornato di `mod.inarrestabile`.
