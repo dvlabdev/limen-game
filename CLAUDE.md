@@ -4,7 +4,11 @@ Il progetto è un gioco a turni in TypeScript compilato in un singolo file HTML.
 
 ## Fonti di verità
 - **DESIGN.md**: le decisioni di design. Una decisione esiste solo se è scritta lì.
-- **docs/ARENA_SPEC.md**: la specifica operativa della fase attuale.
+- **docs/ARENA_SPEC.md**: la specifica operativa della fase attuale; ARENA_S23_SPEC, SCENA_SPEC e UI_SPEC per le rispettive parti.
+- **docs/DECISIONI.md**: il registro delle decisioni con il loro **perché** (log degli intenti). Leggilo prima di proporre di cambiare una scelta già presa.
+- **docs/ROADMAP.md**: la sequenza dei lavori e le **questioni aperte**.
+- **docs/playtest/**: dati e esiti del playtest.
+- **Per riprendere il lavoro di Planning da zero**, leggi in quest'ordine: ROADMAP (questioni aperte), DECISIONI, DESIGN, docs/playtest/ESITI.md.
 - Se codice e documenti non concordano, valgono i documenti. Se un documento è ambiguo, **non inventare**: chiedi (vedi "Domande").
 
 ## Sessioni e proprietà dei file

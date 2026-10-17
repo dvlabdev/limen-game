@@ -17,6 +17,20 @@
 | E2 | Produzione completa della scena, integrazione, audit G5 | Grafica, Codice, Audit | E1 approvato, D | — |
 | F | **Nucleo** (DESIGN §9.2) | Tutte | D positivo, budget dei contenuti | — |
 
+## Questioni aperte (aggiornate al 17 ottobre 2026)
+| Questione | Stato | Prossimo passo |
+|---|---|---|
+| **Linea di base del monitor** (ARENA_SPEC §13.1) | In corso: sessione `monitor-fiato` (Sonnet), che fa anche il fiato leggibile (§13.2) e AUD-025 | Planning legge i numeri e propone le leve |
+| **Ritmo del duello che premia l'Assalto** (D22) | Leve candidate: L1 Attesa che prepara invece di contrattaccare · L2 slancio dell'Assalto · L3 pressione sulla passività · L4 scambi meno sbilanciati · **velocità leggibile nell'hint** ("pesante · lento"), da ESITI O3 | Scegliere sui numeri del monitor; approvazione dell'utente; ARENA_SPEC §13 parte 2 |
+| **Duello pulito con la conoscenza** (D20) | Deciso; i dati del Bruto lo confermano (3 duelli puliti su 5 con hint completi) | Scriverlo in DESIGN §5.2 insieme alla parte 2 |
+| **Momento di apprendimento** (Recluta che insegna, suggerimento al primo errore) | Da decidere con le sessioni 2–3 del playtest | Dopo il fiato leggibile |
+| **SCENA_SPEC §2–§5** (scheletro, animazioni, laboratorio) | Bozza, da approvare | Approvazione dell'utente; prototipo dopo la scelta dello stile, oppure subito in sagoma pura |
+| **Analisi automatica del playtest** (`npm run playtest`) e **"Scarica JSON"** su Pages | Specificati in docs/playtest/README.md | Nella prossima fase di codice |
+| **Concept art** | Prompt pronti (docs/ricerca/PROMPT_CONCEPT.md) | Generazione da parte dell'utente; preferenze in `design/concept/` |
+| **Telemetria su database** | Non funziona nell'app mobile; da desktop non provata | Facoltativo: un duello da claude.ai su desktop |
+| **Sessione `c2a-sagome`** | Lavoro chiuso, archiviazione rifiutata dall'app per attività residua | Archiviarla dalla barra laterale |
+| **Rimandati** | Finte (DESIGN §5.5a) · misura condivisa (P5) · Colpo maestro (P4) · opzione per mancini · installazione come app | Dopo il playtest o con il nucleo |
+
 ## Da preparare prima del nucleo
 - **Budget dei contenuti:** quanti biomi, nemici, boss, tecniche e storylet servono per la 1.0.
 - **Sorgente autoriale** (DESIGN §7.2): scopo, tesoro, mistero della locanda.
