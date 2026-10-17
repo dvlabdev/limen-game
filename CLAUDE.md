@@ -8,8 +8,20 @@ Il progetto è un gioco a turni in TypeScript compilato in un singolo file HTML.
 - **docs/DECISIONI.md**: il registro delle decisioni con il loro **perché** (log degli intenti). Leggilo prima di proporre di cambiare una scelta già presa.
 - **docs/ROADMAP.md**: la sequenza dei lavori e le **questioni aperte**.
 - **docs/playtest/**: dati e esiti del playtest.
-- **Per riprendere il lavoro di Planning da zero**, leggi in quest'ordine: ROADMAP (questioni aperte), DECISIONI, DESIGN, docs/playtest/ESITI.md.
 - Se codice e documenti non concordano, valgono i documenti. Se un documento è ambiguo, **non inventare**: chiedi (vedi "Domande").
+
+### Quando leggere cosa
+**Non caricare questi file per abitudine.** Si leggono solo quando servono, e solo la parte che serve:
+
+| File | Quando leggerlo |
+|---|---|
+| Sezioni di specifica indicate nel brief | **Sempre**, per chi esegue (Codice, Grafica, Audit): il brief dice quali. Il resto della specifica solo se una regola rimanda altrove. |
+| `docs/ROADMAP.md`, solo "Questioni aperte" | All'**inizio di una sessione di Planning** (nuova o dopo una compattazione), oppure quando bisogna decidere il passo successivo. |
+| `docs/DECISIONI.md` | Solo prima di **proporre di cambiare una scelta già presa**, quando serve il **perché** di una decisione, o per aggiungerne una nuova (in fondo). |
+| `DESIGN.md` | Solo le **sezioni pertinenti** al compito (per esempio §5 per il duello, §8 per la grafica). Per intero solo se lo chiede l'utente o se si scrive una specifica nuova. |
+| `docs/playtest/ESITI.md` e `dati/` | Solo quando si lavora su **playtest, bilanciamento o regole del duello**. I dati grezzi si leggono con uno script, mai interi nel contesto. |
+| `audit/` | Solo per l'Audit, o quando Planning smista i rilievi. |
+| `docs/ricerca/` | Solo su richiesta esplicita o quando un documento vi rimanda per un dettaglio. |
 
 ## Sessioni e proprietà dei file
 | Sessione | Possiede | Non tocca |
